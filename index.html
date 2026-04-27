@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>醫療資訊系統整合入口</title>
+    <style>
+        /* 基礎全域設定 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* 頂部導覽列設定 */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 10px 0 0 0;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+
+        /* 主要內容區塊 - 使用 Grid 排版 */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            /* 自動調整列數，最小寬度 300px，最大填滿 */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* 卡片樣式設計 */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-decoration: none; /* 移除超連結底線 */
+            color: inherit;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid #3498db; /* 卡片頂部藍色飾條 */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 滑鼠懸停在卡片上的動畫效果 */
+        .card:hover {
+            transform: translateY(-5px); /* 向上浮動 */
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1); /* 加深陰影 */
+        }
+
+        /* 針對不同系統自訂頂部飾條顏色 */
+        .card.drg { border-color: #e74c3c; } /* 紅色 */
+        .card.icd { border-color: #f39c12; } /* 橘色 */
+        .card.cc { border-color: #2ecc71; }  /* 綠色 */
+        .card.future { 
+            border-color: #95a5a6; 
+            background-color: #fdfdfd;
+            border-style: dashed;
+            border-width: 2px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        .card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            flex-grow: 1; /* 讓文字區塊自動填滿空間，把按鈕推到底部 */
+        }
+
+        /* 虛擬按鈕樣式 */
+        .card-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .card:hover .card-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .card.future:hover .card-btn {
+            background-color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>醫療資訊系統整合中心</h1>
+        <p>快速存取您的智慧查詢與統計工具</p>
+    </header>
+
+    <main class="container">
+        <a href="https://icd10coding.github.io/tw-drg-dashboard/" target="_blank" class="card drg">
+            <h2>TW-DRG 3.4 智能查詢</h2>
+            <p>提供 TW-DRG 3.4 版的智能查詢與統計分析功能，協助快速試算與資源管理。</p>
+            <span class="card-btn">進入系統 &rarr;</span>
+        </a>
+
+        <a href="https://icd10coding.github.io/icd10-search/" target="_blank" class="card icd">
+            <h2>ICD-10 外傷編碼搜尋</h2>
+            <p>針對各部位外傷，提供精準且快速的 ICD-10 疾病分類編碼搜尋服務。</p>
+            <span class="card-btn">進入系統 &rarr;</span>
+        </a>
+
+        <a href="https://icd10coding.github.io/index/" target="_blank" class="card cc">
+            <h2>CC 綜合查詢系統</h2>
+            <p>合併症與併發症 (Comorbidities/Complications) 的綜合查詢與判定輔助。</p>
+            <span class="card-btn">進入系統 &rarr;</span>
+        </a>
+
+        <a href="#" class="card future">
+            <h2>未命名新系統 (開發中)</h2>
+            <p>未來的程式專案完成後，可以直接複製此卡片並修改標題與連結。</p>
+            <span class="card-btn">敬請期待</span>
+        </a>
+    </main>
+
+</body>
+</html>
