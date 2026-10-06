@@ -111,6 +111,17 @@
         .card.future:hover .card-btn {
             background-color: #95a5a6;
         }
+
+        /* 分類標題 */
+        .section-title {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 0 20px 8px;
+            font-size: 22px;
+            color: #2c3e50;
+            border-bottom: 2px solid #dfe6e9;
+        }
+        .section-title + .container { margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -120,10 +131,17 @@
         <p>快速存取您的智慧查詢與統計工具</p>
     </header>
 
+    <h2 class="section-title">Tw DRG</h2>
     <main class="container">
         <a href="https://icd10coding.github.io/tw-drg-dashboard/" target="_blank" class="card drg">
             <h2>TW-DRG 3.4 智能查詢</h2>
             <p>提供 TW-DRG 3.4 版的智能查詢與統計分析功能，協助快速試算與資源管理。</p>
+            <span class="card-btn">進入系統 &rarr;</span>
+        </a>
+
+        <a href="https://icd10coding.github.io/tw-drg-dashboard/v12.html" target="_blank" class="card drg">
+            <h2>Tw-DRG 查詢儀表板 (v12)</h2>
+            <p>DRG／ICD-10／DRG 比較三合一查詢，支援多關鍵字與同義詞（如單條＝單處），含 RW、CMI 與癌症虛擬權重。</p>
             <span class="card-btn">進入系統 &rarr;</span>
         </a>
 
@@ -138,22 +156,19 @@
             <p>合併症與併發症 (Comorbidities/Complications) 的綜合查詢與判定輔助。</p>
             <span class="card-btn">進入系統 &rarr;</span>
         </a>
+    </main>
 
-        <a href="https://icd10coding.github.io/E-code/" target="_blank" class="card E Code">
-            <h2>外因編碼查詢系統</h2>
-            <p>E Code 的綜合查詢。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
-
+    <h2 class="section-title">ICD 10</h2>
+    <main class="container">
         <a href="https://icd10coding.github.io/icd10-search/" target="_blank" class="card icd">
             <h2>ICD-10 外傷編碼搜尋</h2>
             <p>針對 MDC24 各部位外傷，提供精準且快速的 ICD-10 疾病分類編碼搜尋服務。</p>
             <span class="card-btn">進入系統 &rarr;</span>
         </a>
 
-        <a href="https://icd10coding.github.io/tw-drg-dashboard/v12.html" target="_blank" class="card drg">
-            <h2>Tw-DRG 查詢儀表板 (v12)</h2>
-            <p>DRG／ICD-10／DRG 比較三合一查詢，支援多關鍵字與同義詞（如單條＝單處），含 RW、CMI 與癌症虛擬權重。</p>
+        <a href="https://icd10coding.github.io/E-code/" target="_blank" class="card E Code">
+            <h2>外因編碼查詢系統</h2>
+            <p>E Code 的綜合查詢。</p>
             <span class="card-btn">進入系統 &rarr;</span>
         </a>
 
