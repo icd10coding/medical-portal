@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>病歷編碼工作台｜登入</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style id="gate-style">
+:root{--paper:#FBF7FC;--surface:#FFFFFF;--sunk:#F6F0F8;--ink:#3A3145;--muted:#7B7088;--line:#ECE2F0;--btn:#AEE3CF;--btn-ink:#1E4E40;--focus:#9C86D9;--berry:#FFDDE6;--berry-ink:#AE3A5C;
+  --stripe:linear-gradient(90deg,#F9C6D3 0 20%,#BFE8D6 20% 40%,#DCCFF6 40% 60%,#FFEFB0 60% 80%,#FFD2B3 80% 100%);
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--paper:#1D1922;--surface:#26212D;--sunk:#211C28;--ink:#F2EBF6;--muted:#B4A8C1;--line:#3A3245;--btn:#7FC9AE;--btn-ink:#10302A;--focus:#C3B2F2;--berry:#43232E;--berry-ink:#F7A9BE}}
+*{box-sizing:border-box}
+body.gate{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--paper);color:var(--ink);font-family:var(--sans);padding:24px 16px}
+.gate .card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px 24px 22px;position:relative;overflow:hidden}
+.gate .card::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--stripe)}
+.gate h1{margin:6px 0 2px;font-size:1.5rem;font-weight:900;letter-spacing:.03em}
+.gate .sub{margin:0 0 20px;font-size:.82rem;color:var(--muted)}
+.gate form{display:flex;flex-direction:column;gap:12px}
+.gate label{font-size:.76rem;font-weight:700;letter-spacing:.08em;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+.gate input[type=text],.gate input[type=password]{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);font:inherit;font-size:.95rem}
+.gate input:focus-visible,.gate button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.gate .rem{flex-direction:row;align-items:center;gap:8px;font-weight:500;letter-spacing:0;font-size:.82rem}
+.gate button{margin-top:4px;padding:11px;border:0;border-radius:999px;background:var(--btn);color:var(--btn-ink);font:inherit;font-weight:700;font-size:.95rem;cursor:pointer}
+.gate button:disabled{opacity:.6;cursor:wait}
+.gate .msg{min-height:1.4em;font-size:.84rem;color:var(--muted)}
+.gate .msg.err{color:var(--berry-ink)}
+.gate .foot{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gate .foot a{color:inherit}
+.spin{display:inline-block;width:.8em;height:.8em;border:2px solid var(--line);border-top-color:var(--btn-ink);border-radius:50%;animation:sp .9s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+<script src="crypto.js"></script>
+</head>
+<body class="gate">
+<main class="card" id="gate">
+  <h1>病歷編碼工作台</h1>
+  <p class="sub">ICD-10-CM／PCS・Tw-DRG 3.4｜請登入後使用</p>
+  <form id="f" autocomplete="on">
+    <label>帳號<input type="text" id="u" name="username" autocomplete="username" required autofocus></label>
+    <label>密碼<input type="password" id="p" name="password" autocomplete="current-password" required></label>
+    <label class="rem"><input type="checkbox" id="rem">在這台電腦保持登入 7 天</label>
+    <button type="submit" id="go">登入</button>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </form>
+  <div class="foot"><span>沒有帳號請洽管理員</span><a href="../">回醫療資訊系統整合中心</a></div>
+</main>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const msg = (t, err, busy) => { $("msg").className = "msg" + (err ? " err" : ""); $("msg").innerHTML = (busy ? '<span class="spin"></span>' : "") + t; };
+  let U = null;
+
+  async function launch(s){
+    msg("解密工作台中…", false, true);
+    const v = encodeURIComponent(U.build || "");
+    const r = await fetch("app.bin?v=" + v); if (!r.ok) throw new Error("無法下載工作台（" + r.status + "）");
+    const html = CC.dec.decode(await CC.openBin(s.K, await r.arrayBuffer()));
+    window.CODER = {
+      user: s.me.name, role: s.me.role, uid: s.uid,
+      load: async name => { const x = await fetch("data/" + name + ".bin?v=" + v); if (!x.ok) throw new Error(name + " " + x.status); return JSON.parse(CC.dec.decode(await CC.openBin(s.K, await x.arrayBuffer()))); },
+      seal: t => CC.seal(s.K, t), open: t => CC.open(s.K, t),
+      logout: () => { CC.clearSession(); location.reload(); }
+    };
+    inject(html);
+  }
+  function inject(html){
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    document.title = doc.title || "病歷編碼工作台";
+    $("gate-style").remove();
+    doc.head.querySelectorAll("link,style").forEach(n => document.head.appendChild(document.importNode(n, true)));
+    document.body.className = "";
+    const scripts = [...doc.body.querySelectorAll("script")];
+    scripts.forEach(s => s.remove());
+    document.body.innerHTML = doc.body.innerHTML;
+    scripts.forEach(s => { const n = document.createElement("script"); if (s.src) n.src = s.src; else n.textContent = s.textContent; document.body.appendChild(n); });
+  }
+
+  $("f").addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = $("u").value.trim(), pass = $("p").value;
+    if (!name || !pass) return;
+    $("go").disabled = true; msg("驗證中…", false, true);
+    try {
+      U = U || await CC.fetchUsers();
+      const s = await CC.login(name, pass, U);
+      CC.saveSession(s.rawK, s.uid, $("rem").checked);
+      await launch(s);
+    } catch (err){
+      msg(err.message === "帳號或密碼錯誤" ? "帳號或密碼錯誤，請再試一次。" : "無法登入：" + err.message, true);
+      $("go").disabled = false; $("p").select();
+    }
+  });
+
+  (async () => {
+    if (!window.crypto || !crypto.subtle || !window.DecompressionStream){ msg("這個瀏覽器不支援本頁需要的加密功能，請改用最新版 Chrome、Edge、Safari 或 Firefox。", true); $("go").disabled = true; return; }
+    try {
+      U = await CC.fetchUsers();
+      const s = await CC.resume(U);
+      if (s){ $("go").disabled = true; await launch(s); }
+    } catch (err){ msg("無法登入：" + err.message, true); $("go").disabled = false; }
+  })();
+})();
+</script>
+</body>
+</html>

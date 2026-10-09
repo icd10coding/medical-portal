@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>帳號管理｜病歷編碼工作台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+:root{--paper:#FBF7FC;--surface:#FFFFFF;--sunk:#F6F0F8;--ink:#3A3145;--muted:#7B7088;--line:#ECE2F0;--btn:#AEE3CF;--btn-ink:#1E4E40;--focus:#9C86D9;
+  --mint:#DDF4EA;--mint-ink:#2E735F;--berry:#FFDDE6;--berry-ink:#AE3A5C;--lilac:#E9E0FB;--lilac-ink:#6A51B0;--lemon:#FFF5CC;--lemon-ink:#86690A;
+  --stripe:linear-gradient(90deg,#F9C6D3 0 20%,#BFE8D6 20% 40%,#DCCFF6 40% 60%,#FFEFB0 60% 80%,#FFD2B3 80% 100%);
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--paper:#1D1922;--surface:#26212D;--sunk:#211C28;--ink:#F2EBF6;--muted:#B4A8C1;--line:#3A3245;--btn:#7FC9AE;--btn-ink:#10302A;--focus:#C3B2F2;
+  --mint:#1F3A33;--mint-ink:#A5E3CC;--berry:#43232E;--berry-ink:#F7A9BE;--lilac:#302846;--lilac-ink:#C9B8F7;--lemon:#3C3417;--lemon-ink:#F0DA86}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;padding:0 16px 48px}
+.wrap{max-width:860px;margin:0 auto}
+header{padding-block:22px 14px;margin-bottom:20px;position:relative;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;border-radius:6px;background:var(--stripe)}
+h1{margin:0;font-size:1.6rem;font-weight:900}
+h1 small{display:block;font-size:.76rem;font-weight:500;color:var(--muted);letter-spacing:.1em}
+h2{font-size:1.02rem;margin:0 0 10px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+label{font-size:.76rem;font-weight:700;letter-spacing:.06em;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+input,select{padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);color:var(--ink);font:inherit;font-size:.9rem}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button{font:inherit;font-size:.86rem;cursor:pointer;border-radius:999px;padding:7px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+button:hover{background:var(--sunk)}
+button.primary{background:var(--btn);color:var(--btn-ink);border-color:transparent;font-weight:700}
+button.danger{color:var(--berry-ink)}
+button.danger.arm{background:var(--berry-ink);color:var(--surface);border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;font-size:.72rem;letter-spacing:.08em;color:var(--muted);padding:8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl{overflow-x:auto}
+.b{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:999px}
+.b-admin{background:var(--lilac);color:var(--lilac-ink)} .b-user{background:var(--mint);color:var(--mint-ink)} .b-new{background:var(--lemon);color:var(--lemon-ink)}
+.msg{min-height:1.4em;font-size:.84rem;color:var(--muted)} .msg.err{color:var(--berry-ink)}
+.pending{background:var(--lemon);color:var(--lemon-ink);border-color:transparent}
+.pending ol{margin:6px 0 0;padding-left:1.2em;font-size:.86rem}
+.pending a{color:inherit;font-weight:700}
+.hint{font-size:.78rem;color:var(--muted);margin:6px 0 0}
+code,.mono{font-family:var(--mono);font-size:.84rem}
+.inline{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.inline input{width:180px}
+</style>
+<script src="crypto.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header><h1><small>病歷編碼工作台</small>帳號管理</h1><div class="row"><a href="./" style="color:var(--muted);font-size:.84rem">回工作台</a></div></header>
+
+  <section class="panel" id="loginBox" hidden>
+    <h2>請先登入</h2>
+    <form id="lf" class="grid">
+      <label>帳號<input id="lu" autocomplete="username" required></label>
+      <label>密碼<input id="lp" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">登入</button>
+    </form>
+    <div class="msg" id="lmsg"></div>
+  </section>
+
+  <div id="main" hidden>
+    <section class="panel pending" id="pending" hidden>
+      <h2>有尚未發佈的變更</h2>
+      <div id="pendList"></div>
+      <ol>
+        <li>按「下載 users.json」。</li>
+        <li>到 <a href="https://github.com/icd10coding/medical-portal/upload/main/coder" target="_blank" rel="noopener">GitHub 上傳頁</a>，把下載的 <code>users.json</code> 拖進去，按「Commit changes」。</li>
+        <li>約 1 分鐘後新的帳號設定生效。</li>
+      </ol>
+      <div class="row" style="margin-top:10px"><button class="primary" id="dl">下載 users.json</button><button id="cp">複製內容</button><button id="discard">放棄變更</button></div>
+      <p class="hint">只有對 GitHub repo 有寫入權限的人能發佈變更。一般使用者改好密碼後，請把下載的檔案交給管理員上傳。</p>
+    </section>
+
+    <section class="panel">
+      <h2>變更我的密碼</h2>
+      <form id="mf" class="grid">
+        <label>新密碼（至少 8 碼）<input id="mp1" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label>再輸入一次<input id="mp2" type="password" autocomplete="new-password" minlength="8" required></label>
+        <button class="primary" type="submit">變更</button>
+      </form>
+      <div class="msg" id="mmsg"></div>
+    </section>
+
+    <section class="panel" id="adminBox" hidden>
+      <h2>新增帳號</h2>
+      <form id="af" class="grid">
+        <label>帳號<input id="an" autocomplete="off" required></label>
+        <label>密碼（至少 8 碼）<input id="ap" autocomplete="new-password" minlength="8" required></label>
+        <label>角色<select id="ar"><option value="user">一般使用者</option><option value="admin">管理員</option></select></label>
+        <div class="row"><button type="button" id="gen">產生密碼</button><button class="primary" type="submit">新增</button></div>
+      </form>
+      <div class="msg" id="amsg"></div>
+      <h2 style="margin-top:18px">所有帳號</h2>
+      <div class="tbl"><table><thead><tr><th>帳號</th><th>角色</th><th>建立日期</th><th></th></tr></thead><tbody id="list"></tbody></table></div>
+      <p class="hint">刪除帳號後，對方下次開啟工作台就無法登入。若要確保對方無法再使用先前下載過的資料，需重建內容金鑰並請所有人重設密碼（請洽 Claude 協助）。</p>
+    </section>
+  </div>
+</div>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const say = (id, t, err) => { $(id).className = "msg" + (err ? " err" : ""); $(id).textContent = t; };
+  let U0 = null, U = null, S = null, metas = {}, changes = [];
+
+  function genPass(){ const a = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"; const r = crypto.getRandomValues(new Uint32Array(12)); return [...r].map(x => a[x % a.length]).join(""); }
+  async function loadMetas(){ metas = {}; for (const [id, e] of Object.entries(U.users)){ try { metas[id] = await CC.readMeta(S.K, e); } catch { metas[id] = {name:"（無法讀取）", role:"?"}; } } }
+  function adminsLeft(except){ return Object.entries(metas).filter(([id, m]) => id !== except && m.role === "admin").length; }
+  function renderPending(){
+    $("pending").hidden = !changes.length;
+    $("pendList").innerHTML = changes.length ? "<ul>" + changes.map(c => `<li>${esc(c)}</li>`).join("") + "</ul>" : "";
+  }
+  function renderList(){
+    const rows = Object.entries(metas).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([id, m]) => {
+      const me = id === S.uid, isNew = !U0.users[id];
+      return `<tr><td><b>${esc(m.name)}</b>${me ? "（你）" : ""} ${isNew ? '<span class="b b-new">未發佈</span>' : ""}<div class="inline" id="rp-${id}" hidden><input type="text" placeholder="新密碼" minlength="8"><button type="button" data-setpw="${id}">確定</button></div></td>
+        <td><span class="b b-${m.role === "admin" ? "admin" : "user"}">${m.role === "admin" ? "管理員" : "一般使用者"}</span></td><td class="mono">${esc(m.created || "")}</td>
+        <td><div class="row"><button type="button" data-reset="${id}">重設密碼</button>${me ? "" : `<button type="button" class="danger" data-del="${id}">刪除</button>`}</div></td></tr>`;
+    });
+    $("list").innerHTML = rows.join("");
+  }
+  async function start(s){
+    S = s; U = JSON.parse(JSON.stringify(U0));
+    await loadMetas();
+    $("loginBox").hidden = true; $("main").hidden = false;
+    $("adminBox").hidden = s.me.role !== "admin";
+    renderList(); renderPending();
+  }
+
+  $("lf").addEventListener("submit", async e => {
+    e.preventDefault(); say("lmsg", "驗證中…");
+    try { const s = await CC.login($("lu").value, $("lp").value, U0); CC.saveSession(s.rawK, s.uid, false); await start(s); }
+    catch (err){ say("lmsg", err.message === "帳號或密碼錯誤" ? "帳號或密碼錯誤。" : err.message, true); }
+  });
+  $("mf").addEventListener("submit", async e => {
+    e.preventDefault();
+    if ($("mp1").value !== $("mp2").value) return say("mmsg", "兩次輸入的密碼不同。", true);
+    if ($("mp1").value.length < 8) return say("mmsg", "密碼至少 8 碼。", true);
+    say("mmsg", "處理中…");
+    const m = metas[S.uid];
+    const [id, entry] = await CC.makeEntry(m.name, $("mp1").value, m.role, S.rawK, S.K, U.kdf.iter, m.created);
+    U.users[id] = entry; changes.push(`變更 ${m.name} 的密碼`);
+    $("mp1").value = $("mp2").value = ""; say("mmsg", "已更新，請依上方步驟發佈後生效。"); renderPending();
+  });
+  $("gen").onclick = () => { $("ap").value = genPass(); };
+  $("af").addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = $("an").value.trim(), pass = $("ap").value, role = $("ar").value;
+    if (name.length < 2) return say("amsg", "帳號至少 2 個字。", true);
+    if (pass.length < 8) return say("amsg", "密碼至少 8 碼。", true);
+    if (U.users[await CC.uidOf(name)]) return say("amsg", "此帳號已存在。", true);
+    say("amsg", "處理中…");
+    const [id, entry] = await CC.makeEntry(name, pass, role, S.rawK, S.K, U.kdf.iter);
+    U.users[id] = entry; metas[id] = await CC.readMeta(S.K, entry);
+    changes.push(`新增 ${name}（${role === "admin" ? "管理員" : "一般使用者"}）`);
+    say("amsg", `已新增 ${name}，密碼：${pass}（請記下並交給對方，發佈後生效）`);
+    $("an").value = ""; $("ap").value = ""; renderList(); renderPending();
+  });
+  $("list").addEventListener("click", async e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.reset){ const box = $("rp-" + b.dataset.reset); box.hidden = !box.hidden; if (!box.hidden){ const i = box.querySelector("input"); i.value = genPass(); i.select(); } }
+    else if (b.dataset.setpw){
+      const id = b.dataset.setpw, pass = $("rp-" + id).querySelector("input").value;
+      if (pass.length < 8){ say("amsg", "密碼至少 8 碼。", true); return; }
+      const m = metas[id]; delete U.users[id];
+      const [nid, entry] = await CC.makeEntry(m.name, pass, m.role, S.rawK, S.K, U.kdf.iter, m.created);
+      U.users[nid] = entry; changes.push(`重設 ${m.name} 的密碼`);
+      say("amsg", `已重設 ${m.name} 的密碼：${pass}（發佈後生效）`); renderList(); renderPending();
+    }
+    else if (b.dataset.del){
+      const id = b.dataset.del, m = metas[id];
+      if (m.role === "admin" && !adminsLeft(id)) { say("amsg", "至少要保留一位管理員。", true); return; }
+      if (!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "確認刪除"; setTimeout(() => { b.classList.remove("arm"); b.textContent = "刪除"; }, 4000); return; }
+      delete U.users[id]; delete metas[id]; changes.push(`刪除 ${m.name}`); renderList(); renderPending();
+    }
+  });
+  const json = () => JSON.stringify(U, null, 1) + "\n";
+  $("dl").onclick = () => { const url = URL.createObjectURL(new Blob([json()], {type:"application/json"})); const a = document.createElement("a"); a.href = url; a.download = "users.json"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000); };
+  $("cp").onclick = async () => { try { await navigator.clipboard.writeText(json()); $("cp").textContent = "已複製"; setTimeout(() => $("cp").textContent = "複製內容", 2000); } catch { alert("無法複製，請改用下載。"); } };
+  $("discard").onclick = async () => { changes = []; U = JSON.parse(JSON.stringify(U0)); await loadMetas(); renderList(); renderPending(); };
+
+  (async () => {
+    try {
+      U0 = await CC.fetchUsers();
+      const s = await CC.resume(U0);
+      if (s) await start(s); else $("loginBox").hidden = false;
+    } catch (err){ $("loginBox").hidden = false; say("lmsg", "無法載入帳號資料：" + err.message, true); }
+  })();
+})();
+</script>
+</body>
+</html>

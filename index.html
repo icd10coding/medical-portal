@@ -70,6 +70,18 @@
         .card.drg { border-color: #e74c3c; } /* 紅色 */
         .card.icd { border-color: #f39c12; } /* 橘色 */
         .card.cc { border-color: #2ecc71; }  /* 綠色 */
+        .card.coder { border-color: #9b7fd4; } /* 紫色 */
+        .lock {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #ede7f9;
+            color: #6a51b0;
+            font-size: 12px;
+            font-weight: bold;
+            vertical-align: 2px;
+        }
         .card.future { 
             border-color: #95a5a6; 
             background-color: #fdfdfd;
@@ -170,6 +182,12 @@
             <h2>外因編碼查詢系統</h2>
             <p>E Code 的綜合查詢。</p>
             <span class="card-btn">進入系統 &rarr;</span>
+        </a>
+
+        <a href="coder/" target="_blank" class="card coder">
+            <h2>病歷編碼工作台 <span class="lock">需登入</span></h2>
+            <p>貼上或上傳病歷，找出 ICD-10-CM／PCS 代碼，依健保署 Tw-DRG 3.4 判定合併症／併發症與分組，並附 Tabular、Guidelines、Coding Clinic 參考出處。</p>
+            <span class="card-btn">登入使用 &rarr;</span>
         </a>
 
         <a href="#" class="card future">
