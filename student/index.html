@@ -1,0 +1,1810 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>疾病分類練習簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap">
+<style>
+/* 版面：頂部青綠橫條 → 報頭（水彩插畫在右上）→ 分頁籤 → 區塊（章節標・結論標題・內容・玫瑰粉結論句）。插畫只在邊角，文字區保持乾淨紙色。 */
+:root{
+  --paper:#F7F4EC; --card:#FCF7EB; --field:#FFFBF1;
+  --ink:#5C443A; --ink2:#6E5446; --ink3:#876755;
+  --rose:#C27777; --rose-ink:#A65A5A; --apricot:#DE9B67; --sage:#78978B; --teal:#118A8A;
+  --peach:#F9E5CE; --mint:#E2EEE2; --blush:#F6E0DB; --line:#E6C9A8;
+  --ok-line:#5E9A82; --bad-line:#C27777;
+  --deco-pink:#F4C2C2; --deco-yellow:#F6CF96; --deco-green:#BFD6C6; --deco-heart:#F2B5B0;
+  --wash-1:rgba(246,224,219,.95); --wash-2:rgba(249,229,206,.95); --wash-3:rgba(226,238,226,.9); --wash-4:rgba(246,224,219,.8);
+  --grain:.22; --grain-blend:multiply;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#2A2220; --card:#352B27; --field:#2E2522;
+    --ink:#F4E8DA; --ink2:#E6D3C2; --ink3:#BFA593;
+    --rose:#D88C8C; --rose-ink:#EBA9A9; --apricot:#E3A675; --sage:#8FB2A3; --teal:#4FB3AE;
+    --peach:#4A3A2F; --mint:#2F4038; --blush:#4B3535; --line:#6A5545;
+    --ok-line:#7DB59C; --bad-line:#D88C8C;
+    --deco-pink:#8A5A5A; --deco-yellow:#B88A55; --deco-green:#5E8272; --deco-heart:#9A5F5F;
+    --wash-1:rgba(120,70,70,.35); --wash-2:rgba(130,90,50,.3); --wash-3:rgba(60,95,80,.3); --wash-4:rgba(120,70,70,.28);
+    --grain:.3; --grain-blend:soft-light;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#2A2220; --card:#352B27; --field:#2E2522;
+  --ink:#F4E8DA; --ink2:#E6D3C2; --ink3:#BFA593;
+  --rose:#D88C8C; --rose-ink:#EBA9A9; --apricot:#E3A675; --sage:#8FB2A3; --teal:#4FB3AE;
+  --peach:#4A3A2F; --mint:#2F4038; --blush:#4B3535; --line:#6A5545;
+  --ok-line:#7DB59C; --bad-line:#D88C8C;
+  --deco-pink:#8A5A5A; --deco-yellow:#B88A55; --deco-green:#5E8272; --deco-heart:#9A5F5F;
+  --wash-1:rgba(120,70,70,.35); --wash-2:rgba(130,90,50,.3); --wash-3:rgba(60,95,80,.3); --wash-4:rgba(120,70,70,.28);
+  --grain:.3; --grain-blend:soft-light;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  position:relative; margin:0; min-height:100%;
+  background:var(--paper); color:var(--ink2);
+  font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  font-size:1rem; line-height:1.75; overflow-x:hidden;
+}
+/* 水彩暈染：四角各一團淡彩 */
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(60vmax 40vmax at 6% 4%, var(--wash-1) 0, transparent 62%),
+    radial-gradient(50vmax 38vmax at 98% 10%, var(--wash-2) 0, transparent 62%),
+    radial-gradient(55vmax 42vmax at 94% 100%, var(--wash-3) 0, transparent 62%),
+    radial-gradient(45vmax 34vmax at 2% 96%, var(--wash-4) 0, transparent 64%);
+}
+/* 紙張顆粒 */
+body::after{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:var(--grain); mix-blend-mode:var(--grain-blend);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .36  0 0 0 0 .27  0 0 0 0 .22  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.topbar{position:absolute; top:0; left:0; right:0; height:6px; background:var(--teal); z-index:3}
+.page{position:relative; z-index:1}
+.wrap{width:min(1080px,100%); margin-inline:auto; padding-inline:clamp(16px,4vw,32px)}
+
+:focus-visible{outline:3px solid var(--teal); outline-offset:3px; border-radius:6px}
+.sr-file{position:absolute; width:1px; height:1px; opacity:0; overflow:hidden}
+.muted{color:var(--ink3)}
+
+/* 報頭 */
+.masthead{position:relative; padding-block:clamp(44px,8vw,72px) 8px}
+.kicker{color:var(--rose-ink); font-weight:700; font-size:.95rem; letter-spacing:.1em}
+h1{margin:.15em 0 .1em; color:var(--ink); font-size:clamp(2rem,6vw,3rem); line-height:1.25; font-weight:700; text-wrap:balance}
+.lead{max-width:34em; margin:.4em 0 0; font-size:1.05rem}
+.bar-short{width:64px; height:6px; border-radius:6px; background:var(--apricot); margin-top:14px}
+.deco{position:absolute; pointer-events:none}
+.deco svg{display:block; width:100%; height:auto; filter:url(#wobble2)}
+.deco.a{top:34px; right:3%; width:clamp(54px,11vw,92px); transform:rotate(12deg)}
+.deco.b{top:104px; right:calc(3% + clamp(48px,10vw,88px)); width:clamp(24px,4.4vw,38px); transform:rotate(-10deg)}
+.deco.c{top:30px; right:calc(3% + clamp(66px,13vw,118px)); width:clamp(20px,3.6vw,30px); transform:rotate(14deg)}
+.deco.d{top:16px; left:max(6px,1.5%); width:clamp(30px,5vw,48px); transform:rotate(-8deg)}
+.petal ellipse{fill:var(--deco-pink); fill-opacity:.85; stroke:var(--rose); stroke-width:1.4}
+.core{fill:var(--deco-yellow); stroke:var(--apricot); stroke-width:1.4}
+.heart{fill:var(--deco-heart); fill-opacity:.9; stroke:var(--rose); stroke-width:1.5}
+.star{fill:var(--deco-yellow); fill-opacity:.9; stroke:var(--apricot); stroke-width:1.5; stroke-linejoin:round}
+.leaf{fill:var(--deco-green); fill-opacity:.9; stroke:var(--sage); stroke-width:1.5}
+.stem{fill:none; stroke:var(--sage); stroke-width:2; stroke-linecap:round}
+
+/* 分頁籤 */
+.tabs{display:flex; flex-wrap:wrap; gap:10px; margin-block:22px 4px}
+.tab{
+  font:inherit; font-weight:700; color:var(--ink); cursor:pointer; min-height:44px;
+  padding:.45rem 1.2rem; background:transparent; border:2px dashed var(--apricot);
+  border-radius:18px 22px 16px 24px / 22px 16px 24px 18px;
+}
+.tab:hover{background:var(--peach)}
+.tab[aria-selected="true"]{background:var(--blush); border:2px solid var(--rose)}
+.tab .cnt{font-weight:400; color:var(--ink3); margin-left:.35em}
+
+/* 區塊標題 */
+.sec{padding-block:20px 12px}
+.eyebrow{color:var(--rose-ink); font-weight:700; font-size:.9rem; letter-spacing:.1em}
+.sec-title{margin:.1em 0 0; color:var(--ink); font-size:clamp(1.45rem,3.6vw,2rem); line-height:1.4; font-weight:700; text-wrap:balance}
+.rule-short{width:56px; height:5px; border-radius:5px; background:var(--apricot); margin:10px 0 18px}
+.closing{color:var(--rose-ink); font-weight:700; font-size:1.15rem; margin:24px 0 0}
+.stack{display:grid; gap:18px}
+
+/* 手繪外框的卡片 */
+.card{position:relative; background:var(--card); border-radius:20px 24px 18px 26px / 24px 18px 26px 20px; min-width:0}
+.card::before{
+  content:""; position:absolute; inset:0; border:2px solid var(--apricot); border-radius:inherit;
+  filter:url(#wobble); pointer-events:none; opacity:.9;
+}
+.pad{padding:clamp(16px,3vw,26px)}
+.card.mint{background:var(--mint)} .card.blush{background:var(--blush)} .card.peach{background:var(--peach)}
+.card h3{margin:0 0 .5em; color:var(--ink); font-size:1.2rem; line-height:1.45}
+.divider{height:2px; border:0; background:var(--line); margin:18px 0; border-radius:2px}
+.label{font-weight:700; color:var(--ink); margin:0 0 8px; font-size:.98rem}
+.row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.row.between{justify-content:space-between}
+
+/* 按鈕 */
+.btn{
+  font:inherit; font-weight:700; color:var(--ink); cursor:pointer; min-height:44px;
+  padding:.5rem 1.15rem; background:var(--peach); border:2px solid var(--apricot);
+  border-radius:16px 20px 16px 20px / 20px 16px 20px 16px;
+}
+.btn:hover{background:var(--blush)}
+.btn.primary{background:var(--blush); border-color:var(--rose)}
+.btn.primary:hover{background:var(--peach)}
+.btn.quiet{background:transparent; border-color:var(--line)}
+.btn.quiet:hover{background:var(--peach)}
+.btn.small{min-height:38px; padding:.3rem .85rem; font-size:.92rem}
+.btn[disabled]{opacity:.5; cursor:not-allowed}
+
+/* 選項膠囊 */
+.chips{display:flex; flex-wrap:wrap; gap:10px}
+.chip{
+  position:relative; display:flex; flex-direction:column; gap:0; cursor:pointer; min-height:44px;
+  padding:.4rem .95rem; background:var(--field); border:2px solid var(--line);
+  border-radius:16px 18px 14px 20px / 18px 14px 20px 16px;
+}
+.chip input{position:absolute; opacity:0; inset:0; width:100%; height:100%; margin:0; cursor:pointer}
+.chip:focus-within{outline:3px solid var(--teal); outline-offset:3px}
+.chip.on{background:var(--peach); border-color:var(--rose)}
+.chip-t{font-weight:700; color:var(--ink); line-height:1.4}
+.chip-s{font-size:.82rem; color:var(--ink3); line-height:1.4}
+.chip.simple{flex-direction:row; align-items:center}
+
+select,input[type="text"],input[type="search"],input[type="number"],textarea{
+  font:inherit; color:var(--ink); background:var(--field); border:2px solid var(--line);
+  border-radius:12px 14px 12px 16px; padding:.5rem .75rem; min-height:44px; max-width:100%;
+}
+textarea{width:100%; line-height:1.8; resize:vertical}
+input[type="text"],input[type="search"]{width:100%}
+select:focus,input:focus,textarea:focus{outline:3px solid var(--teal); outline-offset:2px; border-color:var(--teal)}
+
+/* 作答統計 */
+.stat-grid{display:grid; gap:12px 22px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.stat-line{display:flex; justify-content:space-between; gap:12px; font-size:.92rem}
+.meter{height:10px; background:var(--peach); border-radius:10px; overflow:hidden; margin-top:4px}
+.meter>i{display:block; height:100%; background:var(--sage); border-radius:10px}
+.big-num{font-size:2.2rem; font-weight:700; color:var(--ink); line-height:1.2}
+
+/* 題目 */
+.tag{display:inline-block; padding:.05rem .75rem; background:var(--mint); color:var(--ink); border:2px solid var(--sage); border-radius:12px 14px 12px 14px; font-weight:700; font-size:.88rem}
+.tag.soft{background:var(--peach); border-color:var(--apricot)}
+.q-text.long{font-size:1.02rem !important; font-weight:400; line-height:1.75 !important}
+.q-text{white-space:pre-line; margin:16px 0 14px !important; font-size:clamp(1.15rem,2.6vw,1.4rem) !important; line-height:1.6 !important; color:var(--ink); text-wrap:pretty}
+.opts{display:grid; gap:10px; margin:0; padding:0; list-style:none}
+.opt{
+  display:flex; align-items:flex-start; gap:12px; width:100%; text-align:left; cursor:pointer;
+  font:inherit; color:var(--ink2); background:var(--field); border:2px solid var(--line);
+  border-radius:16px 14px 18px 12px / 14px 18px 12px 16px; padding:.7rem .9rem; min-height:44px;
+}
+.opt:hover{border-color:var(--apricot)}
+.opt .ltr{
+  flex:none; display:grid; place-items:center; width:34px; height:34px; font-weight:700; color:var(--ink);
+  background:var(--peach); border:2px solid var(--apricot); border-radius:10px 8px 11px 9px;
+}
+.opts li:nth-child(2) .ltr{background:var(--mint); border-color:var(--sage)}
+.opts li:nth-child(3) .ltr{background:var(--blush); border-color:var(--rose)}
+.opts li:nth-child(4) .ltr{background:var(--peach); border-color:var(--sage)}
+.opt .txt{flex:1; min-width:0; padding-top:3px; overflow-wrap:anywhere}
+.opt .state{flex:none; font-size:.82rem; font-weight:700; padding-top:5px}
+.opt.picked{border-color:var(--teal); background:var(--peach)}
+.opt.right{border-color:var(--ok-line); background:var(--mint)}
+.opt.wrong{border-color:var(--bad-line); background:var(--blush)}
+.opt.right .state{color:var(--ink)}
+.opt.wrong .state{color:var(--rose-ink)}
+.opt[aria-disabled="true"]{cursor:default}
+.feedback{margin-top:16px; padding:14px 16px; border-radius:14px 18px 14px 18px; border:2px solid var(--ok-line); background:var(--mint)}
+.feedback.bad{border-color:var(--bad-line); background:var(--blush)}
+.feedback strong{color:var(--ink)}
+.feedback p{margin:.4em 0 0}
+.progress{height:12px; background:var(--peach); border-radius:12px; overflow:hidden; margin-top:12px}
+.progress>i{display:block; height:100%; background:var(--sage); border-radius:12px; transition:width .25s}
+@media (prefers-reduced-motion: reduce){.progress>i{transition:none}}
+
+.result-list{display:grid; gap:10px; margin:0; padding:0; list-style:none}
+details.res{background:var(--field); border:2px solid var(--line); border-radius:14px; padding:.55rem .9rem}
+details.res[open]{border-color:var(--apricot)}
+details.res summary{cursor:pointer; font-weight:700; color:var(--ink); list-style-position:outside}
+details.res .ans{margin:.5em 0 0}
+
+/* 筆記 */
+.notes-grid{display:grid; gap:18px; grid-template-columns:minmax(0,330px) minmax(0,1fr); align-items:start}
+.note-list{display:grid; gap:8px; margin:12px 0 0; padding:0; list-style:none; max-height:56vh; overflow:auto}
+.note-item{
+  display:block; width:100%; text-align:left; font:inherit; color:var(--ink2); cursor:pointer;
+  background:var(--field); border:2px solid var(--line); border-radius:14px 12px 16px 12px; padding:.55rem .8rem;
+}
+.note-item:hover{border-color:var(--apricot)}
+.note-item.active{border-color:var(--rose); background:var(--blush)}
+.note-item b{display:block; color:var(--ink); line-height:1.45; overflow-wrap:anywhere}
+.note-item span{display:block; font-size:.84rem; color:var(--ink3); overflow-wrap:anywhere}
+.tagrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.pill{font:inherit; font-size:.85rem; font-weight:700; cursor:pointer; color:var(--ink); background:transparent; border:2px solid var(--line); border-radius:999px; padding:.1rem .7rem; min-height:32px}
+.pill.on{background:var(--peach); border-color:var(--rose)}
+.fields{display:grid; gap:14px}
+.fields label{display:grid; gap:6px; font-weight:700; color:var(--ink)}
+.fields label .hint{font-weight:400; color:var(--ink3); font-size:.88rem}
+.status{font-size:.88rem; color:var(--ink3)}
+
+/* 電子書 */
+.drop{
+  display:grid; gap:4px; justify-items:center; text-align:center; cursor:pointer; padding:26px 16px;
+  background:var(--field); border:2.5px dashed var(--apricot); border-radius:20px 24px 18px 26px / 24px 18px 26px 20px; color:var(--ink2);
+}
+.drop strong{color:var(--ink); font-size:1.1rem}
+.drop.over,.drop:hover{background:var(--peach)}
+.drop:focus-within{outline:3px solid var(--teal); outline-offset:3px}
+.book-list{display:grid; gap:12px; margin:0; padding:0; list-style:none}
+.book{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:center; justify-content:space-between; padding:14px 18px}
+.book-info{min-width:0; flex:1 1 220px}
+.book-info b{display:block; color:var(--ink); font-size:1.05rem; line-height:1.45; overflow-wrap:anywhere}
+.book-info span{font-size:.88rem; color:var(--ink3)}
+.reader-bar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:12px}
+.reader-bar .grow{flex:1 1 160px; min-width:0; font-weight:700; color:var(--ink); overflow-wrap:anywhere}
+.stage{
+  background:var(--field); border:2px solid var(--line); border-radius:14px; overflow:auto;
+  height:min(72vh,820px); padding:12px; text-align:center;
+}
+.stage canvas{display:block; margin:0 auto; max-width:none}
+.textbook{text-align:left; white-space:pre-wrap; line-height:1.95; font-size:1.05rem; max-width:42em; margin-inline:auto; padding:8px 10px; color:var(--ink); overflow-wrap:anywhere}
+.epub-host{height:100%; min-height:300px}
+.pg{width:5.2em; text-align:center; padding:.3rem .4rem; min-height:38px}
+.note-panel{margin-top:14px}
+
+.notice{padding:12px 16px; border-radius:14px; border:2px solid var(--apricot); background:var(--peach); color:var(--ink); margin-bottom:14px}
+.empty{padding:26px 16px; text-align:center; color:var(--ink3)}
+
+#toast{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); z-index:20;
+  display:flex; gap:12px; align-items:center; max-width:min(92vw,520px);
+  background:var(--card); color:var(--ink); border:2px solid var(--rose); border-radius:16px 20px 16px 20px;
+  padding:.6rem 1rem; font-weight:700;
+}
+.btn[hidden]{display:none}
+#toast[hidden]{display:none}
+
+.foot{padding-block:36px 24px; position:relative}
+.foot p{margin:.3em 0; font-size:.9rem; color:var(--ink3); max-width:44em}
+.foot .deco.e{position:absolute; right:3%; top:20px; width:clamp(36px,7vw,60px); transform:rotate(10deg)}
+
+@media (max-width:760px){
+  .notes-grid{grid-template-columns:minmax(0,1fr)}
+  .note-list{max-height:34vh}
+  .masthead{padding-top:56px}
+  .deco.b{top:92px}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="4" result="t"/>
+    <feDisplacementMap in="SourceGraphic" in2="t" scale="5"/>
+  </filter>
+  <filter id="wobble2" x="-10%" y="-10%" width="120%" height="120%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="9" result="t"/>
+    <feDisplacementMap in="SourceGraphic" in2="t" scale="2.5"/>
+  </filter>
+</svg>
+
+<div class="topbar" aria-hidden="true"></div>
+<div class="page">
+  <header class="wrap masthead">
+    <div class="deco a" aria-hidden="true"><svg viewBox="0 0 64 64"><g class="petal"><ellipse cx="32" cy="17" rx="8.5" ry="12"/><ellipse cx="32" cy="17" rx="8.5" ry="12" transform="rotate(72 32 32)"/><ellipse cx="32" cy="17" rx="8.5" ry="12" transform="rotate(144 32 32)"/><ellipse cx="32" cy="17" rx="8.5" ry="12" transform="rotate(216 32 32)"/><ellipse cx="32" cy="17" rx="8.5" ry="12" transform="rotate(288 32 32)"/></g><circle class="core" cx="32" cy="32" r="5.5"/></svg></div>
+    <div class="deco b" aria-hidden="true"><svg viewBox="0 0 64 64"><path class="heart" d="M32 54C10 38 4 24 14 14C21 8 29 11 32 18C35 11 43 8 50 14C60 24 54 38 32 54Z"/></svg></div>
+    <div class="deco c" aria-hidden="true"><svg viewBox="0 0 64 64"><polygon class="star" points="32,6 39,24 58,25 43,37 48,56 32,45 16,56 21,37 6,25 25,24"/></svg></div>
+    <div class="deco d" aria-hidden="true"><svg viewBox="0 0 64 64"><circle class="leaf" cx="32" cy="19" r="10"/><circle class="leaf" cx="45" cy="32" r="10"/><circle class="leaf" cx="32" cy="45" r="10"/><circle class="leaf" cx="19" cy="32" r="10"/><path class="stem" d="M32 45C34 54 38 58 44 60"/></svg></div>
+    <div class="kicker">ICD-10-CM / PCS 自學小站</div>
+    <h1>疾病分類練習簿</h1>
+    <p class="lead">題庫自測、隨手筆記、上傳電子書閱讀，都收在同一頁。一題一題練，錯的地方留下記號。</p>
+    <p class="lead" style="margin-top:6px"><a href="cc/">AHA Coding Clinic 2023–2026 練習題（需登入）→</a></p>
+    <div class="bar-short" aria-hidden="true"></div>
+    <nav class="tabs" role="tablist" aria-label="功能分頁" id="tabs"></nav>
+  </header>
+
+  <main class="wrap" id="view"></main>
+
+  <footer class="wrap foot">
+    <div class="deco e" aria-hidden="true"><svg viewBox="0 0 64 64"><path class="heart" d="M32 54C10 38 4 24 14 14C21 8 29 11 32 18C35 11 43 8 50 14C60 24 54 38 32 54Z"/></svg></div>
+    <p id="persist-note">筆記、作答紀錄與電子書都存在你自己的瀏覽器裡，換裝置或清除網站資料後不會跟著走。</p>
+    <p>題目與解析供練習參考，正式編碼請依機構使用的官方版本與最新公告為準。</p>
+  </footer>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- 小工具 ---------- */
+function h(tag, props){
+  var el = document.createElement(tag);
+  var kids = Array.prototype.slice.call(arguments, 2);
+  if (props) Object.keys(props).forEach(function(k){
+    var v = props[k];
+    if (v === false || v == null) return;
+    if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else if (k === 'value') el.value = v;
+    else if (k.slice(0,2) === 'on') el.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (v === true) el.setAttribute(k, '');
+    else el.setAttribute(k, v);
+  });
+  (function add(list){
+    list.forEach(function(kid){
+      if (kid == null || kid === false) return;
+      if (Array.isArray(kid)) return add(kid);
+      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    });
+  })(kids);
+  return el;
+}
+function uid(){ return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function shuffle(a){ a = a.slice(); for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function debounce(fn, ms){ var t; return function(){ var a=arguments, c=this; clearTimeout(t); t=setTimeout(function(){ fn.apply(c,a); }, ms); }; }
+function fmtDate(ts){ try{ return new Date(ts).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+function fmtSize(b){ return b > 1048576 ? (b/1048576).toFixed(1) + ' MB' : Math.max(1,Math.round(b/1024)) + ' KB'; }
+
+var ls = {
+  get: function(k,d){ try{ var v=localStorage.getItem(k); return v===null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set: function(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } },
+  has: function(k){ try{ return localStorage.getItem(k) !== null; }catch(e){ return false; } }
+};
+var canPersist = ls.set('dx.probe', 1);
+if (!canPersist) {
+  var pn = document.getElementById('persist-note');
+  if (pn) pn.textContent = '這個瀏覽器目前不允許保存資料，關閉頁面後筆記與作答紀錄會消失，請隨時用「匯出筆記」備份。';
+}
+
+var toastTimer;
+function toast(msg, actionLabel, action){
+  var t = document.getElementById('toast');
+  t.replaceChildren(h('span', null, msg));
+  if (actionLabel) t.append(h('button', {class:'btn small', type:'button', onClick:function(){ t.hidden = true; action && action(); }}, actionLabel));
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.hidden = true; }, 4500);
+}
+function copyText(text){
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return false; });
+  }
+  return Promise.resolve(false);
+}
+function twoStep(btn, label, confirmLabel, run){
+  var armed = false, timer;
+  btn.textContent = label;
+  btn.addEventListener('click', function(){
+    if (!armed) {
+      armed = true; btn.textContent = confirmLabel;
+      timer = setTimeout(function(){ armed = false; btn.textContent = label; }, 3500);
+    } else { clearTimeout(timer); armed = false; btn.textContent = label; run(); }
+  });
+  return btn;
+}
+
+/* ---------- 題庫 ---------- */
+var CATS = [
+  {id:'past20',  name:'歷屆精選 20 題',    hint:'附詳解與來源', past:true},
+  {id:'pastdx',  name:'歷屆・診斷碼',      hint:'主要／次要診斷、碼義', past:true},
+  {id:'pastpx',  name:'歷屆・處置碼',      hint:'PCS 處置、根本操作', past:true},
+  {id:'pastver', name:'歷屆・版本差異',    hint:'2014 → 2023 代碼', past:true},
+  {id:'g27cm',   name:'2027 指引・ICD-10-CM', hint:'FY2027 官方編碼指引', past:true},
+  {id:'g27pcs',  name:'2027 指引・ICD-10-PCS', hint:'2027 官方處置編碼指引', past:true},
+  {id:'basic',   name:'一般概念：基礎',    hint:'非歷屆，ICD 沿革與結構'},
+  {id:'chapter', name:'一般概念：章節',    hint:'非歷屆，各章範圍'},
+  {id:'conv',    name:'一般概念：慣例',    hint:'非歷屆，Excludes・Code first'},
+  {id:'rule',    name:'一般概念：規則',    hint:'非歷屆，主診斷・死因'},
+  {id:'case',    name:'一般概念：常見碼',  hint:'非歷屆，常見診斷碼'},
+  {id:'pcs',     name:'一般概念：PCS',     hint:'非歷屆，處置碼結構'}
+];
+function catName(id){ for (var i=0;i<CATS.length;i++) if (CATS[i].id===id) return CATS[i].name; return id; }
+
+var QS = [];
+/* 每題第一個選項為正解，作答時會自動打亂 */
+function Q(c, id, q, o, e, src){ QS.push({c:c, id:id, q:q, o:o, e:e, s:src || null}); }
+
+Q('basic','b1','ICD 是由哪個機構制定並維護的國際疾病分類？',
+  ['世界衛生組織 (WHO)','國際標準化組織 (ISO)','世界醫學會 (WMA)','國際紅十字會'],
+  'ICD 全名為 International Statistical Classification of Diseases and Related Health Problems，由 WHO 發布，讓各國能用同一套分類統計疾病與死因。');
+Q('basic','b2','ICD-10-CM（診斷碼）由哪個單位發展？',
+  ['美國國家衛生統計中心 (NCHS)','世界衛生組織 (WHO)','美國醫學會 (AMA)','美國食品藥物管理局 (FDA)'],
+  'ICD-10-CM 由 NCHS 以 WHO 的 ICD-10 為基礎修訂；處置編碼 ICD-10-PCS 則由 CMS 發展。');
+Q('basic','b3','ICD-10-PCS 主要用來編哪一類資料？',
+  ['醫療處置與手術','疾病診斷','死亡原因統計','藥品成分分類'],
+  'PCS (Procedure Coding System) 是處置編碼系統；疾病診斷則使用 ICD-10-CM。');
+Q('basic','b4','ICD-10-CM 診斷碼的格式為何？',
+  ['3 至 7 個英數字元，第 1 碼為英文字母，第 3 碼後加小數點','固定 7 個英數字元，不含小數點','3 至 5 位純數字，第 1 碼可為 E 或 V','固定 4 個字元，英文字母加三位數字'],
+  'ICD-10-CM 碼最短 3 碼、最長 7 碼，例如 E11.9 是 4 碼。第二個選項是 ICD-10-PCS 的格式，第三個選項是 ICD-9-CM 的格式。');
+Q('basic','b5','ICD-10-PCS 每個處置碼固定為幾個字元？',
+  ['7 個','3 個','5 個','3 至 7 個'],
+  'PCS 碼固定 7 個英數字元，沒有小數點，每個位置都有固定的意義。');
+Q('basic','b6','ICD-10-PCS 的碼不使用哪兩個英文字母，以免與數字混淆？',
+  ['I 與 O','S 與 Z','B 與 D','U 與 V'],
+  'I 與 O 容易被看成 1 與 0，所以 PCS 不使用。');
+Q('basic','b7','ICD-11 自哪一年起正式生效？',
+  ['2022 年','2015 年','2019 年','2025 年'],
+  '世界衛生大會於 2019 年通過 ICD-11，並自 2022 年 1 月 1 日起生效。');
+Q('basic','b8','查詢診斷碼的標準做法為何？',
+  ['先查字母索引 (Alphabetic Index) 找主要詞，再回類目表 (Tabular List) 核對並選出完整碼','只在字母索引找到碼就可以直接使用','只翻類目表，不必查索引','依記憶直接編碼，不需查表'],
+  'ICD-10-CM 官方指引要求先查 Index，再到 Tabular List 驗證。包含詞、排除註記與第 7 碼等規則只出現在 Tabular List。');
+Q('basic','b9','台灣全民健保自哪一年起全面改用 ICD-10-CM/PCS？',
+  ['2016 年','2010 年','2013 年','2019 年'],
+  '健保自 2016 年 1 月 1 日起由 ICD-9-CM 轉換為 ICD-10-CM/PCS。實際使用的版本與細節請以衛福部、健保署最新公告為準。');
+
+Q('chapter','c1','腫瘤 (Neoplasms) 章節的碼範圍是？',
+  ['C00–D49','A00–B99','E00–E89','F01–F99'],
+  '惡性腫瘤 C00–C96、原位癌 D00–D09、良性 D10–D36、性質未定 D37–D48、性質未特指 D49。');
+Q('chapter','c2','I10（原發性高血壓）屬於哪一章？',
+  ['循環系統疾病 (I00–I99)','內分泌、營養與代謝疾病','呼吸系統疾病','症狀、徵象與異常發現'],
+  '以 I 開頭的碼都在循環系統疾病章，例如 I10、I21、I63。');
+Q('chapter','c3','碼的第一個字母為 Z，代表哪一類？',
+  ['影響健康狀態及接觸健康服務的因素','傷害、中毒及外因的某些後果','外因的發病率與死亡率','症狀、徵象與異常臨床發現'],
+  'Z00–Z99 用來描述就診原因或健康狀態，例如 Z00.00 成人健檢、Z23 預防接種、Z51.11 化學治療。');
+Q('chapter','c4','妊娠、分娩及產褥期的碼以哪個字母開頭？',
+  ['O','P','Q','N'],
+  '妊娠、分娩及產褥期為 O 章。P 是週產期，Q 是先天性畸形，N 是泌尿生殖系統疾病。');
+Q('chapter','c5','R50.9「發燒，未特指」屬於哪一章？',
+  ['症狀、徵象與異常臨床及實驗室發現 (R00–R99)','傳染病與寄生蟲病','循環系統疾病','影響健康狀態的因素'],
+  'R 章收錄症狀與徵象。已確定診斷時，該診斷常見的伴隨症狀不另編碼。');
+Q('chapter','c6','外因碼 (V00–Y99) 的使用原則為何？',
+  ['用來補充說明傷害或疾病的發生原因，不能單獨作為主診斷','可以取代傷害的診斷碼','只能用在死因統計','只用於腫瘤病人'],
+  '外因碼不單獨使用，一定要搭配疾病或傷害的診斷碼。');
+Q('chapter','c7','原位癌 (carcinoma in situ) 歸在哪個範圍？',
+  ['D00–D09','C00–C96','D10–D36','D37–D48'],
+  '原位癌 D00–D09；良性腫瘤 D10–D36；性質未定 D37–D48。惡性腫瘤 C00–C96 指已侵犯的癌。');
+Q('chapter','c8','ICD-O 形態學碼中，行為碼 /3 代表什麼？',
+  ['惡性、原發部位','良性','原位','轉移部位'],
+  '/0 良性、/1 未確定或交界性、/2 原位、/3 惡性原發、/6 惡性轉移。');
+
+Q('conv','v1','Excludes1 註記的意思為何？',
+  ['註記中的兩個情況不能同時編碼','兩個情況可以一起編碼','必須先編本碼，再編另一碼','代表該碼為包含詞'],
+  'Excludes1 就是「NOT CODED HERE」。依官方指引，若兩個情況彼此無關，才有例外。');
+Q('conv','v2','Excludes2 註記的意思為何？',
+  ['不包括在本分類內，但病人同時有兩種情況時可以一併編碼','兩個情況絕對不能同時編碼','必須先編被排除的碼','表示該碼已停用'],
+  'Excludes2 是「NOT INCLUDED HERE」：本碼不含那個情況，但病人兩者都有時，可以各編各的碼。');
+Q('conv','v3','看到「Code first」註記時，應該怎麼做？',
+  ['先編註記指出的病因或原發疾病，再編本碼','先編本碼，再編病因','忽略註記，只編本碼','兩個碼擇一即可'],
+  'Code first 與 Use additional code 規範編碼順序。帶有 Code first 的碼多半是續發疾病或表現。');
+Q('conv','v4','「Use additional code」註記要求你做什麼？',
+  ['另外加編一個碼，補充說明病因、嚴重度或相關資訊','把本碼換成另一個碼','刪除本碼','只在門診使用'],
+  '例如糖尿病碼會提示加編 Z79.4 說明是否使用胰島素，或加編慢性腎臟病的分期碼。');
+Q('conv','v5','字母索引中以方括號 [ ] 標示的表現碼 (manifestation code)，能不能當主診斷？',
+  ['不能，必須先編病因碼','可以，因為它描述了病徵','只有門診可以','只有死因統計可以'],
+  '表現碼的標題多半有「in diseases classified elsewhere」，一定要排在病因碼之後。');
+Q('conv','v6','NEC 與 NOS 的差別為何？',
+  ['NEC：有具體資訊，但分類內沒有對應的專屬碼；NOS：資訊不足，等同未特指','NEC 指未特指，NOS 指其他特指','兩者意義相同','NEC 只用於腫瘤，NOS 只用於傷害'],
+  'NEC = not elsewhere classifiable；NOS = not otherwise specified。');
+Q('conv','v7','傷害碼的第 7 碼「A」代表什麼？',
+  ['初次照護（積極治療階段）','後續照護（復原階段）','後遺症','病人已死亡'],
+  'A 是初次照護，指病人正在接受積極治療；D 是後續照護，指進入例行癒合與復原；S 是後遺症。A 並不代表「第一次就診」。');
+Q('conv','v8','ICD-10-CM 碼中的字元「X」常用來做什麼？',
+  ['作為占位符，讓第 7 碼落在正確位置','表示左側','表示未特指','表示該碼已停用'],
+  '有些碼需要第 7 碼，但前面不足 6 碼時，就用 X 補位。');
+Q('conv','v9','病歷內容正好符合某個組合碼 (combination code) 時，應該怎麼編？',
+  ['使用單一組合碼，不拆成多個碼','拆成兩個碼分別編','只編較嚴重的那個','兩個都不編'],
+  '組合碼同時涵蓋兩種疾病，或疾病加上相關表現，例如 E11.22（第 2 型糖尿病併糖尿病性慢性腎臟病）。');
+
+Q('rule','r1','依 UHDDS 定義，主診斷是指？',
+  ['經檢查後，確定為造成病人此次入院的主要原因之情況','住院期間最嚴重的診斷','花費最高的診斷','入院時醫師最初的猜測'],
+  '重點是「after study」：以檢查後的結論為準，不是入院當下的印象，也不是嚴重度或花費。');
+Q('rule','r2','病人因發燒、咳嗽入院，確診為肺炎 (J18.9)。發燒要怎麼編？',
+  ['不另編，因為發燒是肺炎的常見症狀','另編 R50.9','只編 R50.9，不編 J18.9','以 R50.9 作為主診斷'],
+  '已確定診斷時，該疾病常見的伴隨症狀已包含在診斷內，不另編症狀碼。');
+Q('rule','r3','依 ICD-10-CM 官方指引，住院病人出院診斷寫「疑似肺炎」時，如何處理？',
+  ['視同確定診斷編碼（僅限住院）','改編發燒等症狀碼','完全不編碼','改編 Z 碼'],
+  '住院病人出院時若用 probable、suspected、likely、questionable、still to be ruled out 等詞，編碼上視同確定診斷。門診則編症狀、徵象或異常發現。');
+Q('rule','r4','產科病人（妊娠中）的診斷碼排序，原則為何？',
+  ['O 章（妊娠、分娩及產褥期）的碼優先於其他章','糖尿病等慢性病優先','Z 碼永遠排第一','依碼的字母順序'],
+  'Chapter 15 的碼有排序優先權，除非醫師明確指出該情況與妊娠無關。');
+Q('rule','r5','死因統計使用的「原死因 (underlying cause of death)」是指？',
+  ['啟動一連串直接導致死亡之病態事件的疾病或傷害，或造成致命傷的事故或暴力情境','最後導致死亡的生理衰竭，例如心肺衰竭','病人死亡時最嚴重的診斷','死亡證明書第一行所填的診斷'],
+  '這是 WHO 的定義。最後的生理衰竭與第一行的直接死因，通常只是整個過程的末端。');
+Q('rule','r6','死亡證明書第一部分的因果關係合理時，通常從哪裡找原死因？',
+  ['最下方有填寫的一行','最上方的第一行','第二部分的其他重要情況','任選一行'],
+  '第一部分由上往下依序是直接死因、中間原因、起始原因，所以最後有填寫的一行通常就是原死因。');
+
+Q('case','k1','第 2 型糖尿病、無併發症，應編為？',
+  ['E11.9','E10.9','E11.22','I10'],
+  'E10 是第 1 型、E11 是第 2 型；E11.9 表示無併發症。');
+Q('case','k2','原發性（本態性）高血壓應編為？',
+  ['I10','E11.9','I63.9','J45.909'],
+  'I10 = Essential (primary) hypertension。');
+Q('case','k3','第 2 型糖尿病病人因糖尿病性慢性腎臟病就醫，依組合碼原則應如何編？',
+  ['E11.22，再加 N18.- 標示腎臟病分期','E11.9 加 I10','E10.9 加 N18.-','只編 N18.-'],
+  'E11.22 是組合碼，註記要求加編 N18.1–N18.6 來說明慢性腎臟病的分期。');
+Q('case','k4','長期使用胰島素的第 2 型糖尿病病人，除 E11.- 外，應加編哪個碼？',
+  ['Z79.4','Z23','Z51.11','U07.1'],
+  'Z79.4 = 長期（目前）使用胰島素。E11 的註記要求加編這個碼來說明用藥情形。');
+Q('case','k5','未特指的急性闌尾炎，應編為？',
+  ['K35.80','J18.9','I21.4','A41.9'],
+  'K35.80 = Unspecified acute appendicitis。');
+Q('case','k6','非 ST 段上升型心肌梗塞 (NSTEMI) 應編為？',
+  ['I21.4','I63.9','I10','K35.80'],
+  'I21 是急性心肌梗塞，I21.4 為 NSTEMI；I63 是腦梗塞。');
+Q('case','k7','腦梗塞、未特指，應編為？',
+  ['I63.9','I21.4','J18.9','R50.9'],
+  'I63.9 = Cerebral infarction, unspecified。');
+Q('case','k8','病歷只寫「肺炎」，沒有註明致病微生物，應編為？',
+  ['J18.9','J45.909','A41.9','U07.1'],
+  'J18.9 = Pneumonia, unspecified organism。');
+Q('case','k9','病人到診所單純接種疫苗，第一診斷碼通常為？',
+  ['Z23','Z00.00','Z51.11','R50.9'],
+  'Z23 = Encounter for immunization。');
+Q('case','k10','成人例行健康檢查，沒有發現任何異常，應編為？',
+  ['Z00.00','Z23','R50.9','O80'],
+  'Z00.00 = Encounter for general adult medical examination without abnormal findings。');
+Q('case','k11','肺癌病人 (C34.90) 這次入院只為了接受化學治療，主診斷通常為？',
+  ['Z51.11，再編惡性腫瘤碼','只編 C34.90','Z00.00','R50.9'],
+  '單純為化學治療而入院時，Z51.11（抗腫瘤化學治療）列第一，惡性腫瘤碼列次要。');
+Q('case','k12','敗血症 (A41.9) 併急性器官功能障礙，但沒有敗血性休克，應加編哪個碼？',
+  ['R65.20','R50.9','Z79.4','O80'],
+  '先編 A41.-，再加 R65.20（嚴重敗血症，無敗血性休克）。若併有敗血性休克則為 R65.21。');
+Q('case','k13','COVID-19 的診斷碼為？',
+  ['U07.1','J18.9','R50.9','Z23'],
+  'U07.1 自 2020 年 4 月 1 日起生效；U 章是特殊目的碼。');
+Q('case','k14','足月正常分娩、無併發症，應編為？',
+  ['O80','Z00.00','Z23','J18.9'],
+  'O80 = Encounter for full-term uncomplicated delivery。');
+Q('case','k15','氣喘（未特指、無併發症）應編為？',
+  ['J45.909','J18.9','I10','E11.9'],
+  'J45.909 = Unspecified asthma, uncomplicated。');
+
+Q('pcs','p1','ICD-10-PCS 七個字元由左至右依序代表什麼？',
+  ['區段、身體系統、根本操作、身體部位、手術途徑、裝置、限定詞','區段、根本操作、身體系統、身體部位、裝置、手術途徑、限定詞','身體系統、區段、身體部位、根本操作、限定詞、裝置、手術途徑','區段、身體部位、身體系統、手術途徑、根本操作、限定詞、裝置'],
+  '順序是：1 區段、2 身體系統、3 根本操作、4 身體部位、5 手術途徑、6 裝置、7 限定詞。');
+Q('pcs','p2','PCS 第 1 碼「0」代表哪個區段？',
+  ['內外科 (Medical and Surgical)','產科 (Obstetrics)','影像 (Imaging)','放射治療 (Radiation Therapy)'],
+  '0 是最常用的內外科區段；1 是產科；B 是影像；D 是放射治療。');
+Q('pcs','p3','PCS 手術途徑字元「4」代表什麼？',
+  ['經皮內視鏡 (Percutaneous Endoscopic)，例如腹腔鏡','開放式 (Open)','經皮穿刺 (Percutaneous)','經自然或人工開口 (Via Natural or Artificial Opening)'],
+  '0 開放、3 經皮、4 經皮內視鏡、7 經自然或人工開口、8 經自然或人工開口內視鏡、X 體外。');
+Q('pcs','p4','0DTJ4ZZ（腹腔鏡闌尾切除術）中，根本操作是什麼？',
+  ['Resection，切除整個身體部位','Excision，切除部分身體部位','Drainage，引流','Inspection，檢查'],
+  '拆解：0 內外科、D 消化系統、T 切除、J 闌尾、4 經皮內視鏡、Z 無裝置、Z 無限定詞。');
+Q('pcs','p5','Excision 與 Resection 的差別為何？',
+  ['Excision 切除部位的一部分；Resection 切除整個部位','Excision 切除整個部位；Resection 切除一部分','Excision 需要置入裝置，Resection 不需要','兩者完全相同'],
+  '切除範圍是區分的關鍵：只切一部分用 Excision，整個身體部位切除用 Resection。');
+Q('pcs','p6','PCS 中「根本操作」位於第幾個字元？',
+  ['第 3 個','第 1 個','第 5 個','第 7 個'],
+  '第 3 個字元是根本操作，例如 T 是切除 (Resection)、B 是部分切除 (Excision)。');
+
+/* ---------- 歷屆考題資料（案例摘要與參考代碼）---------- */
+var CASES = [];
+function C(src, id, text, dx, px, chg){
+  function parse(a){ return (a || []).map(function(s){ var p = s.split('|'); return {r:p[0], c:p[1], t:p[2]}; }); }
+  CASES.push({s:src, id:id, text:text, dx:parse(dx), px:parse(px),
+    chg:(chg || []).map(function(s){ var p = s.split('|'); return {c14:p[0], t14:p[1], c23:p[2], t23:p[3]}; })});
+}
+/* 角色：d 主要診斷，e 次要診斷，a 主(次)要診斷（參考答案允許互換）；p 主要處置，q 次要處置，b 主(次)要處置（允許互換） */
+var SRC = {
+  y111_09:'111年9月 疾病分類員', y111_12:'111年12月 疾病分類員', y112_07:'112年7月 疾病分類員',
+  y112_12:'112年12月 疾病分類員', y113_07:'113年7月 疾病分類員', y113_12:'113年12月 疾病分類員',
+  t111:'111年 疾病分類師', t112:'112年7月 疾病分類師', t113:'113年7月 疾病分類師', t114:'114年 疾病分類師',
+  g27cm:'ICD-10-CM 2027 指引', g27pcs:'ICD-10-PCS 2027 指引'
+};
+
+/* ===== 113年7月 疾病分類員 ===== */
+C(SRC.y113_07,'案例一','A 71-year-old male patient was referred to our hospital because of right liver hepatocellular carcinoma. He underwent percutaneous radiofrequency ablation (RFA) for right liver lobe. Postoperative recovery was uneventful and discharge.',
+ ['d|C22.0|Liver cell carcinoma'],['p|0F513ZZ|Destruction of Right Lobe Liver, Percutaneous Approach']);
+C(SRC.y113_07,'案例二','A 70-year-old female patient with anterior ST-elevation myocardial infarction with coronary arterial disease. She underwent percutaneous occlusive balloon angioplasty with left anterior descending and right coronary artery each treated with a drug eluting stent.',
+ ['d|I21.09|ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall','e|I25.10|Atherosclerotic heart disease of native coronary artery without angina pectoris'],
+ ['p|027134Z|Dilation of Coronary Artery, Two Sites with Drug-eluting Intraluminal Device, Percutaneous Approach'],
+ ['027134Z|Dilation of Coronary Artery, Two Sites with Drug-eluting Intraluminal Device, Percutaneous Approach|027135Z|Dilation of Coronary Artery, Two Arteries with Two Drug-eluting Intraluminal Devices, Percutaneous Approach']);
+C(SRC.y113_07,'案例三','A patient present with acute duodenal ulcer bleeding and an esophagogastroduodenoscopy was carried out. Multiple injected with epinephrine were applied to the vessels to control the hemorrhaging ulcers. Also underwent biopsy of the mid-esophagus found reflux esophagitis without bleeding.',
+ ['d|K26.0|Acute duodenal ulcer with hemorrhage','e|K21.0|Gastro-esophageal reflux disease with esophagitis'],
+ ['p|0W3P8ZZ|Control Bleeding in Gastrointestinal Tract, Via Natural or Artificial Opening Endoscopic','q|0DB28ZX|Excision of Middle Esophagus, Via Natural or Artificial Opening Endoscopic, Diagnostic'],
+ ['K21.0|Gastro-esophageal reflux disease with esophagitis|K21.00|Gastro-esophageal reflux disease with esophagitis, without bleeding']);
+C(SRC.y113_07,'案例四','A 60-year-old female with systemic lupus erythematosus has been experiencing pain, stiffness and deformity in bilateral hip. Under the diagnose of bilateral hip primary osteoarthritis. She underwent right total hip replacement use with Ceramic on Polyethylene and uncemented.',
+ ['d|M16.0|Bilateral primary osteoarthritis of hip','e|M32.9|Systemic lupus erythematosus, unspecified'],
+ ['p|0SR904A|Replacement of Right Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Uncemented, Open Approach']);
+C(SRC.y113_07,'案例五','The male was admitted for enlarged prostate. He underwent transurethral resection of the prostate (TURP) via cystoscopy. He also had urinary tract infection with acute pyelonephritis during hospitalization.',
+ ['d|N40.0|Enlarged prostate without lower urinary tract symptoms','e|N10|Acute tubulo-interstitial nephritis'],
+ ['p|0VB08ZZ|Excision of Prostate, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.y113_07,'案例六','The patient was a motorcycle driver injured in collision with car. In ER type II open fracture of right tibia shaft was impressed. So he was admitted for open reduction with internal fixation (ORIF) for right tibia shaft with interlocking intramedullary nailing.',
+ ['d|S82.201B|Unspecified fracture of shaft of right tibia, initial encounter for open fracture type I or II','e|V23.4XXA|Motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter'],
+ ['p|0QSG06Z|Reposition Right Tibia with Intramedullary Internal Fixation Device, Open Approach'],
+ ['V23.4XXA|Motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter|V23.49XA|Other motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter']);
+C(SRC.y113_07,'案例七','A 43-year-old women patient was suffered from multinodular goiter with hyperthyroidism. She was admitted for thyroidectomy. Then endoscopic right total thyroidectomy and left near total thyroidectomy were done.',
+ ['d|E05.20|Thyrotoxicosis with toxic multinodular goiter without thyrotoxic crisis or storm'],
+ ['b|0GTH4ZZ|Resection of Right Thyroid Gland Lobe, Percutaneous Endoscopic Approach','b|0GBG4ZZ|Excision of Left Thyroid Gland Lobe, Percutaneous Endoscopic Approach']);
+C(SRC.y113_07,'案例八','The patient was admitted with sudden onset of left-sided weakness. Impression of right basal ganglia hemorrhage with left hemiparesis. The patient received open left frontal craniotomy for removed of hematoma.',
+ ['d|I61.0|Nontraumatic intracerebral hemorrhage in hemisphere, subcortical','e|G81.94|Hemiplegia, unspecified affecting left nondominant side'],
+ ['p|00C80ZZ|Extirpation of Matter from Basal Ganglia, Open Approach']);
+C(SRC.y113_07,'案例九','This 29-year-old, gravida-2-para-1 woman was pregnant for 39+1 weeks. Her first pregnancy was complicated with fetal malpresentation and cesarean section delivery. Due to previous cesarean section, low segment transverse cesarean section was done and delivered a live mature male baby. The postpartum course was smooth. She was discharged.',
+ ['d|O34.21|Maternal care for scar from previous cesarean delivery','e|Z37.0|Single live birth','e|Z3A.39|39 weeks gestation of pregnancy'],
+ ['p|10D00Z1|Extraction of Products of Conception, Low Cervical, Open Approach'],
+ ['O34.21|Maternal care for scar from previous cesarean delivery|O34.219|Maternal care for unspecified type scar from previous cesarean delivery']);
+C(SRC.y113_07,'案例十','A 84-year-old male has suffered from fever with cough for several days. In ER the COVID-19 rapid test showed positive. The chest x-ray revealed bilateral infiltration with right lower lobe pneumonia patch due to COVID-19 infection. On the second day after admission, the patient developed acute hypoxic respiratory failure. He was accepted endotracheal intubation and on mechanical ventilation for five days.',
+ ['d|U07.1|COVID-19, virus identified','e|J12.89|Other viral pneumonia','e|J96.01|Acute respiratory failure with hypoxia'],
+ ['p|5A1955Z|Respiratory Ventilation, Greater than 96 Consecutive Hours','q|0BH17EZ|Insertion of Endotracheal Airway into Trachea, Via Natural or Artificial Opening'],
+ ['J12.89|Other viral pneumonia|J12.82|Pneumonia due to coronavirus disease 2019']);
+
+/* ===== 112年12月 疾病分類員 ===== */
+C(SRC.y112_12,'試題一','The patient with right-sided inguinal hernia is recurrent. Right open herniorrhaphy with marlex mesh repair was done.',
+ ['d|K40.91|Unilateral inguinal hernia, without obstruction or gangrene, recurrent'],['p|0YU50JZ|Supplement Right Inguinal Region with Synthetic Substitute, Open Approach']);
+C(SRC.y112_12,'試題二','A 55-year-old male is admitted for Chronic Obstructive Pulmonary Disease (COPD) with acute exacerbation of asthma, received medicine treatment and condition was subside.',
+ ['d|J45.901|Unspecified asthma with (acute) exacerbation','e|J44.9|Chronic obstructive pulmonary disease, unspecified'],[]);
+C(SRC.y112_12,'試題三','The patient with adenocarcinoma of lower lobe of left lung, received lower lobe of left lung biopsy under thoracoscopy.',
+ ['d|C34.32|Malignant neoplasm of lower lobe, left bronchus or lung'],['p|0BBJ4ZX|Excision of Left Lower Lung Lobe, Percutaneous Endoscopic Approach, Diagnostic']);
+C(SRC.y112_12,'試題四','The patient admitted for left ureteropelvic junction (UPJ) stone with hydronephrosis, received ureteroscopic laser lithotripsy.',
+ ['d|N13.2|Hydronephrosis with renal and ureteral calculous obstruction'],['p|0TC48ZZ|Extirpation of Matter from Left Kidney Pelvis, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.y112_12,'試題五','This is a 50-year-old man has been experiencing pain, stiffness and deformity in right hip. Under the diagnosis of right hip osteoarthritis. He was admitted for right total hip replacement use metal on polyethylene and cemented.',
+ ['d|M16.11|Unilateral primary osteoarthritis, right hip'],['p|0SR9029|Replacement of Right Hip Joint with Metal on Polyethylene Synthetic Substitute, Cemented, Open Approach']);
+C(SRC.y112_12,'試題六','He had had left hand numbness (especially 1st-4th fingers). Impression of left carpal tunnel syndrome and percutaneous endoscopic carpal tunnel release was performed.',
+ ['d|G56.02|Carpal tunnel syndrome, left upper limb'],['p|01N54ZZ|Release Median Nerve, Percutaneous Endoscopic Approach']);
+C(SRC.y112_12,'試題七','The patient admitted for type 2 diabetic nephropathy with end stage renal disease (ESRD), received medicine controlled with hemodialysis W1,3,5.',
+ ['d|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease','e|N18.6|End stage renal disease','e|Z99.2|Dependence on renal dialysis'],['p|5A1D60Z|Performance of Urinary Filtration, Multiple']);
+C(SRC.y112_12,'試題八','The full-term female infant was born in the hospital by cesarean section. During her stay, hyperbilirubinemia breast milk inhibitor was noted and she received phototherapy for 2 days.',
+ ['d|Z38.01|Single liveborn infant, delivered by cesarean','e|P59.3|Neonatal jaundice from breast milk inhibitor'],['b|6A601ZZ|Phototherapy of Skin, Multiple','b|6A600ZZ|Phototherapy of Skin, Single']);
+C(SRC.y112_12,'試題九','Pregnancy at 38 weeks gestation, a low cervical cesarean section performed because fetal breech presentation. A live mature female baby was delivered. The postpartum course was uneventful without complication.',
+ ['d|O32.1XX0|Maternal care for breech presentation, not applicable or unspecified','e|Z37.0|Single live birth','e|Z3A.38|38 weeks gestation of pregnancy'],['p|10D00Z1|Extraction of Products of Conception, Low Cervical, Open Approach']);
+C(SRC.y112_12,'試題十','A patient presents angina for treatment of coronary artery arteriosclerosis. Left cardiac catheterization and coronary multiple arteries angiography (low osmolar) following percutaneous transluminal coronary angioplasty (PTCA) from proximal left circumflex artery to OM1 (bifurcation), with drug-eluting stent.',
+ ['d|I25.119|Atherosclerotic heart disease of native coronary artery with unspecified angina pectoris'],
+ ['p|0270346|Dilation of Coronary Artery, One Artery, Bifurcation, with Drug-eluting Intraluminal Device, Percutaneous Approach','q|4A023N7|Measurement of Cardiac Sampling and Pressure, Left Heart, Percutaneous Approach','q|B2111ZZ|Fluoroscopy of Multiple Coronary Arteries using Low Osmolar Contrast']);
+C(SRC.y112_12,'試題十一','The patient with fracture of right distal radius due to slipped at home. He underwent an open reduction with internal fixation of the fracture.',
+ ['d|S52.501A|Unspecified fracture of the lower end of right radius, initial encounter for closed fracture','e|W01.0XXA|Fall on same level from slipping, tripping and stumbling without subsequent striking against object, initial encounter','e|Y92.009|Unspecified place in unspecified non-institutional (private) residence as the place of occurrence of the external cause'],
+ ['p|0PSH04Z|Reposition Right Radius with Internal Fixation Device, Open Approach']);
+
+/* ===== 112年7月 疾病分類員 ===== */
+C(SRC.y112_07,'試題一','The 70-year-old female has acute onset of left limb weakness. She was sent to our hospital for help under the impression of right anterior cerebral artery occlusion infarction with left side weakness.',
+ ['d|I63.521|Cerebral infarction due to unspecified occlusion or stenosis of right anterior cerebral artery','e|G81.94|Hemiplegia, unspecified affecting left nondominant side'],[]);
+C(SRC.y112_07,'試題二','This 53-year-old female patient suffered from right hip pain since 3 years ago. She came to our OPD and after survey, she was diagnosed with right hip advanced osteoarthritis secondary to hip dysplasia. Therefore, she underwent right total hip replacement. (Bearing type: Ceramic on Ceramic, cementless fixation).',
+ ['d|M16.31|Unilateral osteoarthritis resulting from hip dysplasia, right hip'],['p|0SR903A|Replacement of Right Hip Joint with Ceramic Synthetic Substitute, Uncemented, Open Approach']);
+C(SRC.y112_07,'試題三','The patient with bilateral recurrent direct inguinal hernia was admitted for laparoscopic bilateral herniorrhaphy with Marlex.',
+ ['d|K40.21|Bilateral inguinal hernia, without obstruction or gangrene, recurrent'],['p|0YUA4JZ|Supplement Bilateral Inguinal Region with Synthetic Substitute, Percutaneous Endoscopic Approach']);
+C(SRC.y112_07,'試題四','A 60-year-old male is admitted with left upper lung (LUL) carcinoma. He received LUL wedge resection with thoracic lymph node partial dissection under thoracoscopy.',
+ ['d|C34.12|Malignant neoplasm of upper lobe, left bronchus or lung'],['p|0BBG4ZZ|Excision of Left Upper Lung Lobe, Percutaneous Endoscopic Approach','q|07B74ZZ|Excision of Thorax Lymphatic, Percutaneous Endoscopic Approach']);
+C(SRC.y112_07,'試題五','The patient with left renal calyx stone complicated with hydronephrosis. In the operation room he underwent left ureterorenoscopic stone manipulation with 6*26 Double-J stent. The stone measuring up to 0.6 cm and was total disintegrated and removed.',
+ ['d|N13.2|Hydronephrosis with renal and ureteral calculous obstruction'],['p|0TC18ZZ|Extirpation of Matter from Left Kidney, Via Natural or Artificial Opening Endoscopic','q|0T778DZ|Dilation of Left Ureter with Intraluminal Device, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.y112_07,'試題六','A patient suffered from painful disability of right hip after an accidental fell from steps. She was sent to our ER where right femoral intertrochanteric fracture was found by X-ray. She was admitted for open reduction internal fixation with proximal femoral intramedullary nail 200*10 mm.',
+ ['d|S72.141A|Displaced intertrochanteric fracture of right femur, initial encounter for closed fracture','e|W10.9XXA|Fall (on) (from) unspecified stairs and steps, initial encounter'],['p|0QS606Z|Reposition Right Upper Femur with Intramedullary Internal Fixation Device, Open Approach']);
+C(SRC.y112_07,'試題七','The full-term female infant was born in the hospital by vaginal delivery. During her stay, hyperbilirubinemia breast milk inhibitor was noted and she received intermittent phototherapy for 2 days.',
+ ['d|Z38.00|Single liveborn infant, delivered vaginally','e|P59.3|Neonatal jaundice from breast milk inhibitor'],['p|6A601ZZ|Phototherapy of Skin, Multiple']);
+C(SRC.y112_07,'試題八','This 85-year-old woman was sent to our ER where pneumonia due to Klebsiella pneumoniae with pleural effusion, after admission the right pig tail was inserted for drainage.',
+ ['d|J15.0|Pneumonia due to Klebsiella pneumoniae','e|J91.8|Pleural effusion in other conditions classified elsewhere'],['p|0W9930Z|Drainage of Right Pleural Cavity with Drainage Device, Percutaneous Approach']);
+C(SRC.y112_07,'試題九','A 65-year-old woman, she felt sudden onset palpitation and chest tightness then was sent to ER. Under the impression of chronic persistent atrial fibrillation and moderate mitral regurgitation, she was admitted for electrophysiological studies and ablation via percutaneous assistance.',
+ ['d|I48.1|Persistent atrial fibrillation','e|I34.0|Nonrheumatic mitral (valve) insufficiency'],['p|02583ZZ|Destruction of Conduction Mechanism, Percutaneous Approach','q|4A0234Z|Measurement of Cardiac Electrical Activity, Percutaneous Approach']);
+C(SRC.y112_07,'試題十','The female patient, at 39 weeks gestation, who had history of previous cesarean section. During this delivery, she received vaginal delivery with median episiotomy and repaired. A living male baby was delivered in left occiput anterior (LOA) position.',
+ ['d|O34.21|Maternal care for scar from previous cesarean delivery','e|Z37.0|Single live birth','e|Z3A.39|39 weeks gestation of pregnancy'],['p|10E0XZZ|Delivery of Products of Conception, External Approach','q|0W8NXZZ|Division of Female Perineum, External Approach']);
+
+/* ===== 112年7月 疾病分類師 ===== */
+C(SRC.t112,'試題一','This 65-year-old male has type 2 diabetes mellitus with diabetic chronic kidney disease stage 3 with insulin dependent. He suffered from right chest pain after traffic accident on 7/20. According to the patient, he was riding scooter collides with car. He came to our emergency department for help. Then right 4-7th ribs fracture, right hemopneumothorax and laceration of right lower leg were impression, during hospitalization on right chest tube and sutured skin of laceration site were performed.',
+ ['d|S27.2XXA|Traumatic hemopneumothorax, initial encounter','e|S22.41XA|Multiple fractures of ribs, right side, initial encounter for closed fracture','e|S81.811A|Laceration without foreign body, right lower leg, initial encounter','e|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease','e|N18.3|Chronic kidney disease, stage 3 (moderate)','e|Z79.4|Long term (current) use of insulin','e|V23.4XXA|Motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter'],
+ ['p|0W9930Z|Drainage of Right Pleural Cavity with Drainage Device, Percutaneous Approach','q|0HQKXZZ|Repair Right Lower Leg Skin, External Approach']);
+C(SRC.t112,'試題二','The female patient, at 36 weeks gestation with monochorionic diamniotic twins pregnancy, was admitted to our delivery room due to preterm labor. During the delivery, she received vacuum-assisted vaginal delivery with median episiotomy, then third degree laceration were repaired. Two living male babies were delivered in occiput anterior position.',
+ ['a|O60.14X1|Preterm labor third trimester with preterm delivery third trimester, fetus 1','a|O60.14X2|Preterm labor third trimester with preterm delivery third trimester, fetus 2','e|O30.033|Twin pregnancy, monochorionic/diamniotic, third trimester','e|O70.2|Third degree perineal laceration during delivery','e|Z37.2|Twins, both liveborn','e|Z3A.36|36 weeks gestation of pregnancy'],
+ ['p|10D07Z6|Extraction of Products of Conception, Vacuum, Via Natural or Artificial Opening','q|0W8NXZZ|Division of Female Perineum, External Approach','q|0DQR0ZZ|Repair Anal Sphincter, Open Approach']);
+C(SRC.t112,'試題三','This 74-year-old male is a case of hepatitis B virus carrier. This time, elevated alpha-fetoprotein was detected and impression a mass lesion over left liver and right adrenal adenoma from computed tomography. After admission, he received laparoscopic segment 4 hepatectomy and cholecystectomy. Pathology report revealed hepatocellular carcinoma and chronic cholecystitis.',
+ ['d|C22.0|Liver cell carcinoma','e|B18.1|Chronic viral hepatitis B without delta-agent','e|D35.01|Benign neoplasm of right adrenal gland','e|K81.1|Chronic cholecystitis'],
+ ['p|0FB24ZZ|Excision of Left Lobe Liver, Percutaneous Endoscopic Approach','q|0FT44ZZ|Resection of Gallbladder, Percutaneous Endoscopic Approach']);
+C(SRC.t112,'試題四','This 66-year-old man has chronic condition of permanent atrial fibrillation and hypertension. He suffered from low abdomen fullness with urinary retention symptom for years. Due to above symptoms, he was admitted for transurethral-scope laser prostatectomy with green light and bipolar aid for tissues prove. Finally, the pathology shows prostate nodular hyperplasia. Post operation, foley and antibiotics of Cefazolin was given. Then he was discharged under stable condition.',
+ ['d|N40.1|Enlarged prostate with lower urinary tract symptoms','e|I48.2|Chronic atrial fibrillation','e|I10|Essential (primary) hypertension','e|R33.8|Other retention of urine'],
+ ['p|0V508ZZ|Destruction of Prostate, Via Natural or Artificial Opening Endoscopic','q|0VB08ZX|Excision of Prostate, Via Natural or Artificial Opening Endoscopic, Diagnostic']);
+C(SRC.t112,'試題五','This 57-year-old male had underlying disease of hypertension and acute on chronic systolic heart failure. This time he was suffered from intermittent chest tightness. He was admitted with unstable angina that could not be controlled with sublingual nitroglycerin. There was no bypass or angioplasty history. On left cardiac catheterization with coronary low osmolar contrast, an atherosclerosis in left anterior descending coronary (LAD) and stenosis 90% at middle LAD were found, then performed angioplasty with a drug coated stent at middle LAD.',
+ ['d|I25.110|Atherosclerotic heart disease of native coronary artery with unstable angina pectoris','e|I11.0|Hypertensive heart disease with heart failure','e|I50.23|Acute on chronic systolic (congestive) heart failure'],
+ ['p|027034Z|Dilation of Coronary Artery, One Site with Drug-eluting Intraluminal Device, Percutaneous Approach','q|4A023N7|Measurement of Cardiac Sampling and Pressure, Left Heart, Percutaneous Approach','q|B2111ZZ|Fluoroscopy of Multiple Coronary Arteries using Low Osmolar Contrast']);
+C(SRC.t112,'試題六','A newborn was delivered by cesarean section at term, and in the discharge summary the physician documents congenital COVID-19 virus infection and respiratory distress syndrome. During hospitalization, intubation and continuous positive airway pressure ventilation was given for 3 days.',
+ ['d|Z38.01|Single liveborn infant, delivered by cesarean','e|P35.8|Other congenital viral diseases','e|U07.1|COVID-19, virus identified','e|P22.0|Respiratory distress syndrome of newborn'],
+ ['p|5A1945Z|Respiratory Ventilation, 24-96 Consecutive Hours, Continuous Positive Airway Pressure','q|0BH17EZ|Insertion of Endotracheal Airway into Trachea, Via Natural or Artificial Opening']);
+C(SRC.t112,'試題七','A 72-year-old female had underlying chronic obstructive pulmonary disease, complain cough, fever, dyspnea for several days. In ER chest X-ray showed right lung infiltration, then she was admitted, chronic obstructive pulmonary disease with acute exacerbation and pneumococcal pneumonia were impression. During hospitalization 5 days, aspiration pneumonia was found. Temporary open tracheostomy was performed and then treated by mechanical ventilation for a week.',
+ ['a|J44.1|Chronic obstructive pulmonary disease with (acute) exacerbation','a|J44.0|Chronic obstructive pulmonary disease with acute lower respiratory infection','a|J13|Pneumonia due to Streptococcus pneumoniae','e|J69.0|Pneumonitis due to inhalation of food and vomit'],
+ ['b|0B110F4|Bypass Trachea to Cutaneous with Tracheostomy Device, Open Approach','b|5A1955Z|Respiratory Ventilation, Greater than 96 Consecutive Hours']);
+C(SRC.t112,'試題八','The 88-year-old female patient has underlying disease of type 2 diabetes mellitus and end stage renal disease under hemodialysis on Qw1.3.5. This time she suffered from right 1st toe gangrene change wound with discharge. She was admitted and diagnosed as diabetes mellitus foot with gangrene, and then received amputation of the right first metatarsophalangeal joint of toe. She received several hemodialysis during this hospitalization.',
+ ['d|E11.52|Type 2 diabetes mellitus with diabetic peripheral angiopathy with gangrene','e|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease','e|N18.6|End stage renal disease','e|Z99.2|Dependence on renal dialysis'],
+ ['p|0Y6P0Z0|Detachment at Right 1st Toe, Complete, Open Approach','q|5A1D60Z|Performance of Urinary Filtration, Multiple']);
+C(SRC.t112,'試題九','The patient was brought to our emergency department due to right side limb weakness. Brain CT was arranged immediately. Impression of intracerebral hemorrhage with right side hemiplegia. He underwent emergent craniotomy for drainage of hemorrhage. During the hospitalization, hydrocephalus was developed. The ventricle peritoneal shunt by open approach was performed.',
+ ['d|I61.9|Nontraumatic intracerebral hemorrhage, unspecified','e|G81.91|Hemiplegia, unspecified affecting right dominant side','e|G91.9|Hydrocephalus, unspecified'],
+ ['p|00900ZZ|Drainage of Brain, Open Approach','q|00160J6|Bypass Cerebral Ventricle to Peritoneal Cavity with Synthetic Substitute, Open Approach']);
+C(SRC.t112,'試題十','The 75-year-old patient with cervix cancer was admitted because he suffered from right hip pathologic fracture last night. The pathologic fracture was due to cervix uteri cancer, T3aN0M1, with bone metastasis. Then she underwent open reduction and internal fixation and excision of metastatic right femoral shaft bone cancer.',
+ ['a|M84.551A|Pathological fracture in neoplastic disease, right femur, initial encounter for fracture','a|C79.51|Secondary malignant neoplasm of bone','e|C53.9|Malignant neoplasm of cervix uteri, unspecified'],
+ ['b|0QS804Z|Reposition Right Femoral Shaft with Internal Fixation Device, Open Approach','b|0QB80ZZ|Excision of Right Femoral Shaft, Open Approach']);
+C(SRC.t112,'試題十一','This is a 71-year-old female with underlying chronic active gastritis, helicobacter infection under medication. The acid reflux aggravated with anorexia, abdominal fullness, and body weight loss was complained. Under the impression of pyloric stenosis, she was admitted for antrectomy with retrocolic Roux-en-Y gastrojejunostomy anastomosis.',
+ ['d|K31.1|Adult hypertrophic pyloric stenosis','e|K29.50|Unspecified chronic gastritis without bleeding','e|B96.81|Helicobacter pylori [H. pylori] as the cause of diseases classified elsewhere'],
+ ['p|0DT70ZZ|Resection of Stomach, Pylorus, Open Approach','q|0D160ZA|Bypass Stomach to Jejunum, Open Approach']);
+
+/* ===== 113年7月 疾病分類師 ===== */
+C(SRC.t113,'案例一','A 77-year-old male, has history of upper abdominal pain that was exacerbated after eating fatty foods, along with associated nausea. Who was diagnosed with cholecystolithiasis with choledocholithiasis and acute cholecystitis and gallstone pancreatitis. Via intravenous injection medications were administered for pain and nausea. The patient underwent Endoscopic retrograde cholangiopancreatography (ERCP) remove choledocholithiasis. A few days later with laparoscopic cholecystectomy.',
+ ['d|K80.62|Calculus of gallbladder and bile duct with acute cholecystitis without obstruction','e|K85.1|Biliary acute pancreatitis'],
+ ['b|0FC98ZZ|Extirpation of Matter from Common Bile Duct, Via Natural or Artificial Opening Endoscopic','b|0FT44ZZ|Resection of Gallbladder, Percutaneous Endoscopic Approach'],
+ ['K85.1|Biliary acute pancreatitis|K85.10|Biliary acute pancreatitis without necrosis or infection']);
+C(SRC.t113,'案例二','This is a 10-year-old boy was diagnosed with COVID-19 on 2023/10/28. Fever to 39 degree was noted on 11/15. He was brought to local medical doctor (LMD) and symptomatic drugs were prescribed. However still high fever. He was admitted to our ward on 11/18 for further evaluation and treatment. After admission lab data showed abnormality, SARS-CoV2 test showed negative. Under the diagnosis of Multisystem inflammatory syndrome in Children (MIS-C) sequelae from COVID-19. Skin rash over trunk and bilateral lower leg was appeared, back skin biopsy was arranged and pathologic report was erythema multiforme. Under relative stable condition, discharge was arranged and OPD follow-up.',
+ ['d|M35.8|Other specified systemic involvement of connective tissue','e|U09.9|Post COVID-19 condition, unspecified','e|L51.9|Erythema multiforme, unspecified'],
+ ['p|0HB6XZX|Excision of Back Skin, External Approach, Diagnostic'],
+ ['M35.8|Other specified systemic involvement of connective tissue|M35.81|Multisystem inflammatory syndrome']);
+C(SRC.t113,'案例三','The patient initial presentation was progressive right hand resting tremor and slow movement at the age of 55 years. Idiopathic Parkinson\'s disease was then diagnosed in 2011. She received regular neurology OPD follow up and medication treatment. This time, she was admitted with Parkinson disease and levodopa-induced dyskinesia and received bilateral entry points, and two burr holes were created, then deep brain stimulation (DBS) electrodes implantation at bilateral subthalamic nuclei (STN), and Implantable Pulse Generator (Right, Activa PC*1, Multiple array) implanted to the anterior chest wall (by incision linear wound).',
+ ['d|G20|Parkinson\'s disease','e|G24.01|Drug induced subacute dyskinesia','e|T42.8X5A|Adverse effect of antiparkinsonism drugs and other central muscle-tone depressants, initial encounter'],
+ ['b|0JH60DZ|Insertion of Multiple Array Stimulator Generator into Chest Subcutaneous Tissue and Fascia, Open Approach','b|00H03MZ|Insertion of Neurostimulator Lead into Brain, Percutaneous Approach']);
+C(SRC.t113,'案例四','This 71-year-old male has a history of eosinophilic asthma. He complained of shortness of breath and associated symptom including productive cough with yellowish sputums. He mentioned worsened symptom in the past 2 days. Chest X-ray showed mild increased infiltration of right lung. Under the impression of eosinophilia severe persistent asthma with acute exacerbation and community acquired pneumonia. After admission, we administered antibiotics with Ceftriaxone and Methylprednisolone 40 mg Q12h for the acute exacerbation of asthma and on Bilevel positive airway pressure (BiPAP) at night via mask, Negative pressure ventilation (NPV) was arranged for lung rehabilitation.',
+ ['a|J45.51|Severe persistent asthma with (acute) exacerbation','a|J18.9|Pneumonia, unspecified organism','e|J82|Pulmonary eosinophilia, not elsewhere classified'],
+ ['p|5A09357|Assistance with Respiratory Ventilation, Less than 24 Consecutive Hours, Continuous Positive Airway Pressure','q|5A0935B|Assistance with Respiratory Ventilation, Less than 24 Consecutive Hours, Intermittent Negative Airway Pressure'],
+ ['J82|Pulmonary eosinophilia, not elsewhere classified|J82.83|Eosinophilic asthma']);
+C(SRC.t113,'案例五','A patient was admitted due to low back pain for 1~2 years. According to patient, he started to suffered from low back pain since 1~2 years ago and started to feel right lower limbs numbness and weakness for 2~3 weeks. Outpatient department lumbar and cervical spine Magnetic Resonance Imaging (MRI) showed L4-5 stenosis and C3-4 herniated intervertebral disc. He was then admitted for further management. L4-L5 Discectomy and perform transforaminal interbody lumbar fusion (TLIF) with PEEK cage and posterior fixation with transpedicular screws was performed on 2024/06/03. C3-4 discectomy and Artificial disc replacement was performed on 2024/06/08.',
+ ['a|M48.06|Spinal stenosis, lumbar region','a|M50.21|Other cervical disc displacement, high cervical region'],
+ ['b|0SG00AJ|Fusion of Lumbar Vertebral Joint with Interbody Fusion Device, Posterior Approach, Anterior Column, Open Approach','b|0RR30JZ|Replacement of Cervical Vertebral Disc with Synthetic Substitute, Open Approach','q|0SB20ZZ|Excision of Lumbar Vertebral Disc, Open Approach'],
+ ['M48.06|Spinal stenosis, lumbar region|M48.061|Spinal stenosis, lumbar region without neurogenic claudication']);
+C(SRC.t113,'案例六','This is a 74-year-old man with enlarged prostate with lower urinary tract symptoms, including nocturia. Until 2 weeks ago, when sudden onset abdominal pain was noted. CT showed a 2.3 cm lesion at left kidney, infection/inflammation change or neoplastic process should be differentiated. Follow up MRI showed a 2.1 cm upper pole renal tumor, left side, suspect renal cell carcinoma. After admission, left robotic-assisted laparoscopic partial nephrectomy was done smoothly. Pathology showed clear cell renal cell carcinoma. He was discharged with scheduled follow-up at the outpatient clinic.',
+ ['d|C64.2|Malignant neoplasm of left kidney, except renal pelvis','e|N40.1|Enlarged prostate with lower urinary tract symptoms','e|R35.1|Nocturia'],
+ ['p|0TB14ZZ|Excision of Left Kidney, Percutaneous Endoscopic Approach','q|8E0W4CZ|Robotic Assisted Procedure of Trunk Region, Percutaneous Endoscopic Approach']);
+C(SRC.t113,'案例七','The patient was a motorcycle driver injured in collision with car and loss of consciousness. He was admitted due to traumatic acute subdural hematoma with left temporal bone fracture. He received craniotomy and removal of hematoma, but post-traumatic hydrocephalus still noted, ventricle peritoneal shunt (V-P shunt) was performed. Then he expired.',
+ ['d|S06.5X7A|Traumatic subdural hemorrhage with loss of consciousness of any duration with death due to brain injury before regaining consciousness, initial encounter for closed fracture','e|S02.19XA|Other fracture of base of skull, initial encounter for closed fracture','e|G91.3|Post-traumatic hydrocephalus, unspecified','e|V23.4XXA|Motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter'],
+ ['p|00C40ZZ|Extirpation of Matter from Subdural Space, Open Approach','q|00160J6|Bypass Cerebral Ventricle to Peritoneal Cavity with Synthetic Substitute, Open Approach'],
+ ['V23.4XXA|Motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter|V23.49XA|Other motorcycle driver injured in collision with car, pick-up truck or van in traffic accident, initial encounter']);
+C(SRC.t113,'案例八','Twin premature liveborn infant was delivered vaginally at 32 completed weeks\' gestation. Twin B with low birth weight 2350 grams. He had multiple problems, including likely group B Streptococcus (GBS) infection due to maternal active GBS infection. He initially required supplemental oxygen and a nasal prong Continuous Positive Airway Pressure (CPAP) for respiratory distress syndrome. He was weaned five hours after birth.',
+ ['d|Z38.30|Twin liveborn infant, delivered vaginally','e|P07.18|Other low birth weight newborn, 2000-2499 grams','e|P07.35|Preterm newborn, gestational age 32 completed weeks','e|P00.2|Newborn (suspected to be) affected by maternal infectious and parasitic diseases','e|B95.1|Streptococcus, group B, as the cause of diseases classified elsewhere','e|P22.0|Respiratory distress syndrome of newborn'],
+ ['p|5A09357|Assistance with Respiratory Ventilation, Less than 24 Consecutive Hours, Continuous Positive Airway Pressure']);
+C(SRC.t113,'案例九','This is a 76-year-old woman with underlying disease of type 2 diabetes mellitus with chronic kidney disease stage 4. According to his family\'s statement she suffered disorientated and difficult to be awake in this morning. At our ER, lab data tests showed abnormality. Under the impression of dehydration related acute kidney injury, acute metabolic acidosis, she was admitted to ICU for continuous venovenous hemodialysis (CVVHD), we arranged prolonged intermittent CVVHD from 113/3/12 to 113/3/14. She was transferred to ordinary ward for further treatment, follow-up lab data was improved. Under the stable condition, the patient was discharged with OPD follow up.',
+ ['d|N17.9|Acute kidney failure, unspecified','e|E87.2|Acidosis','e|E86.0|Dehydration','e|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease','e|N18.4|Chronic kidney disease, stage 4 (severe)'],
+ ['p|5A1D60Z|Performance of Urinary Filtration, Multiple'],
+ ['E87.2|Acidosis|E87.21|Acute metabolic acidosis','5A1D60Z|Performance of Urinary Filtration, Multiple|5A1D80Z|Performance of Urinary Filtration, Prolonged Intermittent, 6-18 hours Per Day']);
+C(SRC.t113,'案例十','Patient has hypertension and congestive heart failure (HFrEF). He is admitted with Non-ST elevation (NSTEMI) myocardial infarction, coronary arteriosclerosis angina pectoris. A left cardiac catheterization with coronary angiogram use low osmolar contrast. A successful coronary angioplasty with placement one drug-eluting stent to left anterior descending artery and atherectomy of the left circumflex artery.',
+ ['d|I21.4|Non-ST elevation myocardial infarction (NSTEMI)','e|I25.10|Atherosclerotic heart disease of native coronary artery without angina pectoris','e|I11.0|Hypertensive heart disease with heart failure','e|I50.20|Unspecified systolic (congestive) heart failure'],
+ ['b|027034Z|Dilation of Coronary Artery, One Site with Drug-eluting Intraluminal Device, Percutaneous Approach','b|02C03ZZ|Extirpation of Matter from Coronary Artery, One Site, Percutaneous Approach','q|4A023N7|Measurement of Cardiac Sampling and Pressure, Left Heart, Percutaneous Approach','q|B2111ZZ|Fluoroscopy of Multiple Coronary Arteries using Low Osmolar Contrast']);
+C(SRC.t113,'案例十一','The patient had underlying disease of hypertension and acute on chronic preserved heart failure, status post cadaveric renal transplant with type 2 diabetes and peripheral angiopathy with artery occlusive disease, had a ulcer on his left heel with muscle necrosis and gangrene. He was admitted for excision debridement of left heel and deep to muscle and subcutaneous tissue layer. 7 days later, still left pain, fever and foul-smelling discharge from the ulcer. A left below-the-knee amputation of the lower leg at the distal portion of the tibia and fibula was performed.',
+ ['d|E11.52|Type 2 diabetes mellitus with diabetic peripheral angiopathy with gangrene','e|E11.621|Type 2 diabetes mellitus with foot ulcer','e|I70.262|Atherosclerosis of native arteries of extremities with gangrene, left leg','e|L97.423|Non-pressure chronic ulcer of left heel and midfoot with necrosis of muscle','e|I11.0|Hypertensive heart disease with heart failure','e|I50.33|Acute on chronic diastolic (congestive) heart failure','e|Z94.0|Kidney transplant status'],
+ ['p|0Y6J0Z3|Detachment at Left Lower Leg, Low, Open Approach','q|0KBW0ZZ|Excision of Left Foot Muscle, Open Approach']);
+
+/* ===== 111年9月 疾病分類員 ===== */
+C(SRC.y111_09,'案例一','The patient was experiencing enlarged prostate with urinary retention. He underwent transurethral resection of the prostate (TURP) via cystoscopy. He has had carcinoma of the bladder history no recurrent.',
+ ['d|N40.1|Enlarged prostate with lower urinary tract symptoms','e|R33.8|Other retention of urine','e|Z85.51|Personal history of malignant neoplasm of bladder'],['p|0VB08ZZ|Excision of Prostate, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.y111_09,'案例二','This patient angina pectoris, coronary artery disease was impressed. A percutaneous transluminal coronary angioplasty to left anterior descending artery with drug-eluting stents was done.',
+ ['d|I25.119|Atherosclerotic heart disease of native coronary artery with unspecified angina pectoris'],['p|027034Z|Dilation of Coronary Artery, One Artery with Drug-eluting Intraluminal Device, Percutaneous Approach']);
+C(SRC.y111_09,'案例三','This 36 year-old woman with gastro-esophageal reflux disease with esophagitis. Admission for bilateral chronic tonsillitis. Operation with bilateral tonsillectomy was performed smoothly.',
+ ['d|J35.01|Chronic tonsillitis','e|K21.0|Gastro-esophageal reflux disease with esophagitis'],['p|0CTPXZZ|Resection of Tonsils, External Approach']);
+C(SRC.y111_09,'案例四','A 62-year-old male patient had anal bleeding for weeks and dysuria. Transanuscolonoscopy rectum biopsy was performed and pathology report adenocarcinoma. The laparoscopic resection of rectum was performed. At same time urinary tract infection was treated with antibiotic.',
+ ['d|C20|Malignant neoplasm of rectum','e|N39.0|Urinary tract infection, site not specified'],['p|0DTP4ZZ|Resection of Rectum, Percutaneous Endoscopic Approach','q|0DBP8ZX|Excision of Rectum, Via Natural or Artificial Opening Endoscopic, Diagnostic']);
+C(SRC.y111_09,'案例五','The female patient, at 38 weeks gestation, she received lower segment cesarean section for previous cesarean section. A living baby was delivered in right occiput anterior (ROA) presentation.',
+ ['d|O34.21|Maternal care for scar from previous cesarean delivery','e|Z37.0|Single live birth','e|Z3A.38|38 weeks gestation of pregnancy'],['p|10D00Z1|Extraction of Products of Conception, Low Cervical, Open Approach']);
+C(SRC.y111_09,'案例六','A 45-year-old women patient was suffered from multinodular goiter. She was admitted for thyroidectomy. Then bilateral near total thyroidectomy was done.',
+ ['d|E04.2|Nontoxic multinodular goiter'],['b|0GBH0ZZ|Excision of Right Thyroid Gland Lobe, Open Approach','b|0GBG0ZZ|Excision of Left Thyroid Gland Lobe, Open Approach']);
+C(SRC.y111_09,'案例七','The patient started to feel intermittent left hip pain for 1 year. Under the impression osteoarthritis, left hip, bilateral knee osteoarthritis. The patient received total hip arthroplasty (ceramic on polyethylene, uncement).',
+ ['d|M16.12|Unilateral primary osteoarthritis, left hip','e|M17.0|Bilateral primary osteoarthritis of knee'],['p|0SRB04A|Replacement of Left Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Uncemented, Open Approach']);
+C(SRC.y111_09,'案例八','A 56-year-old male suffered comminuted fracture of the left distal end tibia and carpal fracture dislocation of right wrist. The injury happened when he fell from a tree. He underwent an open reduction and internal intramedullary rod fixation for tibia fracture.',
+ ['d|S82.302A|Unspecified fracture of lower end of left tibia, initial encounter for closed fracture','e|S62.101A|Fracture of unspecified carpal bone, right wrist, initial encounter for closed fracture','e|W14.XXXA|Fall from tree, initial encounter'],['p|0QSH06Z|Reposition Left Tibia with Intramedullary Internal Fixation Device, Open Approach']);
+C(SRC.y111_09,'案例九','A 40-year-old patient was referred to our hospital because of acute gastric ulcer with hemorrhage and perforation. He received laparoscopic suture repair. Helicobacter pylori infection and anemia due to acute gastrointestinal hemorrhage were also diagnosed.',
+ ['d|K25.2|Acute gastric ulcer with both hemorrhage and perforation','e|D62|Acute posthemorrhagic anemia','e|B96.81|Helicobacter pylori [H. pylori] as the cause of diseases classified elsewhere'],[]);
+C(SRC.y111_09,'案例十','The 70-year-old female has acute onset of left limb weakness. She was sent to our hospital for help. Under the impression of right middle cerebral artery occlusion infarction with left side weakness.',
+ ['d|I63.511|Cerebral infarction due to unspecified occlusion or stenosis of right middle cerebral artery','e|G81.94|Hemiplegia, unspecified affecting left nondominant side'],[]);
+
+/* ===== 111年12月 疾病分類員 ===== */
+C(SRC.y111_12,'試題一','The patient had adenomatous multinodular goiter with thyrotoxicosis, left lobe. Then the percutaneous endoscopic left total thyroidectomy was performed.',
+ ['d|E05.20|Thyrotoxicosis with toxic multinodular goiter without thyrotoxic crisis or storm'],['p|0GTG4ZZ|Resection of Left Thyroid Gland Lobe, Percutaneous Endoscopic Approach']);
+C(SRC.y111_12,'試題二','The patient who had fever and shortness of breath, admitted for Streptococcus pneumoniae pneumonia. After admission fifth day, acute respiratory failure with hypercapnia was developed. Mechanical ventilation assisted for 10 days.',
+ ['d|J13|Pneumonia due to Streptococcus pneumoniae','e|J96.02|Acute respiratory failure with hypercapnia'],['p|5A1955Z|Respiratory Ventilation, Greater than 96 Consecutive Hours']);
+C(SRC.y111_12,'試題三','The female patient was admitted with right tubal pregnancy with rupture. After admission, she received laparoscopic right total salpingectomy with removal of ectopic products of conception.',
+ ['d|O00.1|Tubal pregnancy'],['p|10T24ZZ|Resection of Products of Conception, Ectopic, Percutaneous Endoscopic Approach','q|0UT54ZZ|Resection of Right Fallopian Tube, Percutaneous Endoscopic Approach']);
+C(SRC.y111_12,'試題四','This patient suffers from substernal chest pain with unstable angina, coronary artery disease, acute ST-elevation inferoposterior wall myocardial infarction were impressed. Percutaneous transluminal coronary angioplasty left coronary artery was done.',
+ ['d|I21.19|ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall','e|I25.110|Atherosclerotic heart disease of native coronary artery with unstable angina pectoris'],['p|02703ZZ|Dilation of Coronary Artery, One Site, Percutaneous Approach']);
+C(SRC.y111_12,'試題五','A 50-year-old patient was admitted for acute gastric ulcer with hemorrhage and perforation. He received emergency laparotomy with ulcerectomy of stomach. Helicobacter pylori infection were also diagnosed.',
+ ['d|K25.2|Acute gastric ulcer with both hemorrhage and perforation','e|B96.81|Helicobacter pylori [H. pylori] as the cause of diseases classified elsewhere'],['p|0DB60ZZ|Excision of Stomach, Open Approach']);
+C(SRC.y111_12,'試題六','The patient suffers from enlarged prostate with urinary frequency for one month. He underwent transurethral resection of the prostate (TURP) via cystoscopy.',
+ ['d|N40.1|Enlarged prostate with lower urinary tract symptoms','e|R35.0|Frequency of micturition'],['p|0VB08ZZ|Excision of Prostate, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.y111_12,'試題七','The 62-year-old female was admitted for chemotherapy. She was diagnosed with malignant neoplasm of the left breast (upper outer quadrant) with metastatic to left axillary lymph node. She received Taxol and Cisplatin percutaneously via peripheral vein.',
+ ['d|Z51.11|Encounter for antineoplastic chemotherapy','e|C50.412|Malignant neoplasm of upper-outer quadrant of left female breast','e|C77.3|Secondary and unspecified malignant neoplasm of axilla and upper limb lymph nodes'],['p|3E03305|Introduction of Other Antineoplastic into Peripheral Vein, Percutaneous Approach']);
+C(SRC.y111_12,'試題八','The elderly patient was admitted with viral sepsis. He had type 2 diabetes mellitus and insulin control.',
+ ['d|A41.89|Other specified sepsis','e|B97.89|Other viral agents as the cause of diseases classified elsewhere','e|E11.9|Type 2 diabetes mellitus without complications','e|Z79.4|Long term (current) use of insulin'],[]);
+C(SRC.y111_12,'試題九','The patient has been suffered from low back pain since years ago. Under the impression of spondylolisthesis with spinal stenosis L4-5, the patient had received lumbar discectomy and posterior instrumentation with transpedicle screw, transforaminal lumbar interbody fusion with cage into anterior column (in the prone position).',
+ ['a|M43.16|Spondylolisthesis, lumbar region','a|M48.06|Spinal stenosis, lumbar region'],['p|0SG00AJ|Fusion of Lumbar Vertebral Joint with Interbody Fusion Device, Posterior Approach, Anterior Column, Open Approach','q|0SB20ZZ|Excision of Lumbar Vertebral Disc, Open Approach']);
+C(SRC.y111_12,'試題十','A 53-year-old male, accidentally stepped into boiling water with left leg. Burn injury left ankle 3 degree 3%. Operation with excision debridement of ankle\'s subcutaneous.',
+ ['d|T25.312A|Burn of third degree of left ankle, initial encounter','e|T31.0|Burns involving less than 10% of body surface','e|X12.XXXA|Contact with other hot fluids, initial encounter'],['p|0JBR0ZZ|Excision of Left Foot Subcutaneous Tissue and Fascia, Open Approach']);
+
+/* ===== 113年12月 疾病分類員 ===== */
+C(SRC.y113_12,'第一題','A patient was seen for spontaneous rupture of the extensor tendon of left ankle. The area was opened for exploration, and then the tendon was repaired with sutures.',
+ ['d|M66.272|Spontaneous rupture of extensor tendons, left ankle and foot'],['p|0LQT0ZZ|Repair Left Ankle Tendon, Open Approach']);
+C(SRC.y113_12,'第二題','The patient admitted for right ureter stone with hydronephrosis, received ureteroscopic laser lithotripsy.',
+ ['d|N13.2|Hydronephrosis with renal and ureteral calculous obstruction'],['p|0TC68ZZ|Extirpation of Matter from Right Ureter, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.y113_12,'第三題','A 65-year-old male patient was referred to our hospital because of right liver hepatocellular carcinoma. Transarterial embolization with coil (TAE) via angiography (low osmolar contrast) were performed.',
+ ['d|C22.0|Liver cell carcinoma'],['p|04L33DZ|Occlusion of Hepatic Artery with Intraluminal Device, Percutaneous Approach','q|B4121ZZ|Fluoroscopy of Hepatic Artery using Low Osmolar Contrast']);
+C(SRC.y113_12,'第四題','A 80 year-old male patient was admitted for repair of right common carotid stenosis. Two months earlier, he had suffered a cerebral hemorrhage that resulted aphasia. The procedure via percutaneous right common carotid endarterectomy was successfully accomplished, and the patient was discharged on the fourth hospital day.',
+ ['d|I65.21|Occlusion and stenosis of right carotid artery','e|I69.120|Aphasia following nontraumatic intracerebral hemorrhage'],['p|03CH3ZZ|Extirpation of Matter from Right Common Carotid Artery, Percutaneous Approach']);
+C(SRC.y113_12,'第五題','A 50-year-old male patient had abdominal pain and diagnoses presented gallbladder stone with acute cholecystitis and peritoneal adhesion. The open total cholecystectomy was performed.',
+ ['d|K80.00|Calculus of gallbladder with acute cholecystitis without obstruction','e|K66.0|Peritoneal adhesions (postprocedural) (postinfection)'],['p|0FT40ZZ|Resection of Gallbladder, Open Approach']);
+C(SRC.y113_12,'第六題','This 50-year-old male suffered from traffic accident, he had a left femoral neck fracture, Garden type IV. He received an operation of the left hip cementless bipolar hemiarthroplasty with ceramic device on 2024/03/14.',
+ ['d|S72.002A|Fracture of unspecified part of neck of left femur, initial encounter for closed fracture','e|V89.9XXA|Person injured in unspecified vehicle accident, initial encounter','e|V87.9XXA|Person injured in other specified (collision)(noncollision) transport accidents involving nonmotor vehicle (traffic), initial encounter'],['p|0SRS03A|Replacement of Left Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Uncemented, Open Approach']);
+C(SRC.y113_12,'第七題','42-year-old woman patient was suffered from multinodular goiter. She was admitted for thyroidectomy. Then endoscopic right near total thyroidectomy and left subtotal thyroidectomy were done.',
+ ['d|E04.2|Nontoxic multinodular goiter'],['b|0GBH4ZZ|Excision of Right Thyroid Gland Lobe, Percutaneous Endoscopic Approach','b|0GBG4ZZ|Excision of Left Thyroid Gland Lobe, Percutaneous Endoscopic Approach']);
+C(SRC.y113_12,'第八題','She is 33-year-old, gravida-1-para-0 woman is pregnancy at 37 weeks with low cervical cesarean section performed because fetal breech presentation. A live mature female baby was delivered. The postpartum course was uneventful without complication.',
+ ['d|O32.1XX0|Maternal care for breech presentation, not applicable or unspecified','e|Z37.0|Single live birth','e|Z3A.37|37 weeks gestation of pregnancy'],['p|10D00Z1|Extraction of Products of Conception, Low Cervical, Open Approach']);
+C(SRC.y113_12,'第九題','The patient admitted for Streptococcus pneumoniae pneumonia. After 5 days later acute respiratory failure and sepsis were developed. Blood culture: Streptococcus pneumoniae. Intubated and placed on mechanical ventilation for 6 days.',
+ ['d|J13|Pneumonia due to Streptococcus pneumoniae','e|J96.00|Acute respiratory failure, unspecified whether with hypoxia or hypercapnia','e|A40.3|Sepsis due to Streptococcus pneumoniae'],['p|5A1955Z|Respiratory Ventilation, Greater than 96 Consecutive Hours','q|0BH17EZ|Insertion of Endotracheal Airway into Trachea, Via Natural or Artificial Opening']);
+C(SRC.y113_12,'第十題','Infant is born by cesarean section at GA 31 weeks with birth body weight of 1988 grams. Mild tachypnea was noted and then the patient was treated with continuous positive airway pressure for 3 days.',
+ ['d|Z38.01|Single liveborn infant, delivered by cesarean','e|P07.17|Other low birth weight newborn, 1750-1999 grams','e|P07.34|Preterm newborn, gestational age 31 completed weeks','e|P22.1|Transient tachypnea of newborn'],['p|5A09457|Assistance with Respiratory Ventilation, 24-96 Consecutive Hours, Continuous Positive Airway Pressure']);
+
+/* ===== 111年 疾病分類師 ===== */
+C(SRC.t111,'案例一','A female with type 1 diabetic and post cesarean delivery 12 days earlier, was admitted for bloody discharge from cesarean wound. The wound was opened and hematoma was removal from the abdominal subcutaneous tissue. Post-operation wound was external closed after few days.',
+ ['d|O90.2|Hematoma of obstetric wound','e|O24.03|Pre-existing type 1 diabetes mellitus, in the puerperium'],['p|0JC80ZZ|Extirpation of Matter from Abdomen Subcutaneous Tissue and Fascia, Open Approach','q|0WQFXZZ|Repair Abdominal Wall, External Approach']);
+C(SRC.t111,'案例二','A 51-year-old is status post-surgical left total knee replacement, was admitted for spinal stenosis at L4-5 and spondylolisthesis L5/S1. The patient received L3/L4 and L4/L5 open discectomy, posterior polyetheretherketone (PEEK) cage filled with morselized autograft was implanted into L3/L4 and L4/L5 disc space.',
+ ['a|M48.06|Spinal stenosis, lumbar region','a|M43.17|Spondylolisthesis, lumbosacral region','e|Z96.652|Presence of left artificial knee joint'],['p|0SG10AJ|Fusion of 2 or more Lumbar Vertebral Joints with Interbody Fusion Device, Posterior Approach, Anterior Column, Open Approach','q|0SB20ZZ|Excision of Lumbar Vertebral Disc, Open Approach']);
+C(SRC.t111,'案例三','The patient with invasive ductal carcinoma tumor at 10 o\'clock, 4 cm from nipple over the left breast with lymph node metastasis, estrogen receptors (ER+). Admitted for left modified radical mastectomy with reconstruction and tissue expander implantation.',
+ ['d|C50.212|Malignant neoplasm of upper-inner quadrant of left female breast','e|C77.3|Secondary and unspecified malignant neoplasm of axilla and upper limb lymph nodes','e|Z17.0|Estrogen receptor positive status [ER+]'],['p|0HTU0ZZ|Resection of Left Breast, Open Approach','q|07T60ZZ|Resection of Left Axillary Lymphatic, Open Approach','q|0HHU0NZ|Insertion of Tissue Expander into Left Breast, Open Approach']);
+C(SRC.t111,'案例四','A patient with type 2 diabetes mellitus and chronic kidney disease. This appeared to represent right superficial femoral artery (SFA) chronic total occlusion from ostium to popliteal artery (PA) diffuse calcification and atherosclerosis, external iliac artery (EIA) 60% stenosis. In conclusion, peripheral arterial occlusive disease with lesion at right EIA, right SFA and PA chronic total occlusion. The successful angioplasty at right EIA, and stenting at right SFA.',
+ ['d|E11.51|Type 2 diabetes mellitus with diabetic peripheral angiopathy without gangrene','e|I70.201|Unspecified atherosclerosis of native arteries of extremities, right leg','e|I70.92|Chronic total occlusion of artery of the extremities','e|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease'],['b|047K3DZ|Dilation of Right Femoral Artery with Intraluminal Device, Percutaneous Approach','b|047H3ZZ|Dilation of Right External Iliac Artery, Percutaneous Approach']);
+C(SRC.t111,'案例五','An elderly man, bilateral osteoarthritis resulting from hip dysplasia, right total hip replacement (THR), Girdlestone (removal THR + insert spacer) on 2021/11/01, 2021/12/22. Right THR infection status-post with control well. Admitted for revision right THR. After surgery posthemorrhagic anemia with blood transfusion. Operation procedure: 1. Approach: anterolateral, removal previous spacer first. 2. Revision component: acetabular metal on polyethylene, liner, head, femoral stem, fixation cementless. 3. Bone grafting: yes, acetabular bone defect AAOS3 with allofemur bone graft.',
+ ['d|Z47.32|Aftercare following explantation of hip joint prosthesis','e|M16.32|Unilateral osteoarthritis resulting from hip dysplasia, left hip','e|D62|Acute posthemorrhagic anemia'],['p|0SR902A|Replacement of Right Hip Joint with Metal on Polyethylene Synthetic Substitute, Uncemented, Open Approach','q|0SP908Z|Removal of Spacer from Right Hip Joint, Open Approach','q|0QU40KZ|Supplement Right Acetabulum with Nonautologous Tissue Substitute, Open Approach']);
+C(SRC.t111,'案例六','A patient was admitted for small bowel diverticulitis with abscess and rupture. The laparotomy with excision of small bowel, primary repair by hand-sewn, side-to-side anastomotic and dehiscence of the small bowel was found. The laparotomy with primary repairment over anastomosis disruption with feeding jejunostomy were performed.',
+ ['d|K57.00|Diverticulitis of small intestine with perforation and abscess without bleeding','e|K91.89|Other postprocedural complications and disorders of digestive system','e|T81.32XA|Disruption of internal operation (surgical) wound, not elsewhere classified, initial encounter'],['p|0DB80ZZ|Excision of Small Intestine, Open Approach','q|0DQ80ZZ|Repair Small Intestine, Open Approach','q|0DHA0UZ|Insertion of Feeding Device into Jejunum, Open Approach']);
+C(SRC.t111,'案例七','Angiography revealed left posterior communicating artery aneurysm rupture with diffuse subarachnoid hemorrhage (SAH). Admitted for emergent aneurysm clipping via burr holes with external ventricular drain (EVD) was inserted. Post-operation complicated with post-hemorrhage communicating hydrocephalus. Ventriculoperitoneal shunt (VP shunt) implantation surgery was done. During admitted BIPAP use for ten days.',
+ ['d|I60.32|Nontraumatic subarachnoid hemorrhage from left posterior communicating artery','e|G97.52|Postprocedural hemorrhage and hematoma of a nervous system organ or structure following other procedure','e|G91.0|Communicating hydrocephalus'],['p|03VG3CZ|Restriction of Intracranial Artery with Extraluminal Device, Percutaneous Approach','q|009630Z|Drainage of Cerebral Ventricle with Drainage Device, Percutaneous Approach','q|00163J6|Bypass Cerebral Ventricle to Peritoneal Cavity with Synthetic Substitute, Percutaneous Approach','q|5A09557|Assistance with Respiratory Ventilation, Greater than 96 Consecutive Hours, Continuous Positive Airway Pressure']);
+C(SRC.t111,'案例八','The patient was admitted for cystoscopy confirmed lesion of trigone bladder and biopsy was done. An open radical cystoprostatectomy with urinary diversion due to infiltrative mucinous adenocarcinoma. Once the bladder, prostate, and bilateral seminal vesicles were removed, an ureteroenteric anastomosis was performed to connect the ureters to a newly created ileostomy. During hospitalization the patient\'s son is positive for coronavirus. He contacts with him.',
+ ['d|C67.0|Malignant neoplasm of trigone of bladder','e|Z20.828|Contact with and (suspected) exposure to other viral communicable diseases','e|Z20.822|Contact with and (suspected) exposure to COVID-19'],['p|0TTB0ZZ|Resection of Bladder, Open Approach','q|0VT00ZZ|Resection of Prostate, Open Approach','q|0T180ZC|Bypass Bilateral Ureters to Ileocutaneous, Open Approach','q|0TBB8ZX|Excision of Bladder, Via Natural or Artificial Opening Endoscopic, Diagnostic','q|0VT30ZZ|Resection of Bilateral Seminal Vesicles, Open Approach']);
+C(SRC.t111,'案例九','The patient was known to have hypertension, coronary artery disease, triple vessel disease, complicated with Non-ST elevation myocardial infarction and chronic systolic heart failure, currently decompensated. Status post off-pump coronary artery bypass graft, median sternotomy and left internal mammary artery harvested and anastomosed to left anterior descending artery, left large great saphenous vein harvested (open approach), separately anastomosed to aortotomies and left large great saphenous vein anastomosed to posterior descending artery, first obtuse marginal branch and second obtuse marginal branch.',
+ ['a|I21.4|Non-ST elevation (NSTEMI) myocardial infarction','a|I25.10|Atherosclerotic heart disease of native coronary artery without angina pectoris','e|I11.0|Hypertensive heart disease with heart failure','e|I50.23|Acute on chronic systolic (congestive) heart failure'],['b|021209W|Bypass Coronary Artery, Three Sites from Aorta with Autologous Venous Tissue, Open Approach','b|02100Z9|Bypass Coronary Artery, One Site from Left Internal Mammary, Open Approach','q|06BQ0ZZ|Excision of Left Greater Saphenous Vein, Open Approach']);
+C(SRC.t111,'案例十','A newborn was delivered at 38 weeks of gestation via vacuum assisted vaginal delivery. After birth, the baby developed tachypnea. Under the diagnosis of congenital pneumonia, meconium aspiration syndrome, respiratory support with nasal continuous positive airway pressure was given (use for 52 hours). During the hospitalization, left pneumothorax and seizure were also diagnosed. Left chest tapped air 30 cc was performed and luminal was given.',
+ ['d|Z38.00|Single liveborn infant, delivered vaginally','e|P23.9|Congenital pneumonia, unspecified','e|P24.01|Meconium aspiration with respiratory symptoms','e|P25.1|Pneumothorax originating in the perinatal period','e|P90|Convulsions of newborn'],['p|5A09457|Assistance with Respiratory Ventilation, 24-96 Consecutive Hours, Continuous Positive Airway Pressure','q|0W9B3ZZ|Drainage of Left Pleural Cavity, Percutaneous Approach']);
+C(SRC.t111,'案例十一','A female with known hypertensive heart disease and end-stage renal disease. Admitted with pneumonia due to COVID-19. During hospitalization, acute respiratory failure developed. Endotracheal intubated and mechanical ventilator was used for 17 days. After ventilation for a week ventilator associated pneumonia with pseudomonas was found. Hemodialysis (W1, W3, W5) were provided to treat the end-stage chronic kidney disease. BIPAP at night (less than 24 consecutive hours).',
+ ['d|U07.1|COVID-19','e|J12.89|Other viral pneumonia','e|J96.00|Acute respiratory failure, unspecified whether with hypoxia or hypercapnia','e|J95.851|Ventilator associated pneumonia','e|B96.5|Pseudomonas (aeruginosa) (mallei) (pseudomallei) as the cause of diseases classified elsewhere','e|I13.11|Hypertensive heart and chronic kidney disease without heart failure, with stage 5 chronic kidney disease, or end stage renal disease','e|N18.6|End stage renal disease','e|Z99.2|Dependence on renal dialysis'],['p|5A1955Z|Respiratory Ventilation, Greater than 96 Consecutive Hours','q|5A09357|Assistance with Respiratory Ventilation, Less than 24 Consecutive Hours, Continuous Positive Airway Pressure','q|0BH17EZ|Insertion of Endotracheal Airway into Trachea, Via Natural or Artificial Opening','q|5A1D60Z|Performance of Urinary Filtration, Multiple']);
+
+/* ===== 114年 疾病分類師 ===== */
+C(SRC.t114,'案例一','A 64-year-old patient has alcoholic cirrhosis, presents hematemesis and ascites. Underwent esophagogastroduodenoscopy and abdominal sonography. Who was diagnosed esophageal varices with bleeding. Underwent transorifice endoscopic ligation of esophageal varices using bands.',
+ ['d|K70.31|Alcoholic cirrhosis of liver with ascites','e|I85.11|Secondary esophageal varices with bleeding'],['p|06L38CZ|Occlusion of Esophageal Vein with Extraluminal Device, Via Natural or Artificial Opening Endoscopic']);
+C(SRC.t114,'案例二','A 77-year-old male, left adrenal tumor was noted (7 cm) by abdomen CT. Impression of left adrenal malignant poorly differentiated neuroendocrine tumor with bone metastasis. She received abdomen radiation therapy photons 10 MeV and chemotherapy treatments (via port-A catheter).',
+ ['d|C7A.1|Malignant poorly differentiated neuroendocrine tumors','e|C7B.8|Other secondary neuroendocrine tumors'],['b|DW031ZZ|Beam Radiation of Abdomen using Photons 1 - 10 MeV','b|3E04305|Introduction of Other Antineoplastic into Central Vein, Percutaneous Approach']);
+C(SRC.t114,'案例三','Patient was admitted with aspiration pneumonia and streptococcus pneumoniae pneumonia. Acute hypoxic respiratory failure was developed. Temporary open tracheostomy was performed.',
+ ['a|J69.0|Pneumonitis due to inhalation of food and vomit','a|J13|Pneumonia due to Streptococcus pneumoniae','e|J96.01|Acute respiratory failure with hypoxia'],['p|0B110F4|Bypass Trachea to Cutaneous with Tracheostomy Device, Open Approach']);
+C(SRC.t114,'案例四','This 51-year-old male patient, with a known medical history of type 2 diabetes mellitus with poorly controlled (HbA1c 6.7%), presented to the emergency department with a progressively gangrene wound on his right lower leg. Clinical evaluation confirmed the presence of likely resulting from chronic peripheral vascular insufficiency secondary to diabetic complications. The patient underwent surgical debridement involving the deep subcutaneous tissue of the right lower leg, followed by reconstruction with a split-thickness skin graft (STSG) harvested from the right thigh and applied to the affected area.',
+ ['d|E11.52|Type 2 diabetes mellitus with diabetic peripheral angiopathy with gangrene','e|E11.65|Type 2 diabetes mellitus with hyperglycemia'],['p|0JBN0ZZ|Excision of Right Lower Leg Subcutaneous Tissue and Fascia, Open Approach','q|0HRKX74|Replacement of Right Lower Leg Skin with Autologous Tissue Substitute, Partial Thickness, External Approach','q|0HBHXZZ|Excision of Right Upper Leg Skin, External Approach']);
+C(SRC.t114,'案例五','The patient, a newborn preterm male infant delivered by cesarean section, weighed 2,200 grams at birth and 34 weeks\' gestation. He initially required supplemental oxygen and a nasal prong CPAP for 12 hours for transient tachypnea.',
+ ['d|Z38.01|Single liveborn infant, delivered by cesarean','e|P07.18|Other low birth weight newborn, 2000-2499 grams','e|P07.37|Preterm newborn, gestational age 34 completed weeks','e|P22.1|Transient tachypnea of newborn'],['p|5A09357|Assistance with Respiratory Ventilation, Less than 24 Consecutive Hours, Continuous Positive Airway Pressure']);
+C(SRC.t114,'案例六','A 64-year-old male with a long-standing history of neck pain and bilateral upper limb numbness, which had progressively worsened over the past six months. Cervical spine MRI revealed multilevel cervical spondylosis and herniated intervertebral discs at the C4-C5 and C5-C6 levels with spinal cord compression. After evaluation by the neurosurgery team, the patient underwent anterior cervical discectomy and fusion from C4 to C6. During the procedure, the degenerated and herniated discs were total excised, followed by interbody fusion with cage placement and anterior cervical plate fixation.',
+ ['a|M47.12|Other spondylosis with myelopathy, cervical region','a|M50.021|Cervical disc disorder at C4-C5 level with myelopathy','a|M50.022|Cervical disc disorder at C5-C6 level with myelopathy'],['p|0RG20A0|Fusion of 2 or more Cervical Vertebral Joints with Interbody Fusion Device, Anterior Approach, Anterior Column, Open Approach','q|0RT30ZZ|Resection of Cervical Vertebral Disc, Open Approach']);
+C(SRC.t114,'案例七','The patient was brought to emergency department with right side limb weakness. Brain CT was arranged immediately. Diagnoses of intracerebral hemorrhage with right side hemiplegia. He underwent emergent craniotomy for drainage of hemorrhage. During the hospitalization, hydrocephalus was developed. The ventricle peritoneal shunt by open approach was performed.',
+ ['d|I61.9|Nontraumatic intracerebral hemorrhage, unspecified','e|G81.91|Hemiplegia, unspecified affecting right dominant side','e|G91.9|Hydrocephalus, unspecified'],['p|00900ZZ|Drainage of Brain, Open Approach','q|00160J6|Bypass Cerebral Ventricle to Peritoneal Cavity with Synthetic Substitute, Open Approach']);
+C(SRC.t114,'案例八','This 76-year-old female had underlying disease of type 2 diabetes mellitus with chronic kidney disease stage IIIa, the patient presented with burn injuries to the left hand and back due to accidental contact with hot oil while cooking. Physical examination revealed scald burns with blistering over the left 1st to 3rd fingers and left back, consistent with second- to third-degree burns, involving approximately 9% of total body surface area (TBSA). Surgical management included tangential excision debridement of back.',
+ ['d|T21.34XA|Burn of third degree of lower back, initial encounter','e|T23.342A|Burn of third degree of multiple left fingers (nail), including thumb, initial encounter','e|T31.0|Burns involving less than 10% of body surface','e|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease','e|N18.31|Chronic kidney disease, stage 3a','e|X10.2XXA|Contact with fats and cooking oils, initial encounter'],['b|0HB6XZZ|Excision of Back Skin, External Approach','b|0JB70ZZ|Excision of Back Subcutaneous Tissue and Fascia, Open Approach']);
+C(SRC.t114,'案例九','A 37-week pregnant woman with a dichorionic diamniotic twin gestation was admitted for delivery. She underwent a lower segment transverse cesarean section due to fetal malpresentation (twin B in breech presentation). Two live female infants were delivered. Postpartum hemorrhage secondary to uterine atony was observed, and hemostatic measures were promptly performed.',
+ ['d|O32.1XX2|Maternal care for breech presentation, fetus 2','e|O30.043|Twin pregnancy, dichorionic/diamniotic, third trimester','e|O72.1|Other immediate postpartum hemorrhage','e|Z37.2|Twins, both liveborn','e|Z3A.37|37 weeks gestation of pregnancy'],['p|10D00Z1|Extraction of Products of Conception, Low Cervical, Open Approach','q|0W3R0ZZ|Control Bleeding in Genitourinary Tract, Open Approach','q|0W3R7ZZ|Control Bleeding in Genitourinary Tract, Via Natural or Artificial Opening']);
+C(SRC.t114,'案例十','The patient, with type 2 diabetes with chronic kidney disease, stage 5, came to the hospital with symptoms that were believed to represent coronavirus pneumonia with sepsis. Intubation and mechanical ventilation was given for 5 days.',
+ ['d|A41.89|Other specified sepsis','e|U07.1|COVID-19','e|J12.82|Pneumonia due to coronavirus disease 2019','e|E11.22|Type 2 diabetes mellitus with diabetic chronic kidney disease','e|N18.5|Chronic kidney disease, stage 5'],['p|5A1955Z|Respiratory Ventilation, Greater than 96 Consecutive Hours','q|0BH17EZ|Insertion of Endotracheal Airway into Trachea, Via Natural or Artificial Opening']);
+C(SRC.t114,'案例十一','A 74-year-old male underlying chronic kidney disease stage IIIa and hypertension. This time, he sudden onset chest tightness was noted. Emergent left heart catheter and coronary angiography with low osmolar contrast medium which revealed coronary artery disease, triple vessels disease and inferior ST elevation myocardial infarction, then primary percutaneous coronary intervention with stenting to proximal-middle right coronary artery (drug eluting stent*1), proximal-distal left circumflex artery (stent*1).',
+ ['d|I21.19|ST elevation (STEMI) myocardial infarction involving other coronary artery of inferior wall','e|I25.10|Atherosclerotic heart disease of native coronary artery without angina pectoris','e|I12.9|Hypertensive chronic kidney disease with stage 1 through stage 4 chronic kidney disease, or unspecified chronic kidney disease','e|N18.31|Chronic kidney disease, stage 3a'],['b|02703DZ|Dilation of Coronary Artery, One Artery with Intraluminal Device, Percutaneous Approach','b|027034Z|Dilation of Coronary Artery, One Artery with Drug-eluting Intraluminal Device, Percutaneous Approach','q|4A023N7|Measurement of Cardiac Sampling and Pressure, Left Heart, Percutaneous Approach','q|B2111ZZ|Fluoroscopy of Multiple Coronary Arteries using Low Osmolar Contrast']);
+
+/* ---------- 由歷屆考題自動出題 ---------- */
+var EXAMS = Object.keys(SRC).map(function(k){ return SRC[k]; });
+var PK = {}, DK = {};            /* code -> 描述 */
+CASES.forEach(function(cs){
+  cs.dx.forEach(function(e){ if (!DK[e.c]) DK[e.c] = e.t; });
+  cs.px.forEach(function(e){ if (!PK[e.c]) PK[e.c] = e.t; });
+  cs.chg.forEach(function(g){
+    var pool = (g.c14.length === 7 && /^[0-9]/.test(g.c14)) ? PK : DK;
+    if (!pool[g.c14]) pool[g.c14] = g.t14;
+    if (!pool[g.c23]) pool[g.c23] = g.t23;
+  });
+});
+function codeOpt(c, t){ return c + '　' + t; }
+function inCase(cs, code){
+  var hit = false;
+  cs.dx.concat(cs.px).forEach(function(e){ if (e.c === code) hit = true; });
+  cs.chg.forEach(function(g){ if (g.c14 === code || g.c23 === code) hit = true; });
+  return hit;
+}
+/* 選出干擾碼：先用 prefer（同案例、同系統），再用相近前綴，最後任意 */
+function distract(pool, exclude, prefer, n, prefixLens){
+  var out = [], used = {};
+  exclude.forEach(function(c){ used[c] = 1; });
+  function take(list){
+    shuffle(list).forEach(function(c){ if (out.length < n && !used[c]) { used[c] = 1; out.push(c); } });
+  }
+  take(prefer.filter(function(c){ return pool[c]; }));
+  var all = Object.keys(pool);
+  (prefixLens || [3,2,1]).forEach(function(len){
+    if (out.length >= n) return;
+    var base = (prefer.length ? prefer[0] : exclude[0]) || '';
+    var keys = (exclude[0] || '').slice(0, len);
+    take(all.filter(function(c){ return c.slice(0, len) === keys; }));
+  });
+  take(all);
+  return out;
+}
+var ROLE_DX = {d:'主要診斷', a:'主(次)要診斷', e:'次要診斷'};
+var ROLE_PX = {p:'主要處置', b:'主(次)要處置', q:'次要處置'};
+function ansLine(cs){
+  var parts = [];
+  ['d','a','e'].forEach(function(r){
+    var l = cs.dx.filter(function(e){ return e.r === r; }).map(function(e){ return e.c; });
+    if (l.length) parts.push(ROLE_DX[r] + ' ' + l.join('、'));
+  });
+  ['p','b','q'].forEach(function(r){
+    var l = cs.px.filter(function(e){ return e.r === r; }).map(function(e){ return e.c; });
+    if (l.length) parts.push(ROLE_PX[r] + ' ' + l.join('、'));
+  });
+  var s = '參考答案：' + (parts.join('；') || '（僅列診斷或處置）') + '。';
+  if (cs.chg.length) s += ' 版本差異（2014→2023）：' + cs.chg.map(function(g){ return g.c14 + '→' + g.c23; }).join('、') + '。';
+  return s + ' 來源：' + cs.s + ' ' + cs.id + '。';
+}
+function head(cs){ return '【' + cs.s + '　' + cs.id + '】\n' + cs.text + '\n\n'; }
+function byRole(list, roles){ return list.filter(function(e){ return roles.indexOf(e.r) >= 0; }); }
+
+CASES.forEach(function(cs){
+  var key = cs.s + '|' + cs.id;
+  var dxAll = cs.dx.map(function(e){ return e.c; }), pxAll = cs.px.map(function(e){ return e.c; });
+  var chgCodes = []; cs.chg.forEach(function(g){ chgCodes.push(g.c14, g.c23); });
+
+  /* 1. 主要診斷 */
+  var dMain = byRole(cs.dx, ['d']);
+  if (dMain.length === 1 && !byRole(cs.dx, ['a']).length) {
+    var ok = dMain[0];
+    var ds = distract(DK, [ok.c].concat(chgCodes), byRole(cs.dx, ['e']).slice(0,1).map(function(e){ return e.c; }), 3, [2,1]);
+    if (ds.length === 3) Q('pastdx', 'g:' + key + ':d', head(cs) + '依參考答案，此案例的「主要診斷」是？',
+      [codeOpt(ok.c, ok.t)].concat(ds.map(function(c){ return codeOpt(c, DK[c]); })), ansLine(cs), cs.s);
+  }
+  /* 2. 主要處置 */
+  var pMain = byRole(cs.px, ['p']);
+  if (pMain.length === 1 && !byRole(cs.px, ['b']).length) {
+    var okp = pMain[0];
+    var dp = distract(PK, [okp.c].concat(chgCodes), byRole(cs.px, ['q']).slice(0,1).map(function(e){ return e.c; }), 3, [3,2,1]);
+    if (dp.length === 3) Q('pastpx', 'g:' + key + ':p', head(cs) + '依參考答案，此案例的「主要處置」是？',
+      [codeOpt(okp.c, okp.t)].concat(dp.map(function(c){ return codeOpt(c, PK[c]); })), ansLine(cs), cs.s);
+  }
+  /* 3. 次要診斷 */
+  var eList = byRole(cs.dx, ['e']);
+  if (eList.length) {
+    var oke = eList[Math.floor(Math.random() * eList.length)];
+    var dd = distract(DK, dxAll.concat(chgCodes), [], 3, [2,1]);
+    if (dd.length === 3) Q('pastdx', 'g:' + key + ':e', head(cs) + '下列哪一個診斷碼是此案例參考答案中的「次要診斷」？',
+      [codeOpt(oke.c, oke.t)].concat(dd.map(function(c){ return codeOpt(c, DK[c]); })), ansLine(cs), cs.s);
+  }
+  /* 4. 次要處置 */
+  var qList = byRole(cs.px, ['q']);
+  if (qList.length) {
+    var okq = qList[Math.floor(Math.random() * qList.length)];
+    var dq = distract(PK, pxAll.concat(chgCodes), [], 3, [3,2,1]);
+    if (dq.length === 3) Q('pastpx', 'g:' + key + ':q', head(cs) + '下列哪一個處置碼是此案例參考答案中的「次要處置」？',
+      [codeOpt(okq.c, okq.t)].concat(dq.map(function(c){ return codeOpt(c, PK[c]); })), ansLine(cs), cs.s);
+  }
+  /* 5. 處置描述 → 代碼（看懂 PCS 描述） */
+  if (cs.px.length) {
+    var e5 = cs.px[Math.floor(Math.random() * cs.px.length)];
+    var d5 = distract(PK, pxAll.concat(chgCodes), [], 3, [3,2,1]);
+    if (d5.length === 3) Q('pastpx', 'g:' + key + ':pd', '參考答案中，哪一個處置碼的描述是：\n' + e5.t + '\n（案例：' + cs.s + '　' + cs.id + '）',
+      [e5.c].concat(d5), '正確為 ' + e5.c + '：' + e5.t + '。PCS 碼各字元依序為區段、身體系統、根本操作、身體部位、手術途徑、裝置、限定詞，可從描述回推。' + ansLine(cs), cs.s);
+  }
+  /* 6. 診斷代碼 → 描述 */
+  if (cs.dx.length) {
+    var e6 = cs.dx[Math.floor(Math.random() * cs.dx.length)];
+    var d6 = distract(DK, dxAll.concat(chgCodes), [], 3, [2,1]);
+    if (d6.length === 3) Q('pastdx', 'g:' + key + ':dd', '參考答案中，診斷碼 ' + e6.c + ' 的描述是？\n（案例：' + cs.s + '　' + cs.id + '）',
+      [e6.t].concat(d6.map(function(c){ return DK[c]; })), '正確為 ' + e6.c + '：' + e6.t + '。' + ansLine(cs), cs.s);
+  }
+  /* 7. 2014 → 2023 版本差異 */
+  cs.chg.forEach(function(g, i){
+    var isPx = g.c14.length === 7 && /^[0-9]/.test(g.c14);
+    var pool = isPx ? PK : DK;
+    var dv = distract(pool, [g.c23], [g.c14], 3, isPx ? [3,2,1] : [3,2,1]);
+    if (dv.length === 3) Q('pastver', 'g:' + key + ':v' + i, head(cs) + '此案例 2014 版本的參考代碼為 ' + g.c14 + '（' + g.t14 + '）。依 2023 版本的參考答案，該項目改為？',
+      [codeOpt(g.c23, g.t23)].concat(dv.map(function(c){ return codeOpt(c, pool[c]); })),
+      '2014 版 ' + g.c14 + ' → 2023 版 ' + g.c23 + '（' + g.t23 + '）。' + (g.c23 === '5A1D80Z' ? '同案 2023 版另接受 5A1D90Z（Continuous，每日超過 18 小時）。' : '') + ansLine(cs), cs.s);
+  });
+});
+
+/* 精選 20 題（含詳解與來源定位） */
+Q('past20','x01','復發性右側腹股溝疝氣，以開放式 Marlex mesh 修補。參考答案處置碼 0YU50JZ 的根本操作（root operation）是？',
+  ['Supplement','Repair','Replacement','Reposition'],
+  '0YU50JZ 為「Supplement Right Inguinal Region with Synthetic Substitute, Open Approach」，用合成材料加強既有組織。來源：112年12月疾病分類員 試題一。');
+Q('past20','x02','肺腺癌病人在胸腔鏡下做左下肺葉切片檢查。參考答案處置碼 0BBJ4ZX 的根本操作與限定詞是？',
+  ['Excision，限定詞 Diagnostic','Resection，限定詞 Diagnostic','Extirpation，限定詞 Diagnostic','Inspection，限定詞 No Qualifier'],
+  '0BBJ4ZX 為「Excision of Left Lower Lung Lobe, Percutaneous Endoscopic Approach, Diagnostic」。切片取部分組織，第 7 碼 X 即 Diagnostic。來源：112年12月疾病分類員 試題三。');
+Q('past20','x03','足月女嬰以剖腹產出生，住院期間發現母乳性黃疸並接受照光。參考答案的主要診斷是？',
+  ['Z38.01','Z38.00','P59.3','Z37.0'],
+  '新生兒出生住院的主要診斷為出生狀態碼，剖腹產出生是 Z38.01；Z38.00 是陰道生產（見 112年7月員 試題七）；P59.3 為次要診斷。來源：112年12月疾病分類員 試題八。');
+Q('past20','x04','孕婦陰道生產並做正中會陰切開術。參考答案處置碼 0W8NXZZ 的根本操作是？',
+  ['Division','Excision','Repair','Release'],
+  '參考答案為「0W8NXZZ Division of Female Perineum, External Approach」，會陰切開是切開組織而不移除。來源：112年7月疾病分類員 試題十。');
+Q('past20','x05','病人在家滑倒致右橈骨遠端骨折，接受 ORIF。參考答案在傷害碼之外，另編了哪些外因碼？',
+  ['W01.0XXA 與 Y92.009','W10.9XXA 與 Y92.009','只編 V23.4XXA','不需編外因碼'],
+  '參考答案次要診斷為 W01.0XXA（同一平面滑倒、絆倒）與 Y92.009（私人住宅發生地點）；W10.9XXA 是階梯跌落（見 112年7月員 試題六）。來源：112年12月疾病分類員 試題十一。');
+Q('past20','x06','70 歲女性因右大腦前動脈阻塞性腦梗塞入院，並有左側肢體無力。參考答案的次要診斷是？',
+  ['G81.94','G81.91','I63.521','G91.9'],
+  '參考答案：主要診斷 I63.521，次要診斷 G81.94（左側非慣用側偏癱）；G81.91 是右側慣用側。來源：112年7月疾病分類員 試題一。');
+Q('past20','x07','第 2 型糖尿病腎病變合併末期腎病（ESRD），每週血液透析 3 次。參考答案的主要診斷是？',
+  ['E11.22','N18.6','Z99.2','E11.9'],
+  '參考答案：主要診斷 E11.22（組合碼），次要診斷 N18.6、Z99.2，處置 5A1D60Z。來源：112年12月疾病分類員 試題七。');
+Q('past20','x08','對照剖腹產（10D00Z1）與陰道生產（10E0XZZ）兩個處置碼，根本操作分別是？',
+  ['剖腹產 Extraction，陰道生產 Delivery','兩者都是 Extraction','兩者都是 Delivery','剖腹產 Delivery，陰道生產 Extraction'],
+  '10D00Z1 為「Extraction of Products of Conception, Low Cervical, Open Approach」，10E0XZZ 為「Delivery of Products of Conception, External Approach」。來源：112年12月員 試題九；112年7月員 試題十。');
+Q('past20','x09','左腎盂輸尿管交界處結石併水腎，以輸尿管鏡雷射碎石。參考答案處置碼 0TC48ZZ 的根本操作是？',
+  ['Extirpation','Fragmentation','Destruction','Excision'],
+  '參考答案為「Extirpation of Matter from Left Kidney Pelvis, Via Natural or Artificial Opening Endoscopic」，112年7月員 試題五的 0TC18ZZ 也是 Extirpation。來源：112年12月疾病分類員 試題四。');
+Q('past20','x10','肝細胞癌病人接受經皮射頻燒灼術（RFA）。參考答案處置碼 0F513ZZ 的根本操作是？',
+  ['Destruction','Excision','Extirpation','Resection'],
+  '0F513ZZ 為「Destruction of Right Lobe Liver, Percutaneous Approach」。來源：113年7月疾病分類員 案例一。');
+Q('past20','x11','比較 0SR903A（112年7月員 試題二，Ceramic on Ceramic、無骨水泥）、0SR904A（113年7月員 案例四，Ceramic on Polyethylene、無骨水泥）與 0SR9029（112年12月員 試題五，Metal on Polyethylene、骨水泥），下列何者正確？',
+  ['0SR903A 為陶瓷材質、無骨水泥；0SR904A 為陶瓷對聚乙烯、無骨水泥；0SR9029 為金屬對聚乙烯、骨水泥','0SR904A 代表金屬對聚乙烯、骨水泥','0SR9029 代表陶瓷對聚乙烯、無骨水泥','三者都是陶瓷對聚乙烯，只有固定方式不同'],
+  '三個參考碼的描述各自不同，材質組合與固定方式不同，第 6、7 碼就不同。');
+Q('past20','x12','55 歲男性因「COPD 合併氣喘急性發作」入院，以藥物治療。參考答案的診斷編碼為？',
+  ['主要診斷 J45.901，次要診斷 J44.9','主要診斷 J44.1','主要診斷 J44.9，次要診斷 J45.901','只編 J44.9'],
+  '參考答案：主要診斷 J45.901（氣喘急性發作），次要診斷 J44.9。來源：112年12月疾病分類員 試題二。');
+Q('past20','x13','113年7月師 案例九 CVVHD（實際為 prolonged intermittent）。處置碼從 2014 版到 2023 版的差異是？',
+  ['2014 版 5A1D60Z（Multiple）；2023 版 5A1D80Z（Prolonged Intermittent）或 5A1D90Z（Continuous）','2014 版 5A1D80Z；2023 版 5A1D60Z','兩版都是 5A1D60Z','2014 版 5A1D90Z；2023 版 5A1D80Z'],
+  '同案 E87.2（2014）在 2023 版也改為 E87.21 急性代謝性酸中毒。來源：113年7月疾病分類師 案例九。');
+Q('past20','x14','113年7月員 案例十：COVID-19 合併肺炎。2023 版本的參考答案，肺炎應編為？',
+  ['J12.82','J12.89','J18.9','J96.01'],
+  '2014 版為 J12.89「Other viral pneumonia」，2023 版改為 J12.82「Pneumonia due to coronavirus disease 2019」。來源：113年7月疾病分類員 案例十。');
+Q('past20','x15','113年7月師 案例八：雙胞胎 Twin B 早產，32 完整週、出生體重 2350 公克。參考答案中，出生體重與週數的次要診斷是？',
+  ['P07.18 與 P07.35','P07.17 與 P07.35','P07.18 與 P07.33','P07.16 與 P07.34'],
+  '2350 公克落在 P07.18（2000–2499 公克），32 週對應 P07.35。來源：113年7月疾病分類師 案例八。');
+Q('past20','x16','113年7月師 案例十：NSTEMI 合併冠狀動脈粥樣硬化與心絞痛，參考答案在 I25.119 旁加註「AHA Coding Clinic, 2024, 1Q, p28：當有心肌梗塞時不適合編寫心絞痛代碼」。下列推論何者最符合？',
+  ['主診斷為 I21.4；註記指出有心肌梗塞時不宜編心絞痛碼，與註記一致的是不含心絞痛的 I25.10','病人有心絞痛症狀，所以應以 I25.119 取代 I25.10','有心肌梗塞時，I25.10 與 I25.119 都不該編','因為併有高血壓性心臟病，I21.4 不能當主診斷'],
+  '參考答案列 I21.4 為主要診斷，次要診斷為「I25.10 或 I25.119（註）」。來源：113年7月疾病分類師 案例十（註記）。');
+Q('past20','x17','113年7月師 案例十：LAD 置放藥物釋放支架（027034Z），另對左迴旋支做動脈粥樣斑塊切除（02C03ZZ）。主、次要處置的順序，參考答案是？',
+  ['兩種順序都接受','只接受 027034Z 為主要處置','只接受 02C03ZZ 為主要處置','兩者須合併成單一處置碼'],
+  '案例十有兩組答案，第一組主要處置 027034Z、次要 02C03ZZ，第二組相反；4A023N7、B2111ZZ 都是次要處置。來源：113年7月疾病分類師 案例十。');
+Q('past20','x18','113年7月員甄試各案例的 2014 版與 2023 版代碼互相對照，下列哪一個 2014 版代碼在 2023 版沒有改變？',
+  ['N40.0','K21.0','V23.4XXA','O34.21'],
+  'N40.0（案例五）兩版相同；K21.0→K21.00（案例三），V23.4XXA→V23.49XA（案例六、七），O34.21→O34.219（案例九）。');
+Q('past20','x19','113年7月員 案例二：LAD 與右冠狀動脈各置放一支藥物釋放支架。2023 版本的參考答案處置碼是？',
+  ['027135Z','027134Z','027034Z','0270346'],
+  '2014 版為 027134Z（Two Sites with Drug-eluting Intraluminal Device），2023 版改為 027135Z（Two Arteries with Two Drug-eluting Intraluminal Devices）。來源：113年7月疾病分類員 案例二。');
+Q('past20','x20','112年7月師 試題十：子宮頸癌併骨轉移，造成右髖病理性骨折，接受 ORIF 及轉移癌切除。主要診斷與處置的對應，參考答案是？',
+  ['M84.551A（或 M84.559A）為主要診斷時，處置配 0QS804Z；C79.51 為主要診斷時，處置配 0QB80ZZ','只接受 C53.9 為主要診斷，處置為 0QS804Z','M84.551A 為主要診斷時，處置為 0QB80ZZ；C79.51 為主要診斷時，處置為 0QS804Z','無論主要診斷為何，處置固定先 0QS804Z 再 0QB80ZZ'],
+  '原文標示處置「需配合」各自的主要診斷；C53.9 只是次要診斷。來源：112年7月疾病分類師 試題十。');
+
+/* ===== 2027 指引與 Coding Clinic 2023–2026 題庫（僅依來源內容出題） ===== */
+var NB=[{"c":"g27cm","id":"g27cm:exc1","q":"依 ICD-10-CM 慣例，Excludes1 註記的意義是什麼？","o":["被排除的碼不應與該碼同時使用（兩病況無法並存），但兩病況互不相關時為例外","被排除的病況不屬於該碼，但病人可同時有兩者，適當時可併用","被排除的碼必須作為次要診斷一併申報","僅表示該碼不得作為主診斷"],"e":"Excludes1 為「NOT CODED HERE」，表示不應與上方碼同時使用；若兩病況彼此無關（如 F45.8 與 G47.63 的例子，心因性經痛與睡眠磨牙），可例外併報。選項二描述的是 Excludes2。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.12.a）","s":"g27cm"},{"c":"g27cm","id":"g27cm:exc2","q":"ICD-10-CM 中 Excludes2 註記表示什麼？","o":["被排除的病況不屬於該碼的一部分，病人可同時有兩者，適當時可兩碼併用","兩碼絕不可同時申報","被排除的碼必須排在該碼之前","該碼僅限於住院病人使用"],"e":"Excludes2 意為「Not included here」，被排除的病況不是該碼所代表病況的一部分，但病人可能同時存在，適當時可同時編兩碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.12.b）","s":"g27cm"},{"c":"g27cm","id":"g27cm:manif","q":"標題含「in diseases classified elsewhere」的表現碼（manifestation code），其使用規則為何？","o":["不得作為主診斷或第一順位診斷，必須排在潛在病因碼之後","可作為主診斷，視就診原因而定","必須排在潛在病因碼之前","只在門診可單獨使用"],"e":"病因／表現慣例要求先編病因再編表現；標題為「in diseases classified elsewhere」的碼是表現碼，永遠不可作為第一順位或主診斷，須接在潛在病因碼之後（如巴金森氏症 G20- 後接 F02.80/F02.81-）。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.13）","s":"g27cm"},{"c":"g27cm","id":"g27cm:codealso","q":"Tabular List 中「Code also」註記的意義為何？","o":["可能需要兩個碼才能完整描述病況，但此註記不提供排序指示，排序依該次就診情況決定","必須先編註記所指的碼，再編本碼","註記所指的碼僅在住院時才可使用","兩碼互相排斥，只能擇一"],"e":"「Code also」表示兩個碼可能都需要，但不提供排序方向，順序視該次就診的情況而定。與「Code first」不同，後者規定了順序。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.17）","s":"g27cm"},{"c":"g27cm","id":"g27cm:with","q":"ICD-10-CM 中標題、索引或註記裡的「with」或「in」應如何解讀？","o":["解讀為「associated with」或「due to」，分類假定兩者有因果關係，除非文件明確指出無關","必須有醫師明確記載兩者相關才能編為相關","僅表示兩者在同一次就診出現，不假定因果","只適用於 Tabular List，不適用於 Alphabetic Index"],"e":"「with」在標題、Alphabetic Index（主詞或次詞）或 Tabular List 註記中，推定兩病況有因果關係，即使缺乏醫師明確連結；除非文件明確寫兩者無關，或另有指引要求明確記載連結（如敗血症的急性器官功能障礙）。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.15）","s":"g27cm"},{"c":"g27cm","id":"g27cm:and","q":"ICD-10-CM 碼標題中的「and」應如何解讀？","o":["解讀為「and 或 or」（和／或）","僅能解讀為「and」，兩者須同時存在","僅能解讀為「or」，兩者擇一","視病人年齡決定"],"e":"標題中的 and 視為 and/or。例如「骨結核」「關節結核」與「骨及關節結核」都歸 A18.0 結核性骨與關節。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.14）","s":"g27cm"},{"c":"g27cm","id":"g27cm:default","q":"病歷只記載「appendicitis」，沒有「急性」「慢性」等進一步資訊時，ICD-10-CM 應如何選碼？","o":["指定 Alphabetic Index 主詞旁的預設碼（default code）","必須先向醫師查詢才能編碼","一律選「其他特指」碼","一律選最嚴重（急性）的碼"],"e":"Alphabetic Index 主詞旁的碼為預設碼，代表最常見或未特指的病況；病歷只有主詞而無進一步資訊時，指定預設碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.18）","s":"g27cm"},{"c":"g27cm","id":"g27cm:clin","q":"關於診斷碼的指定與臨床診斷標準（clinical criteria），指引的規定為何？","o":["診斷碼依提供者的診斷陳述指定，不依其所用的臨床標準；紀錄互相矛盾時須查詢醫師","編碼員須自行核對臨床標準是否成立才可編碼","只有實驗室數據支持時才可編碼","提供者陳述不足時，應依檢驗數值自行判定診斷"],"e":"診斷碼的指定依據是提供者「病況存在」的診斷陳述；提供者的陳述即已足夠，不是依其建立診斷所用的臨床標準。如病歷記載互相衝突，須查詢提供者。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.A.19）","s":"g27cm"},{"c":"g27cm","id":"g27cm:detail","q":"關於診斷碼的詳細程度（level of detail），下列何者正確？","o":["碼必須編至可用的最多字元數（含適用的第 7 碼），否則視為無效碼","三碼類目即使有細分，只要已有診斷也可直接使用","第 7 碼為選擇性，可省略","只要編到第 5 碼就算完整"],"e":"三碼類目僅在沒有再細分時才可使用；若未編至該碼所需的完整字元數（含 7th character），則該碼無效。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.2）","s":"g27cm"},{"c":"g27cm","id":"g27cm:acchr","q":"同一病況被描述為既屬急性（亞急性）又屬慢性，且 Alphabetic Index 在同一縮排層級有各自的次詞，應如何編碼？","o":["兩者都編，急性（亞急性）碼排在前","只編慢性碼","只編急性碼","兩者都編，慢性碼排在前"],"e":"依指引，同一病況同時為急性（亞急性）與慢性，且 Index 在同一縮排層級各有次詞時，兩者皆編，急性（亞急性）碼先排。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.8）","s":"g27cm"},{"c":"g27cm","id":"g27cm:combo","q":"當分類中已有組合碼（combination code）能完整涵蓋所記載的診斷與其合併症／表現時，應如何處理？","o":["只編組合碼；僅在組合碼缺乏所需特異性時才加碼","組合碼與各別碼都要編","優先編各別碼以提高特異性","先編組合碼，再把每個元素各自加編"],"e":"指引指出：組合碼已能完整識別所有診斷元素時，不應再多重編碼；只有組合碼對表現或併發症的描述不夠時，才以次要碼補充。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.9）","s":"g27cm"},{"c":"g27cm","id":"g27cm:sequela","q":"殘餘效應（sequela）通常需要兩個碼，其排序為何？","o":["先編殘餘病況或其性質，再編 sequela（後遺症）碼；導致後遺症的急性期疾病碼不得與 sequela 碼併用","先編 sequela 碼，再編殘餘病況","急性期疾病碼與 sequela 碼併用，急性碼排第一","只編 sequela 碼，不編殘餘病況"],"e":"編 sequela 通常需兩碼：殘餘病況或其性質在先，sequela 碼在後（例外：sequela 碼後有表現碼，或已擴充至含表現）。導致後遺症的急性期碼永不與 late effect 碼併用；sequela 無時間限制。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.10）","s":"g27cm"},{"c":"g27cm","id":"g27cm:threat","q":"出院時被描述為「threatened（威脅性）」的病況但並未實際發生，且 Alphabetic Index 沒有 threatened 次詞，應如何編碼？","o":["編現存的潛在病況，不編被描述為 threatened 的病況","當作已確診編碼","不編任何碼","編為疑似診斷的症狀碼 R69"],"e":"「impending/threatened」若確實發生則編為確診；未發生時須查 Index 有無「impending」「threatened」次詞，有則編之；沒有則編現存的潛在病況。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.11）","s":"g27cm"},{"c":"g27cm","id":"g27cm:dup","q":"同一次就診中，同一個 ICD-10-CM 診斷碼可報告幾次？","o":["每個不重複的診斷碼一次就診只報告一次，包括沒有側別專屬碼的雙側病況","雙側病況可報告兩次以表達左右兩側","只要在不同日期記載就可重複報告","有不同醫師記載時可重複報告"],"e":"每個獨特的診斷碼一次就診只可報告一次；這也適用於沒有區分側別的碼的雙側病況，以及兩個不同病況歸到同一碼的情形。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.12）","s":"g27cm"},{"c":"g27cm","id":"g27cm:lat","q":"雙側白內障於不同次住院／就診分別手術，第一側手術那次就診，應如何選擇側別碼？","o":["雙側碼（病況仍在兩側），第二次則依仍存在病況的一側編單側碼","第一次就編單側碼，第二次再編另一側","兩次都編雙側碼","兩次都編側別未特指碼"],"e":"雙側病況分次治療時，第一次治療那次仍因兩側皆有病況而編雙側碼；第二次治療前，已治療側的病況不再存在，所以編仍存在一側的單側碼（若第一次未完全解決，才仍可用雙側碼）。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.13）","s":"g27cm"},{"c":"g27cm","id":"g27cm:oth","q":"下列哪項資訊可依非「病人提供者」之其他臨床人員（如護理師、營養師）的紀錄編碼？","o":["壓瘡的分期（pressure ulcer stage）","敗血症的診斷","肺炎的診斷","手術併發症與手術的因果關係"],"e":"例外清單包含 BMI、非壓力性慢性潰瘍深度、壓瘡分期、昏迷量表、NIHSS、SDOH、側別、血液酒精濃度、免疫不足狀態、槍傷意圖等；但相關診斷（如壓瘡本身）仍須由病人的提供者記載。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.14）","s":"g27cm"},{"c":"g27cm","id":"g27cm:bmi","q":"關於 BMI、昏迷量表、NIHSS 等碼的報告，指引的規定為何？","o":["只能作為次要診斷報告，且相關診斷（如肥胖）須由病人的提供者記載","可作為主診斷","只要營養師記載了 BMI 就可同時推定有肥胖診斷","只能在門診報告"],"e":"BMI、昏迷量表、NIHSS、血液酒精濃度、SDOH 與免疫不足狀態碼只能作為次要診斷；雖可依其他臨床人員記錄，但相關診斷（肥胖、急性中風、F10 等）必須由病人的提供者記載。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.14）","s":"g27cm"},{"c":"g27cm","id":"g27cm:comp","q":"關於「醫療照護併發症」的編碼，下列何者正確？","o":["須有照護與病況間的因果關係且具臨床意義；不必明確寫出「complication」一詞","病歷必須明確使用「complication」才能編碼","手術後發生的任何病況都視為併發症","併發症碼只能由編碼員依時間先後推定"],"e":"編碼依提供者對病況與照護／手術關係的記載；須有因果關係，且病況具臨床意義，但不必明確寫「complication」（如病況改變了手術過程）。關係不清時須查詢提供者。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.16）","s":"g27cm"},{"c":"g27cm","id":"g27cm:border","q":"出院時診斷記載為「borderline」，且 ICD-10-CM 無專屬索引條目時，應如何編碼？","o":["依確診編碼；若索引有專屬條目（如 borderline diabetes）則依該條目","依疑似診斷處理，門診不編","一律改編症狀碼","不編任何碼"],"e":"「borderline」診斷除非分類有專屬條目（如 borderline diabetes），否則當作確診編碼。因為 borderline 不屬於不確定診斷，所以不分門診或住院。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.17）","s":"g27cm"},{"c":"g27cm","id":"g27cm:unspec","q":"關於使用症狀碼與「未特指（unspecified）」碼，指引的立場為何？","o":["當它們最能反映該次就診已知的資訊時是可接受的；不應為求更特定的碼而做不必要的檢查","未特指碼一律禁止使用","應要求醫師進一步檢查，直到可編特定碼為止","診斷尚未確立時一律不可編症狀碼"],"e":"症狀／未特指碼有時是最佳選擇：若診斷尚未確立，可編症狀碼；資訊不足以更特定時可編未特指碼。選用病歷無法支持的特定碼，或為了得到更特定的碼而做不必要檢查，都是不適當的。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.18）","s":"g27cm"},{"c":"g27cm","id":"g27cm:multi","q":"ICD-10-CM 對「multiple（多處）」的定義，以及在無章節專屬指引時的處理為何？","o":["兩處以上；有記載特定部位時各自編碼，部位未記載時才編「multiple sites」碼","三處以上；一律編 multiple sites 碼","兩處以上；一律編 multiple sites 碼","一處以上；一律各自編碼"],"e":"分類將「multiple」定義為涉及兩處以上；無章節專屬指引時，有記載特定部位就各部位分別編碼，部位未記載時才選 multiple sites 碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.B.20）","s":"g27cm"},{"c":"g27cm","id":"g27cm:hiv1","q":"病人因 HIV 相關疾病住院，主診斷應如何選擇？","o":["B20（人類免疫缺乏病毒［HIV］病），後接所有 HIV 相關病況碼","HIV 相關疾病本身的碼，B20 作為次要診斷","Z21（無症狀 HIV 感染狀態）","R75（HIV 實驗室證據）"],"e":"因 HIV 相關病況入院，主診斷為 B20，再加所有報告的 HIV 相關病況碼；例外是 HIV 相關溶血性尿毒症候群，先編 D59.31 再編 B20。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.a.2(b)）","s":"g27cm"},{"c":"g27cm","id":"g27cm:hiv2","q":"HIV 病人因外傷（與 HIV 無關）住院，主診斷為何？","o":["外傷的碼（傷害性質碼）；B20 作為次要診斷","B20","Z21","外傷的外因碼"],"e":"HIV 病人因無關的疾病（如外傷）入院，無關病況碼（如傷害的性質碼）作主診斷，B20 與其他記載的病況為次要診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.a.2(c)）","s":"g27cm"},{"c":"g27cm","id":"g27cm:uro","q":"提供者在病歷中使用「urosepsis」一詞，編碼員應如何處理？","o":["它是非特異性詞彙，不等於 sepsis，Index 沒有預設碼，須向提供者查詢","編為敗血症 A41.9","編為泌尿道感染 N39.0","編為菌血症 R78.81"],"e":"urosepsis 是不具特異性的用語，不可視為與 sepsis 同義，在 Alphabetic Index 中沒有預設碼；提供者用此詞時須查詢澄清。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.d.1(a)(ii)）","s":"g27cm"},{"c":"g27cm","id":"g27cm:sevsep","q":"「嚴重敗血症（severe sepsis）」的編碼，下列何者正確？","o":["至少兩碼：先編潛在的全身性感染，再編 R65.2-，並加編相關急性器官功能障礙碼；未記載病原時感染編 A41.9","只需一個 R65.2- 碼","R65.2- 碼可作為主診斷","先編 R65.2-，再編全身性感染碼"],"e":"嚴重敗血症至少需要兩碼：先為潛在全身性感染（無病原則 A41.9），再為 R65.2- 嚴重敗血症，並加編相關急性器官功能障礙碼；R65.2- 永遠不可作為主診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.d.1(b) 與 I.C.1.d.3）","s":"g27cm"},{"c":"g27cm","id":"g27cm:shock","q":"敗血性休克（septic shock）碼的使用，下列何者正確？","o":["全身性感染碼排第一，再編 R65.21；敗血性休克碼不可作為主診斷","R65.21 可作為主診斷","只編 R65.21，不必編感染碼","R65.21 排在其他器官功能障礙碼之前即可，不需先編感染碼"],"e":"敗血性休克是一種急性器官功能障礙：先編全身性感染碼，再編 R65.21（或術後 T81.12），其他急性器官功能障礙另加；依 Tabular List 排序註記，敗血性休克碼不可為主診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.d.2）","s":"g27cm"},{"c":"g27cm","id":"g27cm:orgdys","q":"病人有敗血症，也有急性器官功能障礙，但病歷顯示該器官功能障礙與敗血症以外的其他病況有關。是否可編 R65.2-？","o":["不可，急性器官功能障礙須與敗血症相關才可編嚴重敗血症碼；關聯不清時須查詢提供者","可以，只要同時存在即可","可以，但須排在第二順位","視檢驗數值而定，不必查詢"],"e":"嚴重敗血症碼要求急性器官功能障礙與敗血症有關；若病歷顯示器官功能障礙與其他病況有關，不編 R65.2-；關聯不清則查詢。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.d.1(a)(iv)）","s":"g27cm"},{"c":"g27cm","id":"g27cm:seploc","q":"病人因敗血症合併局部感染（如肺炎）入院，應如何排序？","o":["先編全身性感染（敗血症）碼，局部感染為次要；若敗血症是入院後才發生，則局部感染先編","局部感染一律排第一","兩者可任意排序","敗血症一律排在局部感染之後"],"e":"入院原因為敗血症合併局部感染時，全身性感染碼為第一，局部感染為次要診斷；若入院時只有局部感染（如肺炎），敗血症／嚴重敗血症在入院後才發生，則局部感染先編。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.1.d.4）","s":"g27cm"},{"c":"g27cm","id":"g27cm:obcls","q":"病歷同時記載「第 3 級肥胖（class 3 obesity）」與「病態肥胖（morbid obesity）」，應如何編碼？","o":["只編第 3 級肥胖碼，因它較為特定","兩者都編","只編病態肥胖碼","兩者都不編，改編 E66.9"],"e":"肥胖級別碼（E66.81-）須由提供者記載級別，可與 Chapter 4、15 的其他肥胖碼併報；但若同時記載第 3 級與病態肥胖，只編第 3 級肥胖碼（較為特定）。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.4.b.1）","s":"g27cm"},{"c":"g27cm","id":"g27cm:f4541","q":"純粹與心理因素相關的疼痛，應編哪個碼？此時能否同時編 G89 類疼痛碼？","o":["F45.41；不可，因 G89 類目下有 Excludes1 註記","F45.41；可以，同時編 G89","F45.42；不可同時編 G89","G89.4；不可同時編 F45.41"],"e":"純心理因素的疼痛編 F45.41；G89 類目的 Excludes1 註記使二者不能併報。F45.42（疼痛症併相關心理因素）才與 G89 碼併用。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.5.a）","s":"g27cm"},{"c":"g27cm","id":"g27cm:hcrisis","q":"依 FY2027 指引，病歷記載「高血壓急迫（hypertensive urgency）」時，應如何編碼？","o":["編 I16 類目碼，並加編已確認的高血壓疾病（I10–I15、I1A）；排序依就診原因","僅編 I10，不另編 I16","僅編 I16，不編其他高血壓碼","一律把 I16 排在高血壓疾病碼之前"],"e":"高血壓急迫、高血壓緊急或未特指的高血壓危象都編 I16；同時編碼任何已確認的高血壓疾病（I10–I15、I1A），排序視就診原因而定。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.9.a.10）","s":"g27cm"},{"c":"g27cm","id":"g27cm:transht","q":"門診血壓偏高，但無高血壓診斷，也沒有既往高血壓診斷。應如何編碼？","o":["R03.0（無高血壓診斷的血壓讀數升高）","I10","I15.9","I16.9"],"e":"「暫時性高血壓」：除非病人已有高血壓的確立診斷，否則編 R03.0；妊娠的暫時性高血壓則依 O13.- 或 O14.-。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.9.a.7）","s":"g27cm"},{"c":"g27cm","id":"g27cm:uncon","q":"病歷記載「uncontrolled hypertension」，應如何選碼？","o":["依其病況編 I10–I15 類碼，不另有專屬的「未控制」碼","I16（高血壓危象）","I1A.0（抗藥性高血壓）","R03.0"],"e":"「未控制」可能指未治療或對現行療法無反應，兩者都編 I10–I15 的適當碼；「controlled」同理。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.9.a.8–9）","s":"g27cm"},{"c":"g27cm","id":"g27cm:secht","q":"次發性高血壓（secondary hypertension）的編碼要求為何？","o":["需要兩碼：潛在病因碼與 I15 類碼，排序依入院／就診原因","只編 I10","只編病因碼","必須先編 I15，再編病因碼"],"e":"次發性高血壓由潛在病況引起，需要兩碼：一為病因，一為 I15；排序由入院或就診的原因決定。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.9.a.6）","s":"g27cm"},{"c":"g27cm","id":"g27cm:resist","q":"病歷記載「treatment resistant hypertension」，應如何編 I1A.0？","o":["作為附加碼（additional code），並同時編高血壓的類型","作為第一順位診斷碼，取代其他高血壓碼","只編 I1A.0，不編高血壓類型","與 I16 併報"],"e":"提供者記載明顯抗藥性、抗藥性或真正抗藥性高血壓時，I1A.0 作為附加碼，另須編高血壓的特定類型碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.9.a.12）","s":"g27cm"},{"c":"g27cm","id":"g27cm:pu1","q":"病人入院時病歷記載壓瘡「已完全癒合」，應如何編碼？","o":["不編壓瘡碼","編 L89 的未特指分期碼","編 L89 第 1 期","編 L89 無法分期碼"],"e":"入院時壓瘡已記載完全癒合，不指定任何壓瘡碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.12.a.4）","s":"g27cm"},{"c":"g27cm","id":"g27cm:pu2","q":"無法分期的壓瘡（unstageable），在清創後揭露出分期，應如何編碼？","o":["只編清創後揭露的分期碼","同時編無法分期碼與揭露的分期碼","只編無法分期碼","編未特指分期碼"],"e":"無法分期（L89.--0）依臨床記載，如被焦痂覆蓋或已植皮；與「未特指分期（L89.--9）」不同，後者用於完全沒有分期記載。若同一次就診清創後揭露分期，只編揭露的分期碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.12.a.2）","s":"g27cm"},{"c":"g27cm","id":"g27cm:z05","q":"健康新生兒為排除疑似疾病而做觀察與評估，結果未發現問題，應如何使用 Z05 類目？","o":["Z05 用於疑似病況經評估後確定不存在者；若記載有疑似問題的症狀或徵象，則編該症狀或徵象","只要有疑似問題就編 Z05，即使有症狀","Z05 只能作為主診斷","Z05 不可與 Z38 同時使用"],"e":"Z05 用於健康新生兒評估疑似疾病，經檢查排除者；有疑似問題的徵象或症狀時不可用 Z05，應編徵象／症狀。在出生紀錄上，Z05 作次要碼，排在 Z38 之後。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.16.b.1 與 b.3）","s":"g27cm"},{"c":"g27cm","id":"g27cm:z05b","q":"FY2027 指引中，非出生紀錄（如再入院）上的 Z05 碼，何時可作主診斷／第一順位診斷？","o":["當 Z38 已不再適用，且為健康新生兒／嬰兒、檢查後未發現病況時","任何時候","只有在出生紀錄上","只有新生兒有症狀時"],"e":"指引 I.C.16.b.2：Z05 可為再入院或就診的主診斷／第一順位診斷，條件是 Z38 不再適用；Z05 僅供健康新生兒與嬰兒、經研判沒有病況者使用。（來源：ICD-10-CM 官方編碼指引 FY2027 Section I.C.16.b.2）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2a","q":"主診斷選擇：當相關的確定診斷已確立時，第 18 章的症狀、徵象與不明確病況碼可否作主診斷？","o":["不可","可以，只要為入院的第一個原因","可以，只要住院天數超過 3 天","可以，但須附加原因碼"],"e":"當相關的確定診斷已確立，症狀、徵象與不明確病況碼（第 18 章）不可作為主診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.A）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2b","q":"兩個以上互相關聯的病況都可能符合主診斷定義（如同一章中的疾病），選擇主診斷的原則為何？","o":["任一病況都可排第一，除非就診情況、所給治療、Tabular List 或 Alphabetic Index 另有指示","一律由編碼員依國際慣例排最嚴重者","一律依字母／碼序排序","一律須查詢醫師"],"e":"互相關聯且皆符合主診斷定義時，哪一個排第一均可，除非入院情況、治療、Tabular List 或 Index 另有指示。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.B）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2d","q":"病歷記載「肺炎或心衰竭（either/or）」兩個對比診斷，如何編碼與排序？","o":["兩者都當作已確診編碼，依入院情況排序；若無法判斷，任一個先編皆可","只編較嚴重者","兩者都不編，改編症狀碼","一律先編 Chapter 9"],"e":"兩個以上對比（comparative/contrasting）診斷以「either/or」記載時，都當作確診編碼，並依入院情況排序；無法進一步決定時，任一均可為第一。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.D）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2f","q":"原定治療計畫因意外情況而未能執行，主診斷應選什麼？","o":["經檢查後造成住院的病況，即使治療未執行","治療計畫改變後的新病況","造成治療取消的原因","一律改編 Z53 類碼"],"e":"原治療計畫未執行時，仍以經檢查後造成住院的病況作為主診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.F）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2g","q":"因手術或其他醫療照護的併發症而入院治療，主診斷應如何選？","o":["併發症碼作為主診斷；若併發症屬 T80–T88 且特異性不足，另加特定併發症碼","原手術的原因","併發症碼作為次要診斷","T80–T88 碼不可作為主診斷"],"e":"入院原因是治療手術或其他醫療照護的併發症時，併發症碼為主診斷；若屬 T80–T88 且特異性不足以描述，須另加指出特定併發症的碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.G）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2h","q":"出院時診斷記載為「probable」「suspected」「likely」，在哪些設施，這些不確定診斷可當作確立診斷編碼？","o":["僅限於短期急性、長期照護與精神科醫院的住院，門診不適用","所有門診與住院皆適用","只限於門診","只限於手術病人"],"e":"不確定診斷（probable、suspected、likely、questionable、possible、still to be ruled out、compatible with、consistent with 等）在出院時視為確診編碼，但這項指引僅適用於短期急性、長期照護與精神科醫院的住院；門診不適用。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.H 與 IV）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2j","q":"病人在醫院門診手術後接著因併發症而轉為同院住院，主診斷如何選？","o":["住院原因是併發症時，併發症為主診斷","一律是門診手術的原因","一律是手術碼","一律由編碼員自行裁量"],"e":"門診手術後轉住院：住院理由是併發症則併發症為主診斷；沒有併發症或其他病況記載時，門診手術的原因為主診斷；住院理由是與手術無關的其他病況，該病況為主診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.J）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p2k","q":"為復健（rehabilitation）而入院，第一順位診斷應如何選？","o":["編接受復健的病況；若該病況已不存在則編追蹤照護（aftercare）碼，但損傷後的復健編損傷碼加第 7 碼 D","一律編 Z51.89","一律編原因急性病況的初診碼","一律編 aftercare 碼"],"e":"復健入院先編正在接受服務的病況（如 I69.351）；病況已不存在時編 aftercare（如髖關節置換後復健 Z47.1），但損傷後復健例外，編損傷碼加 D（如 S72.141D）。（來源：ICD-10-CM 官方編碼指引 FY2027 Section II.K）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p3a","q":"Section III 對「先前病況（previous conditions）」的規定為何？","o":["對本次住院無影響的已解決病況不報告；但歷史碼（Z80–Z87）對現行照護有影響時可作次要碼","所有出現在診斷陳述上的病況皆須報告","歷史碼絕不可使用","已解決的病況只要有 ICD 碼就須報告"],"e":"提供者列在最終診斷陳述的診斷通常應編碼，但對本次住院無影響、已解決的病況與過往手術狀態不報告（除非醫院政策要求）；歷史碼若對現行照護有影響可作次要碼。（來源：ICD-10-CM 官方編碼指引 FY2027 Section III.A）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p3b","q":"住院病人檢驗結果異常，但提供者未表示其臨床意義，是否應編碼？","o":["不編；若異常值已安排其他檢查或治療，可向提供者查詢是否加入","一律編碼","異常值超過正常範圍就編碼","由編碼員依數值判斷嚴重度後編碼"],"e":"住院的異常發現（實驗室、X光、病理）除非提供者指出臨床意義，否則不編碼；超出正常範圍並已安排其他檢查或治療時，可詢問提供者。（來源：ICD-10-CM 官方編碼指引 FY2027 Section III.B）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p4a","q":"門診手術病人因禁忌症而未能執行手術，第一順位診斷應如何選？","o":["編手術的原因（reason for the surgery）","編禁忌症","編 Z53 類目碼","不報告任何診斷"],"e":"門診手術時，即使手術因禁忌症未執行，仍以手術原因為第一順位診斷（reason for the encounter）。（來源：ICD-10-CM 官方編碼指引 FY2027 Section IV.A.1）","s":"g27cm"},{"c":"g27cm","id":"g27cm:p4b","q":"門診手術後出現併發症而收住觀察室，診斷如何排序？","o":["手術原因為第一順位，併發症為次要診斷","併發症為第一順位","兩者任意排序","只報告併發症"],"e":"門診手術後因併發症入觀察：第一報告手術原因（就診原因），再報告併發症為次要診斷。（來源：ICD-10-CM 官方編碼指引 FY2027 Section IV.A.2）","s":"g27cm"},{"c":"g27pcs","id":"g27pcs:a1","q":"ICD-10-PCS 碼由幾個字元組成？每個字元代表什麼？","o":["七個字元，每個字元是一個分類軸（axis of classification）","五個字元，每個字元代表手術部位","七個字元，每個字元固定代表相同資訊，與章節無關","六個字元，第七碼為選擇性"],"e":"每個 PCS 碼有七個字元，每個字元都是一個分類軸；在一個定義的碼範圍內，字元代表同一類型的資訊（如第 5 碼在 0–4、7–9 章為手術方式）。（來源：ICD-10-PCS 官方指引 FY2027 Conventions A1）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:a2","q":"ICD-10-PCS 每個字元可用哪些值？","o":["數字 0–9 與英文字母（不含 I 與 O），共 34 種可能值","數字 0–9 與全部 26 個字母","只有數字 0–9","數字 0–9 與字母（不含 L 與 O）"],"e":"PCS 每個字元可為 0–9 與英文字母，但排除 I 與 O 以免與 1、0 混淆，故共 34 種可能值。（來源：ICD-10-PCS 官方指引 FY2027 Conventions A2）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:a4","q":"在 ICD-10-PCS 中，同一個字元值（如體部值 0）在不同體系是否意義相同？","o":["不同；一個值的意義取決於其分類軸與所依附的前面字元，例如中樞神經系統 0＝腦，周邊神經系統 0＝頸神經叢","相同；值在整個 PCS 系統中永遠代表相同意義","相同；只有手術章節（0）例外","不同，但僅限於 Section X"],"e":"指引舉例：體部值 0 在中樞神經系統代表 Brain，在周邊神經系統代表 Cervical Plexus；值的意義取決於分類軸與前面的值。（來源：ICD-10-PCS 官方指引 FY2027 Conventions A4）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:a7","q":"編 PCS 碼時，是否一定要先查 Alphabetic Index？","o":["不必；可直接從 Tables 選出有效碼，但 Tables 必須查閱以找到最適當的有效碼","必須，Index 是唯一合法起點","必須，且只能由 Index 取得完整碼","只有在 Section X 才可直接查 Tables"],"e":"指引 A6：Index 是用來找到包含建構完整碼所需資訊的表；A7：並不要求先查 Index，可直接由 Tables 選取有效碼。（來源：ICD-10-PCS 官方指引 FY2027 Conventions A6–A7）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:a8","q":"PCS 文件資訊不完整、無法指定全部七個字元時，應如何處理？","o":["向醫師查詢所需資訊；七個字元都指定才是有效碼","用 Z 補足缺的字元","編至已知的字元數即可","自行以最常見值填入"],"e":"必須指定全部七個字元才是有效碼；若文件不足以編碼，應向醫師查詢。（來源：ICD-10-PCS 官方指引 FY2027 Conventions A8）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:a11","q":"醫師病歷記載「partial resection」，編碼員是否須先查詢才能決定 root operation？","o":["不必；編碼員應自行判斷「partial resection」對應 Excision","必須查詢，因為 partial resection 對應 Resection","必須查詢，因為不確定是 Excision 或 Detachment","直接編 Resection"],"e":"編碼員有責任判斷病歷記載相當於 PCS 的哪個定義；醫師不必使用 PCS 用語。指引舉例：「partial resection」可獨立對應到 Excision，無須查詢。（來源：ICD-10-PCS 官方指引 FY2027 Conventions A11）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b21b","q":"在 Upper 與 Lower 為體部值選項的系統（如 Upper Arteries、Lower Veins、Muscles），「upper」與「lower」如何界定？","o":["以橫膈膜為界，位於橫膈膜上方為 upper、下方為 lower","以腰部為界","以心臟為界","以骨盆為界"],"e":"當體部值提供一般性的「upper」「lower」選項時，upper 與 lower 分別指橫膈膜之上與之下。（來源：ICD-10-PCS 官方指引 FY2027 B2.1b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b31b","q":"開放式肝臟切片，為到達手術部位所做的剖腹，是否另編碼？","o":["不另編；到達與關閉手術部位所需的步驟，以及 root operation 定義內含的成分，均不另編","另編 Inspection","另編 Division","另編 Bypass"],"e":"指引舉例：為開放肝切片而剖腹不另編；乙狀結腸切除併降結腸與直腸吻合時，吻合也不另編。（來源：ICD-10-PCS 官方指引 FY2027 B3.1b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b32d","q":"原擬腹腔鏡膽囊切除術，術中轉為開腹膽囊切除，應如何編碼？","o":["編經皮內視鏡的 Inspection，與開放的 Resection（兩者皆編）","只編開放的 Resection","編經皮內視鏡的 Resection","只編經皮內視鏡的 Inspection"],"e":"預定的 root operation 先以一種方式嘗試，後轉為另一種方式時，兩者皆編：腹腔鏡 Inspection 與開放 Resection。（來源：ICD-10-PCS 官方指引 FY2027 B3.2d）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b32b","q":"同一次手術中，切除縫匠肌與股薄肌的病灶，兩者都屬「上腿肌肉」體部值，應如何編碼？","o":["各別編碼（兩個程序），因為是同一體部值內分開的兩個獨立部位","只編一個碼","只編較大塊肌肉的碼","改編 Anatomical Regions 碼"],"e":"同一 root operation 於同一體部值內多個分離且不同的部位重複執行時，要分別編碼（如縫匠肌與股薄肌，或多個趾甲的 Extraction）。（來源：ICD-10-PCS 官方指引 FY2027 B3.2b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b33","q":"預定主動脈瓣置換術，在開胸後、切開心肌前，病人血行動力學不穩而中止手術，應如何編碼？","o":["開放 Inspection of mediastinum（縱膈腔）","Replacement of aortic valve","Resection of aortic valve","不編碼"],"e":"手術中止或未完成時，編實際執行的 root operation；若在執行任何其他 root operation 之前就中止，編 Inspection（針對檢視的部位或區域）。本例編開放的縱膈腔 Inspection。（來源：ICD-10-PCS 官方指引 FY2027 B3.3）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b34a","q":"骨髓切片的 root operation 與限定詞為何？","o":["Extraction，限定詞 Diagnostic","Excision，限定詞 Diagnostic","Drainage，限定詞 Diagnostic","Inspection，無限定詞"],"e":"切片編 Excision、Extraction 或 Drainage 加限定詞 Diagnostic：骨髓切片為 Extraction Diagnostic；肺部液體的細針抽吸為 Drainage Diagnostic；淋巴結採樣為 Excision Diagnostic。（來源：ICD-10-PCS 官方指引 FY2027 B3.4a）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b34b","q":"乳房先做切片，隨後在同一手術部位做部分乳房切除，應如何編碼？","o":["切片與部分乳房切除兩者皆編","只編部分乳房切除","只編切片","兩者合併編為一個 Resection 碼"],"e":"切片之後接著在同一部位做更確定的治療（Destruction、Excision、Resection），兩者都編。（來源：ICD-10-PCS 官方指引 FY2027 B3.4b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b35","q":"excisional debridement 涉及肌肉與肌腱的重疊層次，應編到哪一個體部值？","o":["肌腱（最深層）","肌肉","皮膚","皮下組織"],"e":"在肌肉骨骼系統重疊層次進行 Excision、Extraction、Repair 或 Inspection 時，編最深層的體部值；肌肉＋肌腱→肌腱，皮膚＋皮下組織＋肌肉→肌肉。（來源：ICD-10-PCS 官方指引 FY2027 B3.5）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b36a","q":"Bypass（繞道）程序中，第 4 字元體部值與限定詞各代表什麼？","o":["體部值＝被繞道的來源（from）；限定詞＝繞道到達的目的地（to）","體部值＝目的地；限定詞＝來源","兩者都代表來源","體部值＝移植物來源；限定詞＝目的地"],"e":"例：胃到空腸的繞道，體部值為 Stomach、限定詞為 Jejunum。（來源：ICD-10-PCS 官方指引 FY2027 B3.6a）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b36b","q":"冠狀動脈繞道（CABG）的體部值與限定詞，與其他繞道有何不同？","o":["體部值代表被繞道的冠狀動脈數目；限定詞代表繞道的來源血管","體部值代表來源血管；限定詞代表動脈數目","體部值與限定詞的意義與一般繞道相同","體部值代表使用的移植物種類"],"e":"冠狀動脈繞道的體部值指繞道到的冠狀動脈數目，限定詞指繞道來源（如主動脈）。若多條冠狀動脈使用不同裝置／限定詞，各別編碼。（來源：ICD-10-PCS 官方指引 FY2027 B3.6b–c）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b37","q":"以硝酸銀燒灼治療急性鼻出血，應編哪個 root operation？","o":["Control","Destruction","Repair","Occlusion"],"e":"Control 為停止或企圖停止術後或其他急性出血；以燒灼、應用物質、縫合、結紮等未被更特定 root operation 描述的技術止血時編 Control。若有更特定的 root operation 適用（如以液態栓塞阻斷血流為 Occlusion），則編更特定者。（來源：ICD-10-PCS 官方指引 FY2027 B3.7）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b38","q":"左上肺葉切除術（左上葉整個切除），應編何者？","o":["Resection of Upper Lung Lobe, Left","Excision of Lung, Left","Excision of Upper Lung Lobe, Left","Detachment of Lung, Left"],"e":"PCS 對器官的解剖次分區（如肺葉、肝葉）有各自體部值；整個體部值被切除時編 Resection，而不是對較不特定的體部值編 Excision。（來源：ICD-10-PCS 官方指引 FY2027 B3.8）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b39","q":"冠狀動脈繞道手術同時取下大隱靜脈作為移植物，大隱靜脈的取得應如何編碼？","o":["另編一個 Excision 程序，因限定詞並未完整指定自體移植物取得部位","不另編，已含在 Bypass 內","另編 Resection","另編 Detachment"],"e":"自體移植物取自不同手術部位時另編；例外是 PCS 表格的第 7 碼已完整指定取得部位，如 DIEP 皮瓣乳房置換，皮瓣取得不另編。（來源：ICD-10-PCS 官方指引 FY2027 B3.9）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b310c","q":"脊椎椎體關節融合使用內含碎骨移植的 cage 式椎體間融合裝置，應選何種裝置值？","o":["Interbody Fusion Device","Autologous Tissue Substitute","Nonautologous Tissue Substitute","Synthetic Substitute"],"e":"使用含骨移植的椎體間融合裝置使關節固定時，編 Interbody Fusion Device；僅骨移植時視自體或非自體編相應 Tissue Substitute；自體與非自體骨混合時編 Autologous Tissue Substitute。（來源：ICD-10-PCS 官方指引 FY2027 B3.10c）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b311b","q":"膀胱輸尿管鏡檢查，檢視膀胱與輸尿管，Inspection 應編到哪個體部值？","o":["Ureter（最遠端的管狀構造）","Bladder","Urinary Tract（區域）","兩者各編一碼"],"e":"檢視多個管狀構造時，編最遠端（離起始點最遠）者；若檢視多個非管狀構造，編代表整個檢視區域的體部值（如剖腹探查編 Peritoneal Cavity）。（來源：ICD-10-PCS 官方指引 FY2027 B3.11b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b312","q":"腫瘤栓塞（tumor embolization）與腦動脈瘤栓塞，各應編何種 root operation？","o":["腫瘤栓塞編 Occlusion；腦動脈瘤栓塞編 Restriction","兩者皆 Occlusion","兩者皆 Restriction","腫瘤栓塞編 Restriction；腦動脈瘤栓塞編 Occlusion"],"e":"栓塞目的為完全關閉血管編 Occlusion（腫瘤栓塞切斷血液供應）；目的為縮窄管腔編 Restriction（腦動脈瘤處縮窄管腔而非完全阻斷）。（來源：ICD-10-PCS 官方指引 FY2027 B3.12）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b313","q":"腸黏連分離術（lysis of intestinal adhesions），Release 的體部值應如何選？","o":["被鬆解的特定腸段（被釋放的體部），而非被切開的黏連組織","黏連組織","Peritoneum","Anatomical Regions, General"],"e":"Release 的體部值是被釋放的體部，不是為釋放而操作或切開的組織。（來源：ICD-10-PCS 官方指引 FY2027 B3.13）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b314","q":"把神經根從周圍疤痕組織中鬆解以緩解疼痛，與切斷神經根以緩解疼痛，分別是何種 root operation？","o":["前者 Release；後者 Division","前者 Division；後者 Release","兩者皆 Release","兩者皆 Excision"],"e":"唯一目的為釋放體部而不切割該體部＝Release；唯一目的為分離或橫切體部＝Division。（來源：ICD-10-PCS 官方指引 FY2027 B3.14）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b315","q":"無移位骨折以石膏固定，與有移位骨折閉鎖整復後上石膏，分別如何編碼？","o":["前者編 Placement 章節的 Immobilization；後者編 Reposition，石膏不另編","前者編 Reposition；後者編 Immobilization","兩者皆編 Immobilization","兩者皆編 Reposition 並另編石膏"],"e":"有移位骨折的整復編 Reposition，併用的石膏或夾板不另編；無移位骨折依實際執行的程序編碼（石膏為 Immobilization；打釘為 Insertion）。（來源：ICD-10-PCS 官方指引 FY2027 B3.15）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b316","q":"自體或非自體骨髓、胰島細胞、幹細胞的輸入，應編何處？","o":["Administration 章節","Transplantation（Medical and Surgical）","Transfer","Replacement"],"e":"Transplantation 為放入另一個體或動物的成熟且具功能的活體部位；放入自體或非自體細胞（骨髓、胰島細胞、幹細胞）則編 Administration 章節。（來源：ICD-10-PCS 官方指引 FY2027 B3.16）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b317","q":"肌皮瓣（musculocutaneous flap）轉移，體部值應如何選？","o":["皮瓣中最深層組織所對應的體部值（肌肉），限定詞描述其他組織層","皮膚","皮下組織","必須編成三個獨立程序"],"e":"多組織層的 Transfer 編到皮瓣中最深層組織的體部值，並用限定詞描述其他組織層。（來源：ICD-10-PCS 官方指引 FY2027 B3.17）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b318","q":"乳房切除後立即重建，與全關節置換前切除關節，各應如何處理？","o":["乳房切除與重建兩者皆編；關節置換的關節切除屬整合性準備，不另編","兩者都只編置換／重建","兩者的切除皆須另編","兩者的切除皆不另編"],"e":"切除後接置換，通常兩者皆編以呈現各自目的；但若切除為置換所必需的整合性準備（如關節置換、瓣膜置換的切除）則不另編。（來源：ICD-10-PCS 官方指引 FY2027 B3.18）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b319","q":"手部截肢，「Complete」與「Partial」在 PCS 定義中分別指什麼？","o":["Complete＝經腕掌關節（足部為跗蹠關節）；Partial＝沿掌骨（蹠骨）幹或頭的任何位置","Complete＝經掌指關節；Partial＝經腕掌關節","Complete＝經腕骨；Partial＝經指骨","Complete＝經橈尺骨；Partial＝經掌骨"],"e":"手與足的 Detachment：Complete 指經腕掌關節（手）或跗蹠關節（足）的截肢；Partial 指沿掌骨或蹠骨幹或頭的任何位置的截肢。拇指、手指、腳趾的 Complete 則指經掌指／蹠趾關節。（來源：ICD-10-PCS 官方指引 FY2027 B3.19）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b41a","q":"手術在下頷骨牙槽突（alveolar process）進行，PCS 沒有該部位的獨立體部值，應編到何處？","o":["Mandible（整個下頷骨）","Maxilla","Tooth","Skull"],"e":"手術部位只是某體部的一部分、且無獨立體部值時，編對應整個體部的值。（來源：ICD-10-PCS 官方指引 FY2027 B4.1a）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b41b","q":"手術部位記載為骨膜（periosteum）時，應編到什麼體部值？","o":["對應的骨頭","皮下組織","肌肉","Anatomical Regions"],"e":"指引舉例：涉及骨膜的手術編到對應的骨體部值；「peri-」加體部（如 perirenal）且部位未進一步特定時，編到所命名的體部（腎）。（來源：ICD-10-PCS 官方指引 FY2027 B4.1b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b43","q":"相同程序施行於雙側輸卵管，與雙側膝關節，各如何編碼？","o":["輸卵管編一碼（Fallopian Tube, Bilateral）；膝關節編兩碼（右、左各一）","兩者皆編一碼","兩者皆編兩碼","輸卵管編兩碼；膝關節編一碼"],"e":"只有部分體部有雙側值；有雙側值者相同程序編一碼，沒有則左右分別編碼。（來源：ICD-10-PCS 官方指引 FY2027 B4.3）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b44","q":"兩條冠狀動脈做血管成形術，一條置放支架、另一條未放支架，應如何編碼？","o":["分別編碼：Dilation 一條動脈併 Intraluminal Device，與 Dilation 一條動脈無裝置","編一個 Dilation 兩條動脈併 Intraluminal Device","編一個 Dilation 兩條動脈無裝置","編 Insertion of 兩條動脈"],"e":"冠狀動脈是單一體部值，以治療的動脈數指定；僅當同一程序的裝置與限定詞值都相同才合為一碼，裝置不同須分開編。（來源：ICD-10-PCS 官方指引 FY2027 B4.4）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b45","q":"前十字韌帶（ACL）修補與膝關節鏡下軟骨修整，兩者的體部值是否相同？","o":["不同；ACL 修補編 Bursae and Ligaments 的膝體部，關節鏡軟骨修整編 Lower Joints 的膝關節","相同，都編 Lower Joints 的膝關節","相同，都編 Bursae and Ligaments","相同，都編 Tendons"],"e":"作用於關節周圍的肌腱、韌帶、滑囊、筋膜時，編以該結構為焦點的所屬系統體部；作用在關節構造本身（如關節軟骨）才編關節系統。（來源：ICD-10-PCS 官方指引 FY2027 B4.5）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b46","q":"對覆蓋肩關節的皮膚、皮下組織或筋膜進行程序，體部值應編至哪裡？膝關節呢？","o":["肩編 Upper Arm；膝編 Lower Leg","肩編 Lower Arm；膝編 Upper Leg","肩編 Upper Arm；膝編 Upper Leg","肩編 Chest；膝編 Foot"],"e":"指引對應：肩→上臂，肘→下臂，腕→下臂，髖→大腿（Upper Leg），膝→小腿（Lower Leg），踝→足。（來源：ICD-10-PCS 官方指引 FY2027 B4.6）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b47","q":"某系統（如 Muscles）沒有手指的獨立體部值，切除指肌肉應編到哪個體部？","o":["Hand（手）的肌肉體部值","Upper Arm","Lower Arm and Wrist","Anatomical Regions, Upper Extremities"],"e":"體系沒有指／趾的獨立體部值時，手指編手、腳趾編足。（來源：ICD-10-PCS 官方指引 FY2027 B4.7）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b48","q":"Upper Intestinal Tract 與 Lower Intestinal Tract 的範圍如何界定？更換空腸中的裝置（Change）應編哪個？","o":["Upper＝食道至十二指腸（含）；Lower＝空腸至直腸與肛門（含）；空腸裝置編 Lower Intestinal Tract","Upper＝食道至空腸（含）；空腸裝置編 Upper","Upper＝食道至胃；空腸裝置編 Upper","Lower＝迴腸至肛門；空腸裝置編 Upper"],"e":"Upper Intestinal Tract 包含食道到十二指腸；Lower 包含空腸到直腸與肛門，因此空腸裝置的 Change 編 Lower Intestinal Tract。（來源：ICD-10-PCS 官方指引 FY2027 B4.8）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b52a","q":"腹腔鏡輔助乙狀結腸切除（laparoscopic-assisted sigmoidectomy，開放執行主要步驟），手術方式應編何者？","o":["Open（開放）","Percutaneous Endoscopic","Via Natural or Artificial Opening Endoscopic","Percutaneous"],"e":"以開放方式並由經皮內視鏡輔助者，編 Open；此與經皮內視鏡手術，因手輔助或延伸切口取出標本而仍編 Percutaneous Endoscopic 的情形（B5.2b）不同。（來源：ICD-10-PCS 官方指引 FY2027 B5.2a）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b52b","q":"手輔助腹腔鏡乙狀結腸切除，並延長切口取出標本，手術方式編何者？","o":["Percutaneous Endoscopic","Open","Percutaneous","External"],"e":"經皮內視鏡手術使用手輔助，或延伸切口以取出全部或部分體部、或吻合管狀構造者，仍編 Percutaneous Endoscopic。（來源：ICD-10-PCS 官方指引 FY2027 B5.2b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b53","q":"扁桃腺切除術與閉鎖性骨折整復，手術方式各編何者？","o":["兩者皆 External","扁桃腺 Open；骨折整復 External","扁桃腺 Via Natural or Artificial Opening；骨折整復 Percutaneous","兩者皆 Via Natural or Artificial Opening"],"e":"在孔道內、不需器械即可看見的構造上所做的程序編 External（如扁桃腺切除）；以外力經中間體層間接施行的程序也編 External（如閉鎖性骨折整復）。（來源：ICD-10-PCS 官方指引 FY2027 B5.3a–b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b54","q":"經由為手術放置的經皮腎造瘻管來碎腎結石，手術方式編何者？","o":["Percutaneous","Via Natural or Artificial Opening","Open","External"],"e":"經由為該程序而放置的裝置，以經皮方式進行，編 Percutaneous。（來源：ICD-10-PCS 官方指引 FY2027 B5.4）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b61","q":"縫線、結紮線、放射標記與暫時性術後傷口引流管，在 PCS 是否編為裝置？","o":["不編；它們視為手術的整合部分","要編為 Drainage Device","要編為 Other Device","要編為 Insertion"],"e":"只有手術結束後仍留存的裝置才編；縫線、結紮、放射標記與暫時性術後傷口引流管均不另編為裝置。若預計留存的裝置在同一手術過程內因故須移除，則置入與移除都要編。（來源：ICD-10-PCS 官方指引 FY2027 B6.1a–b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:b61c","q":"對經皮腎造瘻管（裝置本身）進行沖洗，應如何編碼？","o":["編 Administration 章節的 Irrigation（沖洗植入裝置）","編 Drainage","編 Inspection of kidney","編 Revision"],"e":"只對裝置而非對體部進行的程序，用 Change、Irrigation、Removal、Revision 等 root operation；指引舉例為腎造瘻管沖洗。（來源：ICD-10-PCS 官方指引 FY2027 B6.1c）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:bc2","q":"產後或流產後的子宮內膜刮除或殘留妊娠產物排出，與非產後的 D&C，分別編在哪個章節？","o":["前者在 Obstetrics 章節（Extraction，Products of Conception, Retained）；後者在 Medical and Surgical（Extraction，Endometrium）","兩者皆 Obstetrics 章節","兩者皆 Medical and Surgical 章節","前者在 Medical and Surgical；後者在 Obstetrics"],"e":"產後／流產後的內膜刮除與殘留物清除，編 Obstetrics 章節的 Extraction、Products of Conception, Retained；其他時間的診斷或治療性 D&C 編 Medical and Surgical 的 Extraction、Endometrium。（來源：ICD-10-PCS 官方指引 FY2027 C2）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:bd1","q":"近接治療（brachytherapy）後放射性來源留在體內，除放射治療章節的碼之外，還須如何編？","o":["另編 Medical and Surgical 的 Insertion，裝置值為 Radioactive Element","不須另編","另編 Removal","另編 Administration"],"e":"近接治療編 Radiation Therapy 章節近接治療模式；若放射性來源於程序結束時仍在體內，另編 Insertion 與 Radioactive Element（例外：腦腫瘤切除後置入含 Cs-131 或 Pd-103 的膠原植入物，只編 Insertion）。（來源：ICD-10-PCS 官方指引 FY2027 D1.a）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:be1","q":"Section X（新技術）的碼已完整描述一項新技術程序，且為唯一程序時，是否須再加編其他章節的碼？","o":["不須；只報告 Section X 碼","須，要再編 Administration 章節的碼","須，要再編 Medical and Surgical 的碼","視保險給付而定"],"e":"Section X 碼完整代表碼名所述的特定程序，若是唯一執行的程序，只編 Section X 碼（例：zanidatamab 經周邊靜脈給予，不再編 3E0 表的 Administration 碼）。（來源：ICD-10-PCS 官方指引 FY2027 E1.a）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:be1b","q":"經導管主動脈瓣置換（valve-in-valve TAVR）時，另以射頻能量做瓣葉切割（X28F3WB），應如何編碼？","o":["Section X 碼與 TAVR 程序碼分別編碼","只編 X28F3WB","只編 TAVR","合併為一個 Replacement 碼"],"e":"多項程序時，Section X 碼依多重程序指引編碼：X28F3WB 與 TAVR 另碼並報；同理，經暫時輸注裝置給予基因治療時，輸注裝置的 Insertion 另編。（來源：ICD-10-PCS 官方指引 FY2027 E1.b）","s":"g27pcs"},{"c":"g27pcs","id":"g27pcs:bf","q":"主診斷的相關診斷性程序，與次要診斷的確定治療性程序並存時，何者為主要程序？","o":["與主診斷相關的診斷性程序作為主要程序","次要診斷的確定治療性程序","依手術時間先後","依 DRG 權重較高者"],"e":"指引 F3：對主診斷執行診斷程序，且對次要診斷執行確定治療程序時，與主診斷最相關的診斷程序優先作為主要程序。（來源：ICD-10-PCS 官方指引 FY2027 F）","s":"g27pcs"}];
+NB.forEach(function(x){ Q(x.c,x.id,x.q,x.o,x.e,SRC[x.s]); });
+
+/* ---------- 持久狀態 ---------- */
+var stats = ls.get('dx.stats', {});
+var marked = new Set(ls.get('dx.marked', []));
+var notes = ls.get('dx.notes', null);
+if (!Array.isArray(notes)) {
+  notes = [{
+    id: uid(), title: '範例：Excludes1 與 Excludes2', tags: ['編碼慣例','範例'], ref: null, updated: Date.now(),
+    body: '（這是範例筆記，可以直接修改或刪除。）\n\nExcludes1：兩個情況不能同時編碼。\nExcludes2：不包括在本分類內，但病人同時有兩種情況時可以一起編碼。'
+  }];
+  ls.set('dx.notes', notes);
+}
+function saveStats(){ ls.set('dx.stats', stats); }
+function saveMarked(){ ls.set('dx.marked', Array.from(marked)); }
+function saveNotes(){ ls.set('dx.notes', notes); }
+function record(id, ok){
+  var s = stats[id] || {r:0, w:0};
+  if (ok) s.r++; else s.w++;
+  s.last = ok ? 'r' : 'w';
+  stats[id] = s; saveStats();
+}
+
+/* ---------- 版面狀態 ---------- */
+var TABS = [['quiz','題庫自測'], ['notes','我的筆記'], ['books','電子書庫']];
+var S = {
+  tab: 'quiz',
+  quiz: { phase:'setup', cats:new Set(CATS.filter(function(c){ return c.past; }).map(function(c){ return c.id; })), exams:new Set(EXAMS), count:20, mode:'practice', source:'all', items:[], i:0, confirm:false },
+  notesUi: { sel: null, q: '', tag: '' },
+  reader: null,
+  openNote: null
+};
+(function(){ var t = (location.hash || '').slice(1); if (TABS.some(function(x){ return x[0]===t; })) S.tab = t; })();
+
+function go(t){
+  if (S.reader) { S.reader.destroy(); S.reader = null; }
+  S.tab = t;
+  try { history.replaceState(null, '', '#' + t); } catch(e) {}
+  render();
+}
+function renderTabs(){
+  var box = document.getElementById('tabs');
+  box.replaceChildren();
+  TABS.forEach(function(x){
+    var label = x[1];
+    var b = h('button', {type:'button', role:'tab', class:'tab', id:'tab-'+x[0], 'aria-selected': String(S.tab===x[0]), 'aria-controls':'view', onClick:function(){ go(x[0]); }}, label);
+    if (x[0]==='notes') b.append(h('span', {class:'cnt'}, '(' + notes.length + ')'));
+    box.append(b);
+  });
+}
+function render(){
+  renderTabs();
+  var v = document.getElementById('view');
+  v.setAttribute('aria-labelledby', 'tab-' + S.tab);
+  v.replaceChildren(S.tab==='quiz' ? quizView() : S.tab==='notes' ? notesView() : booksView());
+}
+function secHead(label, title, id){
+  return h('header', {class:'sec-head'},
+    h('div', {class:'eyebrow'}, label),
+    h('h2', {class:'sec-title', id:id}, title),
+    h('div', {class:'rule-short', 'aria-hidden':'true'}));
+}
+
+/* ---------- 01 題庫自測 ---------- */
+function pool(){
+  var qz = S.quiz;
+  return QS.filter(function(q){
+    if (!qz.cats.has(q.c)) return false;
+    if (q.s && !qz.exams.has(q.s)) return false;
+    if (qz.source==='wrong') return stats[q.id] && stats[q.id].last==='w';
+    if (qz.source==='marked') return marked.has(q.id);
+    return true;
+  });
+}
+function quizView(){
+  var qz = S.quiz;
+  var root = h('section', {class:'sec', 'aria-labelledby':'quiz-h'});
+  root.append(secHead('01｜題庫自測', '挑一個範圍，答完馬上看解析', 'quiz-h'));
+  root.append(qz.phase==='setup' ? quizSetup() : qz.phase==='run' ? quizRun() : quizResult());
+  root.append(h('p', {class:'closing'}, '錯的題目會自動收進錯題本，隨時回來再做一次。'));
+  return root;
+}
+function chipGroup(name, opts, value, onPick){
+  var box = h('div', {class:'chips', role:'radiogroup'});
+  opts.forEach(function(o){
+    var inp = h('input', {type:'radio', name:name, id:name+'-'+o[0], checked: value===o[0], onChange:function(){
+      Array.prototype.forEach.call(box.children, function(c){ c.classList.remove('on'); });
+      lab.classList.add('on'); onPick(o[0]);
+    }});
+    var lab = h('label', {class:'chip'+(value===o[0]?' on':''), for:name+'-'+o[0]}, inp, h('span', {class:'chip-t'}, o[1]), o[2] ? h('span', {class:'chip-s'}, o[2]) : null);
+    box.append(lab);
+  });
+  return box;
+}
+function quizSetup(){
+  var qz = S.quiz;
+  var wrap = h('div', {class:'stack'});
+  var card = h('div', {class:'card pad'});
+  var fields = h('div', {class:'fields'});
+
+  var catBox = h('div', {class:'chips', role:'group', 'aria-label':'題目範圍'});
+  CATS.forEach(function(c){
+    var n = QS.filter(function(q){ return q.c===c.id; }).length;
+    var inp = h('input', {type:'checkbox', id:'cat-'+c.id, checked: qz.cats.has(c.id), onChange:function(){
+      if (inp.checked) qz.cats.add(c.id); else qz.cats.delete(c.id);
+      lab.classList.toggle('on', inp.checked); upd();
+    }});
+    var lab = h('label', {class:'chip'+(qz.cats.has(c.id)?' on':''), for:'cat-'+c.id}, inp, h('span', {class:'chip-t'}, c.name), h('span', {class:'chip-s'}, c.hint + '・' + n + ' 題'));
+    catBox.append(lab);
+  });
+  fields.append(h('div', null, h('p', {class:'label'}, '題目範圍'), catBox));
+
+  var examBox = h('div', {class:'chips', role:'group', 'aria-label':'考卷範圍'});
+  EXAMS.forEach(function(name, i){
+    var n = QS.filter(function(q){ return q.s === name; }).length;
+    var inp = h('input', {type:'checkbox', id:'ex-'+i, checked: qz.exams.has(name), onChange:function(){
+      if (inp.checked) qz.exams.add(name); else qz.exams.delete(name);
+      lab.classList.toggle('on', inp.checked); upd();
+    }});
+    var lab = h('label', {class:'chip'+(qz.exams.has(name)?' on':''), for:'ex-'+i}, inp, h('span', {class:'chip-t'}, name), h('span', {class:'chip-s'}, n + ' 題'));
+    examBox.append(lab);
+  });
+  var allEx = h('button', {type:'button', class:'btn small quiet', onClick:function(){
+    var all = qz.exams.size === EXAMS.length;
+    qz.exams = new Set(all ? [] : EXAMS);
+    Array.prototype.forEach.call(examBox.querySelectorAll('label.chip'), function(l, i){
+      l.classList.toggle('on', !all); l.querySelector('input').checked = !all;
+    }); upd();
+  }}, '全選／全不選');
+  fields.append(h('div', null, h('div', {class:'row between'}, h('p', {class:'label', style:'margin:0'}, '題源範圍（歷屆考卷、2027 指引、Coding Clinic 依來源篩選）'), allEx), examBox));
+
+  var wrongN = QS.filter(function(q){ return stats[q.id] && stats[q.id].last==='w'; }).length;
+  var markN = QS.filter(function(q){ return marked.has(q.id); }).length;
+  fields.append(h('div', null, h('p', {class:'label'}, '題目來源'),
+    chipGroup('src', [['all','全部題目'], ['wrong','錯題本', wrongN + ' 題'], ['marked','已標記', markN + ' 題']], qz.source, function(v){ qz.source = v; upd(); })));
+  fields.append(h('div', null, h('p', {class:'label'}, '作答方式'),
+    chipGroup('mode', [['practice','練習','每題答完立即看解析'], ['exam','模擬考','交卷後一起看解析']], qz.mode, function(v){ qz.mode = v; })));
+
+  var sel = h('select', {id:'qcount', onChange:function(){ qz.count = Number(sel.value); upd(); }},
+    [5,10,20,30,50,100,0].map(function(n){ return h('option', {value:String(n), selected: qz.count===n}, n===0 ? '全部（依範圍隨機排序）' : n + ' 題'); }));
+  fields.append(h('div', null, h('label', {for:'qcount', class:'label', style:'display:block'}, '題數'), sel));
+
+  var info = h('p', {class:'status', 'aria-live':'polite'});
+  var start = h('button', {type:'button', class:'btn primary', onClick:startQuiz}, '開始作答');
+  card.append(fields, h('hr', {class:'divider'}), h('div', {class:'row'}, start, info));
+  function upd(){
+    var n = pool().length;
+    var take = qz.count===0 ? n : Math.min(qz.count, n);
+    info.textContent = n===0 ? '符合條件的題目是 0 題，請調整範圍或來源。' : '符合條件 ' + n + ' 題，這次會出 ' + take + ' 題。';
+    start.disabled = n===0;
+  }
+  upd();
+  wrap.append(card, statsCard());
+  return wrap;
+}
+function statsCard(){
+  var answered = 0, right = 0;
+  QS.forEach(function(q){ var s = stats[q.id]; if (s) { answered += s.r + s.w; right += s.r; } });
+  var pct = answered ? Math.round(right / answered * 100) : 0;
+  var card = h('div', {class:'card mint pad'});
+  card.append(h('h3', null, '我的作答紀錄'));
+  var head = h('div', {class:'row', style:'gap:28px;margin-bottom:14px'},
+    h('div', null, h('div', {class:'big-num'}, String(answered)), h('div', {class:'muted'}, '累計作答次數')),
+    h('div', null, h('div', {class:'big-num'}, answered ? pct + '%' : '—'), h('div', {class:'muted'}, '累計答對率')));
+  card.append(head);
+  var grid = h('div', {class:'stat-grid'});
+  CATS.forEach(function(c){
+    var list = QS.filter(function(q){ return q.c===c.id; });
+    var ok = list.filter(function(q){ return stats[q.id] && stats[q.id].last==='r'; }).length;
+    grid.append(h('div', null,
+      h('div', {class:'stat-line'}, h('span', null, c.name), h('span', null, '最近答對 ' + ok + ' / ' + list.length)),
+      h('div', {class:'meter', role:'img', 'aria-label': c.name + ' 最近答對 ' + ok + ' 題，共 ' + list.length + ' 題'}, h('i', {style:'width:' + (list.length ? ok/list.length*100 : 0) + '%'}))));
+  });
+  card.append(grid);
+  if (answered) {
+    var reset = h('button', {type:'button', class:'btn quiet small', style:'margin-top:16px'});
+    twoStep(reset, '清除作答紀錄', '再按一次確定清除', function(){ stats = {}; saveStats(); render(); toast('已清除作答紀錄'); });
+    card.append(reset);
+  }
+  return card;
+}
+function makeItems(list){
+  return list.map(function(q){ return {q:q, order:shuffle([0,1,2,3]), pick:null, done:false}; });
+}
+function startQuiz(){
+  var qz = S.quiz;
+  var list = shuffle(pool());
+  if (qz.count > 0) list = list.slice(0, qz.count);
+  if (!list.length) return;
+  qz.items = makeItems(list); qz.i = 0; qz.phase = 'run'; qz.confirm = false;
+  render(); window.scrollTo(0, 0);
+}
+function isRight(it){ return it.pick !== null && it.order[it.pick] === 0; }
+function answer(k){
+  var qz = S.quiz, it = qz.items[qz.i];
+  if (qz.mode==='practice') {
+    if (it.done) return;
+    it.pick = k; it.done = true; record(it.q.id, isRight(it));
+  } else { it.pick = k; }
+  render();
+}
+function finishQuiz(){
+  var qz = S.quiz;
+  if (qz.mode==='exam') qz.items.forEach(function(it){ if (it.pick !== null) record(it.q.id, isRight(it)); });
+  qz.phase = 'result'; qz.confirm = false;
+  render(); window.scrollTo(0, 0);
+}
+function noteFromQuestion(q){
+  var n = { id: uid(), title: '題目：' + q.q.slice(0, 22) + (q.q.length > 22 ? '…' : ''), tags:['題庫'], ref:{type:'q', id:q.id}, updated: Date.now(),
+    body: '【題目】' + q.q + '\n【正解】' + q.o[0] + '\n【解析】' + q.e + '\n\n【我的想法】\n' };
+  notes.unshift(n); saveNotes(); S.notesUi.sel = n.id;
+  renderTabs();
+  toast('已加入筆記', '前往筆記', function(){ go('notes'); });
+}
+function quizRun(){
+  var qz = S.quiz, it = qz.items[qz.i], q = it.q, n = qz.items.length, practice = qz.mode==='practice';
+  var wrap = h('div', {class:'stack'});
+  var card = h('div', {class:'card pad'});
+  var isMarked = marked.has(q.id);
+  card.append(h('div', {class:'row between'},
+    h('div', {class:'row'}, h('span', {class:'tag'}, '第 ' + (qz.i+1) + ' / ' + n + ' 題'), h('span', {class:'tag soft'}, catName(q.c))),
+    h('button', {type:'button', class:'btn small quiet', 'aria-pressed':String(isMarked), onClick:function(){
+      if (marked.has(q.id)) marked.delete(q.id); else marked.add(q.id); saveMarked(); render();
+    }}, isMarked ? '已標記，點一下取消' : '標記這題')));
+  var answeredN = qz.items.filter(function(x){ return x.pick !== null; }).length;
+  card.append(h('div', {class:'progress', role:'progressbar', 'aria-valuemin':'0', 'aria-valuemax':String(n), 'aria-valuenow':String(answeredN), 'aria-label':'作答進度'}, h('i', {style:'width:' + (answeredN/n*100) + '%'})));
+  card.append(h('h3', {class:'q-text' + (q.q.length > 140 ? ' long' : '')}, q.q));
+
+  var revealed = practice && it.done;
+  var list = h('ul', {class:'opts'});
+  it.order.forEach(function(oi, k){
+    var cls = 'opt';
+    var stateText = '';
+    if (revealed) {
+      if (oi === 0) { cls += ' right'; stateText = '正確答案'; }
+      else if (it.pick === k) { cls += ' wrong'; stateText = '你的選擇'; }
+    } else if (it.pick === k) cls += ' picked';
+    var btn = h('button', {type:'button', class:cls, 'aria-pressed':String(it.pick===k), 'aria-disabled':String(revealed), onClick:function(){ if (!revealed) answer(k); }},
+      h('span', {class:'ltr', 'aria-hidden':'true'}, 'ABCD'.charAt(k)),
+      h('span', {class:'txt'}, q.o[oi]),
+      stateText ? h('span', {class:'state'}, stateText) : null);
+    list.append(h('li', null, btn));
+  });
+  card.append(list);
+
+  if (revealed) {
+    var ok = isRight(it);
+    var correctLetter = 'ABCD'.charAt(it.order.indexOf(0));
+    card.append(h('div', {class:'feedback' + (ok ? '' : ' bad'), role:'status'},
+      h('strong', null, ok ? '答對了' : '答錯了，正解是 ' + correctLetter),
+      h('p', null, q.e),
+      h('div', {class:'row', style:'margin-top:12px'}, h('button', {type:'button', class:'btn small', onClick:function(){ noteFromQuestion(q); }}, '存成筆記'))));
+  }
+
+  var nav = h('div', {class:'row', style:'margin-top:18px'});
+  var last = qz.i === n - 1;
+  if (practice) {
+    nav.append(h('button', {type:'button', class:'btn primary', disabled: !it.done, onClick:function(){ if (last) finishQuiz(); else { qz.i++; render(); } }}, last ? '看結果' : '下一題'));
+    if (!last) nav.append(h('button', {type:'button', class:'btn quiet', onClick:finishQuiz}, '提早結束'));
+  } else {
+    nav.append(h('button', {type:'button', class:'btn quiet', disabled: qz.i===0, onClick:function(){ qz.i--; qz.confirm = false; render(); }}, '上一題'));
+    nav.append(h('button', {type:'button', class:'btn', disabled: last, onClick:function(){ qz.i++; qz.confirm = false; render(); }}, '下一題'));
+    var left = n - answeredN;
+    if (!qz.confirm) nav.append(h('button', {type:'button', class:'btn primary', onClick:function(){ if (left === 0) finishQuiz(); else { qz.confirm = true; render(); } }}, '交卷'));
+    else nav.append(h('button', {type:'button', class:'btn primary', onClick:finishQuiz}, '還有 ' + left + ' 題未作答，確定交卷'));
+  }
+  card.append(nav);
+  wrap.append(card);
+  return wrap;
+}
+function quizResult(){
+  var qz = S.quiz, n = qz.items.length;
+  var rightN = qz.items.filter(isRight).length;
+  var pct = n ? Math.round(rightN / n * 100) : 0;
+  var wrap = h('div', {class:'stack'});
+  var msg = pct >= 80 ? '掌握得不錯，把錯的題目再看一次會更穩。' : pct >= 50 ? '已經過半，錯題值得回頭看。' : '先從解析慢慢讀，下一輪會更順。';
+  var card = h('div', {class:'card peach pad'});
+  card.append(h('div', {class:'row', style:'gap:28px'},
+    h('div', null, h('div', {class:'big-num'}, rightN + ' / ' + n), h('div', {class:'muted'}, '答對題數')),
+    h('div', null, h('div', {class:'big-num'}, pct + '%'), h('div', {class:'muted'}, '答對率'))));
+  card.append(h('p', {style:'margin:12px 0 0;color:var(--ink);font-weight:700'}, msg));
+  var wrongItems = qz.items.filter(function(it){ return !isRight(it); });
+  var btns = h('div', {class:'row', style:'margin-top:16px'});
+  if (wrongItems.length) btns.append(h('button', {type:'button', class:'btn primary', onClick:function(){
+    qz.items = makeItems(wrongItems.map(function(it){ return it.q; }).sort(function(){ return Math.random()-.5; }));
+    qz.i = 0; qz.phase = 'run'; qz.confirm = false; render(); window.scrollTo(0, 0);
+  }}, '只重做答錯的 ' + wrongItems.length + ' 題'));
+  btns.append(h('button', {type:'button', class:'btn', onClick:function(){ qz.phase = 'setup'; render(); }}, '回到設定'));
+  card.append(btns);
+  wrap.append(card);
+
+  var list = h('ul', {class:'result-list'});
+  qz.items.forEach(function(it, idx){
+    var status = it.pick === null ? '未作答' : isRight(it) ? '答對' : '答錯';
+    var d = h('details', {class:'res'},
+      h('summary', null, '第 ' + (idx+1) + ' 題・' + status + '・' + it.q.q),
+      h('p', {class:'ans'}, h('b', null, '正確答案：'), it.q.o[0]),
+      it.pick !== null && !isRight(it) ? h('p', {class:'ans'}, h('b', null, '你的選擇：'), it.q.o[it.order[it.pick]]) : null,
+      h('p', {class:'ans'}, it.q.e),
+      h('button', {type:'button', class:'btn small', style:'margin-top:6px', onClick:function(){ noteFromQuestion(it.q); }}, '存成筆記'));
+    if (status !== '答對') d.open = true;
+    list.append(h('li', null, d));
+  });
+  wrap.append(h('div', {class:'card pad'}, h('h3', null, '逐題檢討'), list));
+  return wrap;
+}
+document.addEventListener('keydown', function(e){
+  if (S.tab !== 'quiz' || S.quiz.phase !== 'run') return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '')) return;
+  var k = '1234'.indexOf(e.key);
+  if (k < 0) k = 'abcd'.indexOf(String(e.key).toLowerCase());
+  if (k < 0) return;
+  var it = S.quiz.items[S.quiz.i];
+  if (S.quiz.mode==='practice' && it.done) return;
+  answer(k);
+});
+
+/* ---------- 02 我的筆記 ---------- */
+function allTags(){
+  var set = {};
+  notes.forEach(function(n){ (n.tags || []).forEach(function(t){ set[t] = (set[t] || 0) + 1; }); });
+  return Object.keys(set);
+}
+function parseTags(s){ return s.split(/[,，、\s]+/).map(function(x){ return x.trim(); }).filter(Boolean).slice(0, 12); }
+function notesView(){
+  var ui = S.notesUi;
+  var root = h('section', {class:'sec', 'aria-labelledby':'notes-h'});
+  root.append(secHead('02｜我的筆記', '把想記住的重點，寫在自己的筆記裡', 'notes-h'));
+
+  var grid = h('div', {class:'notes-grid'});
+  var listCard = h('div', {class:'card pad'});
+  var editorCard = h('div', {class:'card pad'});
+  var copyBox = h('div');
+
+  var search = h('input', {type:'search', id:'note-search', placeholder:'搜尋標題、內文或標籤', 'aria-label':'搜尋筆記', value: ui.q, onInput:function(){ ui.q = search.value; refreshList(); }});
+  var tagRow = h('div', {class:'tagrow', 'aria-label':'依標籤篩選'});
+  var listEl = h('ul', {class:'note-list'});
+  var addBtn = h('button', {type:'button', class:'btn primary', onClick:function(){
+    var n = { id: uid(), title: '', body: '', tags: [], ref: null, updated: Date.now() };
+    notes.unshift(n); saveNotes(); ui.sel = n.id; ui.q = ''; ui.tag = ''; search.value = '';
+    refreshList(); loadEditor(true); renderTabs();
+  }}, '新增筆記');
+  var copyAll = h('button', {type:'button', class:'btn quiet', 'aria-expanded':'false', onClick:function(){
+    if (copyBox.firstChild) { copyBox.replaceChildren(); copyAll.setAttribute('aria-expanded','false'); return; }
+    copyAll.setAttribute('aria-expanded','true');
+    copyBox.replaceChildren(exportPanel());
+  }}, '匯出筆記');
+
+  /* 匯出：Markdown / 純文字 / JSON，可下載檔案、複製，或手動全選 */
+  function buildExport(fmt, list){
+    var stamp = new Date().toISOString().slice(0,10);
+    if (fmt === 'json') {
+      return JSON.stringify({ app:'疾病分類練習', exported: new Date().toISOString(), notes: list.map(function(n){
+        return { title:n.title, tags:n.tags||[], body:n.body, updated:new Date(n.updated).toISOString() };
+      }) }, null, 2);
+    }
+    if (fmt === 'txt') {
+      return list.map(function(n){
+        return '【' + (n.title || '（未命名）') + '】' + ((n.tags||[]).length ? '　標籤：' + n.tags.join('、') : '') + '\n' + n.body;
+      }).join('\n\n==========\n\n');
+    }
+    return '# 我的疾病分類筆記（' + stamp + '）\n\n' + list.map(function(n){
+      return '## ' + (n.title || '（未命名）') + '\n' + ((n.tags||[]).length ? '標籤：' + n.tags.join('、') + '\n' : '') + '\n' + n.body;
+    }).join('\n\n---\n\n') + '\n';
+  }
+  function exportPanel(){
+    var fmt = 'md', scope = 'all';
+    var box = h('div', {class:'notice', style:'margin-top:14px'});
+    var out = h('textarea', {readonly:true, rows:'7', 'aria-label':'匯出內容預覽'});
+    var info = h('div', {class:'hint', style:'margin-top:8px', 'aria-live':'polite'}, '');
+    function pick(){
+      var list = scope === 'one' ? [current()].filter(Boolean) : notes.slice().sort(function(a,b){ return b.updated - a.updated; });
+      return list;
+    }
+    function refresh(){
+      var list = pick();
+      out.value = list.length ? buildExport(fmt, list) : '';
+      info.textContent = list.length ? ('共 ' + list.length + ' 則筆記') : '沒有可匯出的筆記。';
+    }
+    function radios(name, items, get, set){
+      var wrap = h('div', {class:'row', role:'radiogroup', 'aria-label':name});
+      items.forEach(function(it){
+        wrap.append(h('button', {type:'button', class:'pill' + (get()===it[0] ? ' on' : ''), role:'radio', 'aria-checked':String(get()===it[0]), onClick:function(){
+          set(it[0]); Array.prototype.forEach.call(wrap.children, function(b, i){
+            var on = items[i][0] === it[0]; b.className = 'pill' + (on ? ' on' : ''); b.setAttribute('aria-checked', String(on));
+          }); refresh();
+        }}, it[1]));
+      });
+      return wrap;
+    }
+    function fileName(){
+      return '疾病分類筆記-' + new Date().toISOString().slice(0,10) + '.' + fmt;
+    }
+    var dlBtn = h('button', {type:'button', class:'btn primary small', hidden:true, onClick:function(){
+      if (!out.value) return;
+      if (!dl) {
+        try { var bl = new Blob([out.value], {type:'text/plain;charset=utf-8'}), u = URL.createObjectURL(bl), a = document.createElement('a');
+          a.href = u; a.download = fileName(); document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(u); }, 1000);
+          info.textContent = '已交給瀏覽器儲存。'; } catch (err) { info.textContent = '這裡無法直接下載，請改用「複製」。'; }
+        return;
+      }
+      dl.save({ filename:fileName(), data:out.value }).then(function(){ info.textContent = '已交給瀏覽器儲存。'; }, function(e){
+        info.textContent = (e && e.code === 'declined') ? '已取消下載。' : '這裡無法直接下載，請改用「複製」。';
+      });
+    }}, '下載檔案');
+    var cpBtn = h('button', {type:'button', class:'btn small', onClick:function(){
+      if (!out.value) return;
+      copyText(out.value).then(function(ok){
+        if (ok) { info.textContent = '已複製到剪貼簿，可貼到記事本或 Word 儲存。'; }
+        else { out.focus(); out.select(); info.textContent = '瀏覽器不允許自動複製，內容已全選，請按 Ctrl/⌘ + C。'; }
+      });
+    }}, '複製內容');
+    var selBtn = h('button', {type:'button', class:'btn quiet small', onClick:function(){ out.focus(); out.select(); }}, '全選');
+    var dl = null;
+    dlBtn.hidden = false;
+    if (window.claude && claude.use) {
+      claude.use('downloads').then(function(d){ if (d) { dl = d; } }, function(){});
+    }
+    box.append(
+      h('div', {class:'hint'}, '格式'),
+      radios('匯出格式', [['md','Markdown'],['txt','純文字'],['json','JSON']], function(){ return fmt; }, function(v){ fmt = v; }),
+      h('div', {class:'hint', style:'margin-top:10px'}, '範圍'),
+      radios('匯出範圍', [['all','全部筆記'],['one','目前這則']], function(){ return scope; }, function(v){ scope = v; }),
+      h('div', {class:'row', style:'margin-top:12px'}, dlBtn, cpBtn, selBtn),
+      info, h('div', {style:'margin-top:8px'}, out));
+    refresh();
+    return box;
+  }
+  listCard.append(h('div', {class:'row'}, addBtn, copyAll), copyBox, h('div', {style:'margin-top:14px'}, search), tagRow, listEl);
+
+  function filtered(){
+    var q = ui.q.trim().toLowerCase();
+    return notes.slice().sort(function(a,b){ return b.updated - a.updated; }).filter(function(n){
+      if (ui.tag && (n.tags || []).indexOf(ui.tag) < 0) return false;
+      if (!q) return true;
+      return (n.title + '\n' + n.body + '\n' + (n.tags||[]).join(' ')).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+  function refreshList(){
+    tagRow.replaceChildren();
+    allTags().forEach(function(t){
+      tagRow.append(h('button', {type:'button', class:'pill' + (ui.tag===t ? ' on' : ''), 'aria-pressed':String(ui.tag===t), onClick:function(){ ui.tag = ui.tag===t ? '' : t; refreshList(); }}, t));
+    });
+    listEl.replaceChildren();
+    var list = filtered();
+    if (!list.length) listEl.append(h('li', {class:'empty'}, notes.length ? '沒有符合的筆記。' : '還沒有筆記，按「新增筆記」開始寫。'));
+    list.forEach(function(n){
+      var snippet = (n.body || '').replace(/\s+/g, ' ').slice(0, 46);
+      listEl.append(h('li', null, h('button', {type:'button', class:'note-item' + (n.id===ui.sel ? ' active' : ''), 'aria-current': n.id===ui.sel ? 'true' : null, onClick:function(){ ui.sel = n.id; refreshList(); loadEditor(true); }},
+        h('b', null, n.title || '（未命名）'),
+        h('span', null, fmtDate(n.updated) + (snippet ? '・' + snippet : '')))));
+    });
+  }
+
+  function current(){ for (var i=0;i<notes.length;i++) if (notes[i].id===ui.sel) return notes[i]; return null; }
+  function loadEditor(focusTitle){
+    editorCard.replaceChildren();
+    var n = current();
+    if (!n) {
+      editorCard.append(h('div', {class:'empty'}, h('p', null, '選一則筆記，或新增一則。'), h('button', {type:'button', class:'btn primary', onClick:function(){ addBtn.click(); }}, '新增筆記')));
+      return;
+    }
+    var status = h('span', {class:'status', 'aria-live':'polite'}, '');
+    var save = debounce(function(){ n.updated = Date.now(); saveNotes(); status.textContent = canPersist ? '已儲存' : '已更新（此瀏覽器無法長期保存）'; refreshList(); renderTabs(); }, 400);
+    var title = h('input', {type:'text', id:'note-title', value:n.title, placeholder:'標題', onInput:function(){ n.title = title.value; status.textContent = '儲存中…'; save(); }});
+    var tags = h('input', {type:'text', id:'note-tags', value:(n.tags||[]).join('、'), placeholder:'例如：Excludes1、PCS', onInput:function(){ n.tags = parseTags(tags.value); status.textContent = '儲存中…'; save(); }});
+    var body = h('textarea', {id:'note-body', rows:'14', placeholder:'在這裡寫下重點、口訣或易混淆的地方', value:n.body, onInput:function(){ n.body = body.value; status.textContent = '儲存中…'; save(); }});
+    var del = h('button', {type:'button', class:'btn quiet small'});
+    twoStep(del, '刪除這則筆記', '再按一次確定刪除', function(){
+      notes = notes.filter(function(x){ return x.id !== n.id; }); saveNotes();
+      ui.sel = notes.length ? notes[0].id : null; refreshList(); loadEditor(false); renderTabs(); toast('已刪除筆記');
+    });
+    var refLine = null;
+    if (n.ref && n.ref.type==='q') refLine = h('span', {class:'tag soft'}, '來自題庫');
+    else if (n.ref && n.ref.type==='book') refLine = h('span', {class:'tag soft'}, '來自電子書' + (n.ref.page ? '第 ' + n.ref.page + ' 頁' : ''));
+    editorCard.append(h('div', {class:'fields'},
+      h('label', {for:'note-title'}, '標題', title),
+      h('label', {for:'note-tags'}, h('span', null, '標籤 ', h('span', {class:'hint'}, '用頓號或逗號分開')), tags),
+      h('label', {for:'note-body'}, '內容', body),
+      h('div', {class:'row between'}, h('div', {class:'row'}, status, refLine), del)));
+    if (focusTitle && !n.title && !n.body) title.focus();
+  }
+
+  grid.append(listCard, editorCard);
+  root.append(grid, h('p', {class:'closing'}, '筆記只存在這台裝置的瀏覽器，記得常按「匯出筆記」備份。'));
+  if (!current()) { var first = notes.slice().sort(function(a,b){ return b.updated-a.updated; })[0]; ui.sel = first ? first.id : null; }
+  refreshList(); loadEditor(false);
+  return root;
+}
+
+/* ---------- 03 電子書庫 ---------- */
+var DB = (function(){
+  var p;
+  function open(){
+    return p || (p = new Promise(function(res, rej){
+      if (!window.indexedDB) return rej(new Error('no indexedDB'));
+      var r;
+      try { r = indexedDB.open('dx-books', 1); } catch(e) { return rej(e); }
+      r.onupgradeneeded = function(){ var d = r.result; d.createObjectStore('meta', {keyPath:'id'}); d.createObjectStore('files'); };
+      r.onsuccess = function(){ res(r.result); };
+      r.onerror = function(){ rej(r.error); };
+      r.onblocked = function(){ rej(new Error('blocked')); };
+    }));
+  }
+  function run(store, mode, fn){
+    return open().then(function(d){
+      return new Promise(function(res, rej){
+        var t = d.transaction(store, mode), s = t.objectStore(store), req;
+        try { req = fn(s); } catch(e) { return rej(e); }
+        t.oncomplete = function(){ res(req ? req.result : undefined); };
+        t.onerror = function(){ rej(t.error); };
+        t.onabort = function(){ rej(t.error); };
+      });
+    });
+  }
+  return {
+    list: function(){ return run('meta', 'readonly', function(s){ return s.getAll(); }); },
+    putMeta: function(m){ return run('meta', 'readwrite', function(s){ return s.put(m); }); },
+    putFile: function(id, b){ return run('files', 'readwrite', function(s){ return s.put(b, id); }); },
+    getFile: function(id){ return run('files', 'readonly', function(s){ return s.get(id); }); },
+    del: function(id){ return run('meta', 'readwrite', function(s){ return s.delete(id); }).then(function(){ return run('files', 'readwrite', function(s){ return s.delete(id); }); }); }
+  };
+})();
+var sessionBooks = []; /* 無法寫入 IndexedDB 時，只在本次瀏覽中保留 */
+var loaded = {};
+function loadScript(src){
+  if (loaded[src]) return loaded[src];
+  loaded[src] = new Promise(function(res, rej){
+    var s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = function(){ delete loaded[src]; rej(new Error('無法載入閱讀元件')); };
+    document.head.append(s);
+  });
+  return loaded[src];
+}
+var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+var PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+var JSZIP = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+var EPUBJS = 'https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.93/epub.min.js';
+
+function kindOf(name){
+  var m = /\.([a-z0-9]+)$/i.exec(name || '');
+  var ext = m ? m[1].toLowerCase() : '';
+  if (ext === 'pdf') return 'pdf';
+  if (ext === 'epub') return 'epub';
+  if (ext === 'txt' || ext === 'md' || ext === 'markdown' || ext === 'text') return 'text';
+  return null;
+}
+function persistMeta(meta){
+  if (sessionBooks.some(function(b){ return b.meta.id === meta.id; })) return;
+  DB.putMeta(meta).catch(function(){});
+}
+function progressText(m){
+  if (m.kind === 'pdf') return m.last ? '讀到第 ' + m.last + (m.total ? ' / ' + m.total : '') + ' 頁' : '尚未開始';
+  if (m.kind === 'epub') return m.cfi ? '已讀過' : '尚未開始';
+  return m.ratio ? '讀到約 ' + Math.round(m.ratio * 100) + '%' : '尚未開始';
+}
+function booksView(){
+  var root = h('section', {class:'sec', 'aria-labelledby':'books-h'});
+  root.append(secHead('03｜電子書庫', '上傳自己的電子書，一邊讀一邊記', 'books-h'));
+  var body = h('div', {class:'stack'});
+  root.append(body);
+  showLibrary(body);
+  return root;
+}
+function showLibrary(body){
+  body.replaceChildren();
+  var msg = h('div', {'aria-live':'polite'});
+  var input = h('input', {type:'file', id:'bookfile', class:'sr-file', accept:'.pdf,.epub,.txt,.md,.markdown,application/pdf,application/epub+zip,text/plain', multiple:true, onChange:function(){ var f = Array.prototype.slice.call(input.files); input.value = ''; handleFiles(f); }});
+  var drop = h('label', {class:'drop', for:'bookfile'}, input, h('strong', null, '選擇檔案，或把檔案拖曳到這裡'), h('span', {class:'muted'}, '支援 PDF、EPUB、TXT、Markdown，單檔上限 200 MB'));
+  drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', function(){ drop.classList.remove('over'); });
+  drop.addEventListener('drop', function(e){ e.preventDefault(); drop.classList.remove('over'); if (e.dataTransfer && e.dataTransfer.files) handleFiles(Array.prototype.slice.call(e.dataTransfer.files)); });
+  var listBox = h('div');
+  body.append(h('div', {class:'card pad'}, drop, msg), listBox);
+
+  function say(text){
+    msg.replaceChildren();
+    if (text) msg.append(h('div', {class:'notice', style:'margin:14px 0 0'}, text));
+  }
+  function handleFiles(files){
+    var chain = Promise.resolve(); var problems = []; var added = 0;
+    files.forEach(function(f){
+      chain = chain.then(function(){
+        var kind = kindOf(f.name);
+        if (!kind) { problems.push('「' + f.name + '」格式不支援'); return; }
+        if (f.size > 200 * 1048576) { problems.push('「' + f.name + '」超過 200 MB'); return; }
+        var meta = { id: uid(), name: f.name.replace(/\.[^.]+$/, ''), kind: kind, size: f.size, added: Date.now(), last: 1, total: 0, cfi: '', ratio: 0 };
+        return DB.putFile(meta.id, f).then(function(){ return DB.putMeta(meta); }).then(function(){ added++; }, function(){
+          sessionBooks.push({meta: meta, blob: f}); added++; problems.push('「' + f.name + '」無法長期保存，只能在這次瀏覽中閱讀');
+        });
+      });
+    });
+    chain.then(function(){
+      say(problems.length ? problems.join('；') + '。' : '');
+      if (added && !problems.length) toast('已加入 ' + added + ' 本');
+      refresh();
+    });
+  }
+  function refresh(){
+    listBox.replaceChildren(h('p', {class:'muted'}, '讀取書庫中…'));
+    DB.list().catch(function(){ return []; }).then(function(metas){
+      var all = metas.concat(sessionBooks.map(function(b){ return b.meta; })).sort(function(a,b){ return b.added - a.added; });
+      listBox.replaceChildren();
+      if (!all.length) { listBox.append(h('div', {class:'card pad empty'}, '書庫是空的。上傳第一本電子書，之後可以從上次讀到的地方繼續。')); return; }
+      var ul = h('ul', {class:'book-list'});
+      all.forEach(function(m){
+        var del = h('button', {type:'button', class:'btn quiet small'});
+        twoStep(del, '刪除', '再按一次確定', function(){
+          sessionBooks = sessionBooks.filter(function(b){ return b.meta.id !== m.id; });
+          DB.del(m.id).catch(function(){}).then(refresh);
+        });
+        ul.append(h('li', {class:'card book'},
+          h('div', {class:'book-info'}, h('b', null, m.name), h('span', null, m.kind.toUpperCase() + '・' + fmtSize(m.size) + '・' + progressText(m))),
+          h('div', {class:'row'}, h('button', {type:'button', class:'btn primary small', onClick:function(){ openReader(body, m); }}, '開啟閱讀'), del)));
+      });
+      listBox.append(ul);
+    });
+  }
+  refresh();
+  body.append(h('p', {class:'closing'}, '檔案只存在你的瀏覽器，不會上傳到任何伺服器。'));
+}
+
+function openReader(body, meta){
+  body.replaceChildren(h('p', {class:'muted'}, '開啟中…'));
+  var sb = sessionBooks.filter(function(b){ return b.meta.id === meta.id; })[0];
+  var getBlob = sb ? Promise.resolve(sb.blob) : DB.getFile(meta.id);
+  getBlob.catch(function(){ return null; }).then(function(blob){
+    function back(){ if (S.reader) { S.reader.destroy(); S.reader = null; } showLibrary(body); }
+    if (!blob) {
+      body.replaceChildren(h('div', {class:'notice'}, '找不到這本書的檔案，可能已被清除。請重新上傳。'), h('button', {type:'button', class:'btn', onClick:back}, '回到書庫'));
+      return;
+    }
+    var stage = h('div', {class:'stage', tabindex:'0', 'aria-label':'閱讀區'});
+    var indicator = h('span', {class:'status', 'aria-live':'polite'}, '');
+    var controlsBox = h('div', {class:'row'});
+    var saveMeta = debounce(function(){ persistMeta(meta); }, 500);
+    var ctl = { destroy:function(){} };
+    S.reader = { destroy:function(){ try { ctl.destroy(); } catch(e) {} document.removeEventListener('keydown', onKey); } };
+
+    var page = function(){ return meta.kind === 'pdf' ? meta.last : null; };
+    var notePanel = h('div', {class:'card pad note-panel', hidden:true});
+    var noteArea = h('textarea', {id:'reader-note', rows:'4', placeholder:'寫下這一頁的重點或疑問'});
+    var noteHint = h('p', {class:'status', style:'margin:0 0 8px'}, '');
+    notePanel.append(h('label', {for:'reader-note', class:'label', style:'display:block'}, '讀書筆記'), noteHint, noteArea,
+      h('div', {class:'row', style:'margin-top:10px'},
+        h('button', {type:'button', class:'btn primary small', onClick:function(){
+          var text = noteArea.value.trim();
+          if (!text) { noteHint.textContent = '請先寫一點內容。'; return; }
+          var pg = page();
+          var n = { id: uid(), title: '《' + meta.name + '》' + (pg ? '第 ' + pg + ' 頁' : ''), body: text, tags:['讀書筆記'], ref:{type:'book', id:meta.id, page:pg}, updated: Date.now() };
+          notes.unshift(n); saveNotes(); S.notesUi.sel = n.id; noteArea.value = ''; renderTabs();
+          toast('已存成筆記', '前往筆記', function(){ go('notes'); });
+        }}, '存成筆記'),
+        h('button', {type:'button', class:'btn quiet small', onClick:function(){ notePanel.hidden = true; }}, '收起')));
+    var noteBtn = h('button', {type:'button', class:'btn small', onClick:function(){
+      notePanel.hidden = !notePanel.hidden;
+      noteHint.textContent = page() ? '這則筆記會記錄在第 ' + page() + ' 頁。' : '這則筆記會連到這本書。';
+      if (!notePanel.hidden) noteArea.focus();
+    }}, '記筆記');
+
+    var bar = h('div', {class:'reader-bar'},
+      h('button', {type:'button', class:'btn small quiet', onClick:back}, '回到書庫'),
+      h('div', {class:'grow'}, meta.name), controlsBox, noteBtn);
+    body.replaceChildren(h('div', null, bar, stage, h('div', {style:'margin-top:8px'}, indicator), notePanel));
+
+    function onKey(e){
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '')) return;
+      if (ctl.prev && e.key === 'ArrowLeft') ctl.prev();
+      if (ctl.next && e.key === 'ArrowRight') ctl.next();
+    }
+    document.addEventListener('keydown', onKey);
+
+    function fail(err){
+      stage.replaceChildren(h('div', {class:'notice', style:'text-align:left'}, '這個檔案無法在頁面內開啟（' + (err && err.message ? err.message : '未知原因') + '）。請確認檔案沒有加密或損毀，或換成 PDF 格式再試一次。'));
+    }
+    var start = meta.kind === 'pdf' ? pdfReader : meta.kind === 'epub' ? epubReader : textReader;
+    start(blob).then(function(c){ ctl = c; }, fail);
+
+    /* PDF */
+    function pdfReader(blob){
+      stage.replaceChildren(h('p', {class:'muted'}, '載入 PDF 中…'));
+      return loadScript(PDFJS).then(function(){
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+        return blob.arrayBuffer();
+      }).then(function(buf){
+        return window.pdfjsLib.getDocument({data: buf}).promise;
+      }).then(function(doc){
+        var total = doc.numPages, zoom = meta.zoom || 1, token = 0, task = null, dead = false;
+        meta.total = total; meta.last = Math.min(Math.max(1, meta.last || 1), total);
+        var pg = h('input', {type:'number', class:'pg', min:'1', max:String(total), value:String(meta.last), 'aria-label':'跳到頁碼', onChange:function(){ goTo(Number(pg.value)); }});
+        function goTo(n){ if (!isFinite(n)) return; n = Math.min(Math.max(1, Math.round(n)), total); meta.last = n; pg.value = String(n); draw(); }
+        function setZoom(z){ zoom = Math.min(3, Math.max(0.5, z)); meta.zoom = zoom; draw(); }
+        controlsBox.replaceChildren(
+          h('button', {type:'button', class:'btn small', onClick:function(){ goTo(meta.last - 1); }}, '上一頁'),
+          pg, h('span', {class:'status'}, '/ ' + total),
+          h('button', {type:'button', class:'btn small', onClick:function(){ goTo(meta.last + 1); }}, '下一頁'),
+          h('button', {type:'button', class:'btn small quiet', 'aria-label':'縮小', onClick:function(){ setZoom(zoom - 0.15); }}, '縮小'),
+          h('button', {type:'button', class:'btn small quiet', 'aria-label':'放大', onClick:function(){ setZoom(zoom + 0.15); }}, '放大'));
+        function draw(){
+          var my = ++token;
+          indicator.textContent = '第 ' + meta.last + ' / ' + total + ' 頁';
+          doc.getPage(meta.last).then(function(p){
+            if (my !== token || dead) return;
+            var base = p.getViewport({scale:1});
+            var avail = Math.max(260, stage.clientWidth - 28);
+            var vp = p.getViewport({scale: avail / base.width * zoom});
+            var dpr = window.devicePixelRatio || 1;
+            var cv = document.createElement('canvas');
+            cv.width = Math.floor(vp.width * dpr); cv.height = Math.floor(vp.height * dpr);
+            cv.style.width = Math.floor(vp.width) + 'px'; cv.style.height = Math.floor(vp.height) + 'px';
+            if (task) { try { task.cancel(); } catch(e) {} }
+            task = p.render({canvasContext: cv.getContext('2d'), viewport: vp, transform: dpr !== 1 ? [dpr,0,0,dpr,0,0] : null});
+            return task.promise.then(function(){
+              if (my !== token || dead) return;
+              stage.replaceChildren(cv); stage.scrollTop = 0; saveMeta();
+            });
+          }).catch(function(e){ if (e && e.name === 'RenderingCancelledException') return; fail(e); });
+        }
+        draw();
+        return { prev:function(){ goTo(meta.last - 1); }, next:function(){ goTo(meta.last + 1); }, destroy:function(){ dead = true; token++; if (task) { try { task.cancel(); } catch(e) {} } try { doc.destroy(); } catch(e) {} } };
+      });
+    }
+
+    /* EPUB */
+    function epubReader(blob){
+      stage.replaceChildren(h('p', {class:'muted'}, '載入 EPUB 中…'));
+      return loadScript(JSZIP).then(function(){ return loadScript(EPUBJS); }).then(function(){ return blob.arrayBuffer(); }).then(function(buf){
+        var book = window.ePub(buf);
+        var host = h('div', {class:'epub-host'});
+        stage.replaceChildren(host);
+        var cs = getComputedStyle(stage);
+        var rend = book.renderTo(host, {width:'100%', height:'100%', flow:'paginated', spread:'none'});
+        rend.themes.default({ body: { color: getComputedStyle(document.body).color + ' !important', 'line-height': '1.85 !important', 'font-family': "'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif !important" }, a: { color: 'inherit' } });
+        rend.on('relocated', function(loc){
+          try { meta.cfi = loc.start.cfi; indicator.textContent = '閱讀中，進度已自動記錄'; saveMeta(); } catch(e) {}
+        });
+        controlsBox.replaceChildren(
+          h('button', {type:'button', class:'btn small', onClick:function(){ rend.prev(); }}, '上一頁'),
+          h('button', {type:'button', class:'btn small', onClick:function(){ rend.next(); }}, '下一頁'));
+        return rend.display(meta.cfi || undefined).then(function(){
+          return { prev:function(){ rend.prev(); }, next:function(){ rend.next(); }, destroy:function(){ try { rend.destroy(); } catch(e) {} try { book.destroy(); } catch(e) {} } };
+        });
+      });
+    }
+
+    /* 純文字／Markdown */
+    function textReader(blob){
+      return blob.arrayBuffer().then(function(buf){
+        var text;
+        try { text = new TextDecoder('utf-8', {fatal:true}).decode(buf); }
+        catch(e) { try { text = new TextDecoder('big5').decode(buf); } catch(e2) { text = new TextDecoder('utf-8').decode(buf); } }
+        var box = h('div', {class:'textbook'}, text);
+        stage.replaceChildren(box);
+        controlsBox.replaceChildren(h('span', {class:'status'}, '捲動閱讀，進度會自動記錄'));
+        function ratio(){ var max = stage.scrollHeight - stage.clientHeight; return max > 0 ? stage.scrollTop / max : 0; }
+        var onScroll = debounce(function(){ meta.ratio = ratio(); indicator.textContent = '讀到約 ' + Math.round(meta.ratio * 100) + '%'; saveMeta(); }, 300);
+        stage.addEventListener('scroll', onScroll);
+        setTimeout(function(){ var max = stage.scrollHeight - stage.clientHeight; stage.scrollTop = (meta.ratio || 0) * Math.max(0, max); }, 0);
+        return { destroy:function(){ stage.removeEventListener('scroll', onScroll); } };
+      });
+    }
+  });
+}
+
+render();
+})();
+</script>
