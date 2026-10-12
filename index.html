@@ -189,7 +189,8 @@
 
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            /* auto-fill 會保留空欄位，單張卡片也維持與其他卡片相同寬度 */
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
             gap: 26px;
             padding-bottom: 20px;
         }
