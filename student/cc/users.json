@@ -1,0 +1,15 @@
+{
+ "v": 1,
+ "build": "202610122221",
+ "kdf": {
+  "alg": "PBKDF2-SHA256",
+  "iter": 600000
+ },
+ "users": {
+  "6aeb7436aec29b2af2a06b8dabed12ae728d667cfeeeaf6140a8318102ce2e9c": {
+   "s": "C3OpkhKR79mLgKB4bqyTvg==",
+   "w": "lreswpnRyN1+JtYvpFUGx28gUv65gPP+Csv+Yygqo2Fu65homHpKN/x9PbDpNIVhOf0nroA9NqTkYL2D",
+   "m": "vST8YCqtXnJ2VepimQ4fQywB8W39XZHMdKsBDD+pY7Ts6gTse+bSySAZsosHOrttPhuBzvgHkAzEfFI6KbYTvTs34lQNBm4vtos3BZaO1C7XKA=="
+  }
+ }
+}
