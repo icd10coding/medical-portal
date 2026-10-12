@@ -4,208 +4,469 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>醫療資訊系統整合入口</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
     <style>
-        /* 基礎全域設定 */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-            color: #333;
+        /* ========= 水彩手繪馬卡龍 色票 ========= */
+        :root {
+            --paper: #FFFAF3;          /* 水彩紙米白 */
+            --ink: #4A3B47;            /* 柔和莓棕 */
+            --muted: #7E6E7B;
+            --pink: #F9C6D3;           /* 草莓 */
+            --mint: #BFE8D6;           /* 開心果 */
+            --lavender: #DCCFF6;       /* 薰衣草 */
+            --butter: #FFEFB0;         /* 奶油檸檬 */
+            --peach: #FFD2B3;          /* 蜜桃 */
+            --sky: #C9E4F5;            /* 藍莓牛奶 */
+            --pink-deep: #D9708F;
+            --mint-deep: #4E9C7E;
+            --lavender-deep: #8468C9;
+            --peach-deep: #D9824A;
+            --hand: "Klee One", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", cursive, sans-serif;
+            --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
         }
 
-        /* 頂部導覽列設定 */
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px 40px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: var(--sans);
+            color: var(--ink);
+            background-color: var(--paper);
+            /* 水彩暈染底色：多層柔和色塊 */
+            background-image:
+                radial-gradient(ellipse 520px 380px at 8% 6%,   rgba(249,198,211,.55), transparent 70%),
+                radial-gradient(ellipse 560px 400px at 96% 10%, rgba(220,207,246,.55), transparent 70%),
+                radial-gradient(ellipse 600px 420px at 85% 92%, rgba(191,232,214,.55), transparent 70%),
+                radial-gradient(ellipse 520px 380px at 4% 88%,  rgba(255,239,176,.6),  transparent 70%),
+                radial-gradient(ellipse 380px 280px at 50% 48%, rgba(255,210,179,.28), transparent 70%);
+            background-attachment: fixed;
+            position: relative;
         }
+
+        /* 紙張纖維顆粒（SVG 雜訊） */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: .35;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .45  0 0 0 0 .5  0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+        }
+
+        .page { position: relative; z-index: 1; }
+
+        /* ========= 頁首 ========= */
+        header {
+            text-align: center;
+            padding: 44px 20px 10px;
+        }
+        .logo-row {
+            display: inline-flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .macaron {
+            width: 38px; height: 28px;
+            border-radius: 22px 22px 18px 18px / 20px 20px 14px 14px;
+            position: relative;
+            filter: url(#wobble);
+        }
+        .macaron::after {              /* 夾心奶油 */
+            content: "";
+            position: absolute;
+            left: 3px; right: 3px; top: 11px; height: 6px;
+            background: #fffdf8;
+            border-radius: 6px;
+            box-shadow: 0 0 0 1px rgba(74,59,71,.08);
+        }
+        .macaron.m1 { background: var(--pink); }
+        .macaron.m2 { background: var(--mint); transform: translateY(-4px) rotate(-4deg); }
+        .macaron.m3 { background: var(--lavender); transform: rotate(3deg); }
+        .macaron.m4 { background: var(--butter); transform: translateY(-3px) rotate(-3deg); }
 
         header h1 {
             margin: 0;
-            font-size: 28px;
-            letter-spacing: 1px;
+            font-family: var(--hand);
+            font-weight: 600;
+            font-size: clamp(26px, 5vw, 38px);
+            letter-spacing: 2px;
+            color: var(--ink);
         }
-
+        header h1 span {
+            background: linear-gradient(transparent 62%, rgba(249,198,211,.75) 62% 92%, transparent 92%);
+            padding: 0 6px;
+        }
         header p {
-            margin: 10px 0 0 0;
-            font-size: 14px;
-            color: #bdc3c7;
+            margin: 10px 0 0;
+            font-family: var(--hand);
+            font-size: 16px;
+            color: var(--muted);
         }
 
-        /* 主要內容區塊 - 使用 Grid 排版 */
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
+        /* ========= 頁籤 ========= */
+        .tabs-wrap {
+            max-width: 1100px;
+            margin: 26px auto 0;
             padding: 0 20px;
-            display: grid;
-            /* 自動調整列數，最小寬度 300px，最大填滿 */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+        }
+        .tablist {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+        .tab {
+            appearance: none;
+            border: 0;
+            cursor: pointer;
+            font-family: var(--hand);
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--ink);
+            padding: 12px 26px;
+            position: relative;
+            background: transparent;
+            isolation: isolate;
+            transition: transform .2s ease;
+        }
+        /* 手繪不規則色塊底（用濾鏡扭曲邊緣，文字不受影響） */
+        .tab::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: 26px 18px 24px 16px / 18px 24px 16px 26px;
+            background: var(--tab-bg);
+            border: 2px solid var(--tab-line);
+            opacity: .55;
+            filter: url(#wobble);
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .tab:hover { transform: translateY(-2px); }
+        .tab:hover::before { opacity: .8; }
+        .tab[aria-selected="true"] { transform: translateY(-2px) rotate(-1deg); }
+        .tab[aria-selected="true"]::before { opacity: 1; box-shadow: 3px 4px 0 var(--tab-line); }
+        .tab:focus-visible { outline: 3px dashed var(--lavender-deep); outline-offset: 4px; }
+
+        .tab[data-tab="student"] { --tab-bg: var(--peach);    --tab-line: #E9A97C; }
+        .tab[data-tab="drg"]     { --tab-bg: var(--pink);     --tab-line: #E79BB0; }
+        .tab[data-tab="icd"]     { --tab-bg: var(--lavender); --tab-line: #B6A2E6; }
+
+        .tab .count {
+            display: inline-block;
+            margin-left: 8px;
+            min-width: 22px;
+            padding: 0 7px;
+            font-family: var(--sans);
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 20px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.75);
+            color: var(--muted);
         }
 
-        /* 卡片樣式設計 */
+        /* ========= 面板 ========= */
+        .panel { display: none; padding-top: 30px; }
+        .panel.active { display: block; animation: wash .45s ease both; }
+        @keyframes wash {
+            from { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+            to   { opacity: 1; transform: none;           filter: blur(0); }
+        }
+
+        .panel-intro {
+            text-align: center;
+            font-family: var(--hand);
+            color: var(--muted);
+            margin: 0 0 22px;
+            font-size: 15px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 26px;
+            padding-bottom: 20px;
+        }
+
+        /* ========= 卡片 ========= */
         .card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            text-decoration: none; /* 移除超連結底線 */
-            color: inherit;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-top: 5px solid #3498db; /* 卡片頂部藍色飾條 */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            --c-bg: var(--mint);
+            --c-line: #8CCDB2;
+            --c-deep: var(--mint-deep);
+            position: relative;
             display: flex;
             flex-direction: column;
+            padding: 26px 24px 22px;
+            color: inherit;
+            text-decoration: none;
+            isolation: isolate;
+            transition: transform .25s ease;
+        }
+        /* 手繪邊框與水彩暈染底 */
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: 30px 22px 28px 20px / 22px 28px 20px 30px;
+            border: 2.5px solid var(--c-line);
+            background:
+                radial-gradient(ellipse 70% 60% at 12% 8%,  color-mix(in srgb, var(--c-bg) 90%, #fff), transparent 75%),
+                radial-gradient(ellipse 60% 55% at 92% 95%, color-mix(in srgb, var(--c-bg) 70%, #fff), transparent 75%),
+                color-mix(in srgb, var(--c-bg) 28%, #fffdf8);
+            box-shadow: 4px 5px 0 color-mix(in srgb, var(--c-line) 70%, transparent);
+            filter: url(#wobble);
+            transition: box-shadow .25s ease;
+        }
+        .card:hover { transform: translateY(-5px) rotate(-.4deg); }
+        .card:hover::before { box-shadow: 7px 9px 0 color-mix(in srgb, var(--c-line) 70%, transparent); }
+        .card:focus-visible { outline: 3px dashed var(--lavender-deep); outline-offset: 5px; }
+
+        /* 馬卡龍小圓點 */
+        .card::after {
+            content: "";
+            position: absolute;
+            top: 16px; right: 18px;
+            width: 22px; height: 16px;
+            border-radius: 14px 14px 10px 10px / 12px 12px 8px 8px;
+            background: var(--c-bg);
+            border: 1.5px solid var(--c-line);
+            box-shadow: inset 0 -5px 0 -2px #fffdf8;
+            transform: rotate(8deg);
         }
 
-        /* 滑鼠懸停在卡片上的動畫效果 */
-        .card:hover {
-            transform: translateY(-5px); /* 向上浮動 */
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1); /* 加深陰影 */
+        .card.student { --c-bg: var(--peach);    --c-line: #E9A97C; --c-deep: var(--peach-deep); }
+        .card.drg     { --c-bg: var(--pink);     --c-line: #E79BB0; --c-deep: var(--pink-deep); }
+        .card.mdc     { --c-bg: var(--butter);   --c-line: #E5CB63; --c-deep: #A98912; }
+        .card.cc      { --c-bg: var(--mint);     --c-line: #8CCDB2; --c-deep: var(--mint-deep); }
+        .card.icd     { --c-bg: var(--sky);      --c-line: #8FC2E0; --c-deep: #3B83AE; }
+        .card.ecode   { --c-bg: var(--butter);   --c-line: #E5CB63; --c-deep: #A98912; }
+        .card.coder   { --c-bg: var(--lavender); --c-line: #B6A2E6; --c-deep: var(--lavender-deep); }
+        .card.future  { --c-bg: #EFE8EE;         --c-line: #C9BBC7; --c-deep: var(--muted); }
+        .card.future::before { border-style: dashed; box-shadow: none; }
+        .card.future:hover { transform: none; }
+
+        .card h2 {
+            margin: 0 34px 10px 0;
+            font-family: var(--hand);
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 1.4;
+            color: var(--ink);
+        }
+        .card p {
+            margin: 0;
+            flex-grow: 1;
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--muted);
         }
 
-        /* 針對不同系統自訂頂部飾條顏色 */
-        .card.drg { border-color: #e74c3c; } /* 紅色 */
-        .card.icd { border-color: #f39c12; } /* 橘色 */
-        .card.cc { border-color: #2ecc71; }  /* 綠色 */
-        .card.coder { border-color: #9b7fd4; } /* 紫色 */
-        .card.student { border-color: #e8a87c; } /* 暖橘 */
         .lock {
             display: inline-block;
             margin-left: 6px;
-            padding: 2px 8px;
+            padding: 1px 9px;
             border-radius: 999px;
-            background: #ede7f9;
-            color: #6a51b0;
+            background: #fff;
+            border: 1.5px solid var(--c-line);
+            color: var(--c-deep);
+            font-family: var(--sans);
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 700;
             vertical-align: 2px;
         }
-        .card.future { 
-            border-color: #95a5a6; 
-            background-color: #fdfdfd;
-            border-style: dashed;
-            border-width: 2px;
-        }
 
-        .card h2 {
-            margin-top: 0;
-            font-size: 20px;
-            color: #2c3e50;
-        }
-
-        .card p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #666;
-            flex-grow: 1; /* 讓文字區塊自動填滿空間，把按鈕推到底部 */
-        }
-
-        /* 虛擬按鈕樣式 */
         .card-btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 15px;
-            background-color: #ecf0f1;
-            color: #2c3e50;
+            align-self: flex-start;
+            margin-top: 18px;
+            padding: 8px 18px;
+            font-family: var(--hand);
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--c-deep);
+            background: rgba(255,255,255,.8);
+            border: 2px solid var(--c-line);
+            border-radius: 18px 12px 16px 12px / 12px 16px 12px 18px;
+            transition: background-color .2s ease, color .2s ease;
+        }
+        .card:hover .card-btn { background: var(--c-line); color: #fff; }
+        .card.future:hover .card-btn { background: rgba(255,255,255,.8); color: var(--muted); }
+
+        footer {
             text-align: center;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
+            padding: 26px 20px 40px;
+            font-family: var(--hand);
+            font-size: 13px;
+            color: var(--muted);
         }
 
-        .card:hover .card-btn {
-            background-color: #3498db;
-            color: white;
+        @media (max-width: 560px) {
+            header { padding-top: 32px; }
+            .tab { padding: 10px 18px; font-size: 16px; }
+            .tablist { gap: 8px; }
         }
-        
-        .card.future:hover .card-btn {
-            background-color: #95a5a6;
+        @media (prefers-reduced-motion: reduce) {
+            .panel.active { animation: none; }
+            .card, .tab, .card::before, .tab::before { transition: none; }
+            .card:hover, .tab:hover { transform: none; }
         }
-
-        /* 分類標題 */
-        .section-title {
-            max-width: 1200px;
-            margin: 40px auto 0;
-            padding: 0 20px 8px;
-            font-size: 22px;
-            color: #2c3e50;
-            border-bottom: 2px solid #dfe6e9;
-        }
-        .section-title + .container { margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>醫療資訊系統整合中心</h1>
-        <p>快速存取您的智慧查詢與統計工具</p>
-    </header>
+    <!-- 手繪邊緣扭曲濾鏡 -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+    </svg>
 
-    <h2 class="section-title">學生練習區</h2>
-    <main class="container">
-        <a href="student/" target="_blank" class="card student">
-            <h2>疾病分類 學生練習區</h2>
-            <p>歷屆考題、2027 年版編碼指引與 AHA Coding Clinic 2023–2026 隨機出題自我測驗，可做筆記、匯出筆記與上傳電子書閱讀。</p>
-            <span class="card-btn">開始練習 &rarr;</span>
-        </a>
-    </main>
+    <div class="page">
+        <header>
+            <div class="logo-row" aria-hidden="true">
+                <span class="macaron m1"></span><span class="macaron m2"></span><span class="macaron m3"></span><span class="macaron m4"></span>
+            </div>
+            <h1><span>醫療資訊系統整合中心</span></h1>
+            <p>快速存取您的智慧查詢與統計工具</p>
+        </header>
 
-    <h2 class="section-title">Tw DRG</h2>
-    <main class="container">
-        <a href="https://icd10coding.github.io/tw-drg-dashboard/" target="_blank" class="card drg">
-            <h2>TW-DRG 3.4 智能查詢</h2>
-            <p>提供 TW-DRG 3.4 版的智能查詢與統計分析功能，協助快速試算與資源管理。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
+        <div class="tabs-wrap">
+            <div class="tablist" role="tablist" aria-label="系統分類">
+                <button class="tab" role="tab" id="tab-student" data-tab="student" aria-controls="panel-student" aria-selected="true">學生練習區<span class="count">1</span></button>
+                <button class="tab" role="tab" id="tab-drg" data-tab="drg" aria-controls="panel-drg" aria-selected="false" tabindex="-1">Tw DRG<span class="count">4</span></button>
+                <button class="tab" role="tab" id="tab-icd" data-tab="icd" aria-controls="panel-icd" aria-selected="false" tabindex="-1">ICD 10<span class="count">3</span></button>
+            </div>
 
-        <a href="https://icd10coding.github.io/tw-drg-dashboard/v12.html" target="_blank" class="card drg">
-            <h2>Tw-DRG 查詢儀表板 (v12)</h2>
-            <p>DRG／ICD-10／DRG 比較三合一查詢，支援多關鍵字與同義詞（如單條＝單處），含 RW、CMI 與癌症虛擬權重。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
+            <!-- 學生練習區 -->
+            <section class="panel active" role="tabpanel" id="panel-student" aria-labelledby="tab-student">
+                <p class="panel-intro">歷屆考題、編碼指引與 Coding Clinic，一起慢慢練、輕鬆考上 ✿</p>
+                <div class="container">
+                    <a href="student/" target="_blank" class="card student">
+                        <h2>疾病分類 學生練習區</h2>
+                        <p>歷屆考題、2027 年版編碼指引與 AHA Coding Clinic 2023–2026 隨機出題自我測驗，可做筆記、匯出筆記與上傳電子書閱讀。</p>
+                        <span class="card-btn">開始練習 &rarr;</span>
+                    </a>
+                </div>
+            </section>
 
-        <a href="https://icd10coding.github.io/MDC3/" target="_blank" class="card icd">
-            <h2>MDC3 耳鼻喉及口腔之疾病與疾患</h2>
-            <p>TW‑DRGs 查詢。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
+            <!-- Tw DRG -->
+            <section class="panel" role="tabpanel" id="panel-drg" aria-labelledby="tab-drg" hidden>
+                <p class="panel-intro">TW-DRG 試算、查詢與合併症／併發症判定</p>
+                <div class="container">
+                    <a href="https://icd10coding.github.io/tw-drg-dashboard/" target="_blank" class="card drg">
+                        <h2>TW-DRG 3.4 智能查詢</h2>
+                        <p>提供 TW-DRG 3.4 版的智能查詢與統計分析功能，協助快速試算與資源管理。</p>
+                        <span class="card-btn">進入系統 &rarr;</span>
+                    </a>
 
-        <a href="https://icd10coding.github.io/index/" target="_blank" class="card cc">
-            <h2>CC 綜合查詢系統</h2>
-            <p>合併症與併發症 (Comorbidities/Complications) 的綜合查詢與判定輔助。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
-    </main>
+                    <a href="https://icd10coding.github.io/tw-drg-dashboard/v12.html" target="_blank" class="card drg">
+                        <h2>Tw-DRG 查詢儀表板 (v12)</h2>
+                        <p>DRG／ICD-10／DRG 比較三合一查詢，支援多關鍵字與同義詞（如單條＝單處），含 RW、CMI 與癌症虛擬權重。</p>
+                        <span class="card-btn">進入系統 &rarr;</span>
+                    </a>
 
-    <h2 class="section-title">ICD 10</h2>
-    <main class="container">
-        <a href="https://icd10coding.github.io/icd10-search/" target="_blank" class="card icd">
-            <h2>ICD-10 外傷編碼搜尋</h2>
-            <p>針對 MDC24 各部位外傷，提供精準且快速的 ICD-10 疾病分類編碼搜尋服務。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
+                    <a href="https://icd10coding.github.io/MDC3/" target="_blank" class="card mdc">
+                        <h2>MDC3 耳鼻喉及口腔之疾病與疾患</h2>
+                        <p>TW‑DRGs 查詢。</p>
+                        <span class="card-btn">進入系統 &rarr;</span>
+                    </a>
 
-        <a href="https://icd10coding.github.io/E-code/" target="_blank" class="card E Code">
-            <h2>外因編碼查詢系統</h2>
-            <p>E Code 的綜合查詢。</p>
-            <span class="card-btn">進入系統 &rarr;</span>
-        </a>
+                    <a href="https://icd10coding.github.io/index/" target="_blank" class="card cc">
+                        <h2>CC 綜合查詢系統</h2>
+                        <p>合併症與併發症 (Comorbidities/Complications) 的綜合查詢與判定輔助。</p>
+                        <span class="card-btn">進入系統 &rarr;</span>
+                    </a>
+                </div>
+            </section>
 
-        <a href="coder/" target="_blank" class="card coder">
-            <h2>病歷編碼工作台 <span class="lock">需登入</span></h2>
-            <p>貼上或上傳病歷，找出 ICD-10-CM／PCS 代碼，依健保署 Tw-DRG 3.4 判定合併症／併發症與分組，並附 Tabular、Guidelines、Coding Clinic 參考出處。</p>
-            <span class="card-btn">登入使用 &rarr;</span>
-        </a>
+            <!-- ICD 10 -->
+            <section class="panel" role="tabpanel" id="panel-icd" aria-labelledby="tab-icd" hidden>
+                <p class="panel-intro">ICD-10 編碼搜尋與病歷編碼工作</p>
+                <div class="container">
+                    <a href="https://icd10coding.github.io/icd10-search/" target="_blank" class="card icd">
+                        <h2>ICD-10 外傷編碼搜尋</h2>
+                        <p>針對 MDC24 各部位外傷，提供精準且快速的 ICD-10 疾病分類編碼搜尋服務。</p>
+                        <span class="card-btn">進入系統 &rarr;</span>
+                    </a>
 
-        <a href="#" class="card future">
-            <h2>未命名新系統 (開發中)</h2>
-            <p>未來的程式專案完成後，可以直接複製此卡片並修改標題與連結。</p>
-            <span class="card-btn">敬請期待</span>
-        </a>
-    </main>
+                    <a href="https://icd10coding.github.io/E-code/" target="_blank" class="card ecode">
+                        <h2>外因編碼查詢系統</h2>
+                        <p>E Code 的綜合查詢。</p>
+                        <span class="card-btn">進入系統 &rarr;</span>
+                    </a>
 
+                    <a href="coder/" target="_blank" class="card coder">
+                        <h2>病歷編碼工作台 <span class="lock">需登入</span></h2>
+                        <p>貼上或上傳病歷，找出 ICD-10-CM／PCS 代碼，依健保署 Tw-DRG 3.4 判定合併症／併發症與分組，並附 Tabular、Guidelines、Coding Clinic 參考出處。</p>
+                        <span class="card-btn">登入使用 &rarr;</span>
+                    </a>
+
+                    <a href="#" class="card future">
+                        <h2>未命名新系統 (開發中)</h2>
+                        <p>未來的程式專案完成後，可以直接複製此卡片並修改標題與連結。</p>
+                        <span class="card-btn">敬請期待</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <footer>Made with 水彩 &amp; 馬卡龍 ♡</footer>
+    </div>
+
+    <script>
+        (function () {
+            var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+            var panels = {};
+            tabs.forEach(function (t) { panels[t.dataset.tab] = document.getElementById('panel-' + t.dataset.tab); });
+
+            function activate(name, focus, updateHash) {
+                if (!panels[name]) name = 'student';
+                tabs.forEach(function (t) {
+                    var on = t.dataset.tab === name;
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                    t.tabIndex = on ? 0 : -1;
+                    if (on && focus) t.focus();
+                });
+                Object.keys(panels).forEach(function (k) {
+                    var on = k === name;
+                    panels[k].hidden = !on;
+                    panels[k].classList.toggle('active', on);
+                });
+                if (updateHash) {
+                    try { history.replaceState(null, '', '#' + name); } catch (e) { /* 忽略 */ }
+                }
+                try { sessionStorage.setItem('portal-tab', name); } catch (e) { /* 忽略 */ }
+            }
+
+            tabs.forEach(function (t, i) {
+                t.addEventListener('click', function () { activate(t.dataset.tab, false, true); });
+                t.addEventListener('keydown', function (e) {
+                    var n = null;
+                    if (e.key === 'ArrowRight') n = (i + 1) % tabs.length;
+                    else if (e.key === 'ArrowLeft') n = (i - 1 + tabs.length) % tabs.length;
+                    else if (e.key === 'Home') n = 0;
+                    else if (e.key === 'End') n = tabs.length - 1;
+                    if (n !== null) { e.preventDefault(); activate(tabs[n].dataset.tab, true, true); }
+                });
+            });
+
+            window.addEventListener('hashchange', function () {
+                activate(location.hash.replace('#', ''), false, false);
+            });
+
+            var start = location.hash.replace('#', '');
+            if (!panels[start]) {
+                try { start = sessionStorage.getItem('portal-tab') || ''; } catch (e) { start = ''; }
+            }
+            activate(start, false, false);
+        })();
+    </script>
 </body>
 </html>
