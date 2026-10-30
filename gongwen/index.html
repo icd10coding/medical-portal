@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>公文範本工坊</title>
+<meta name="description" content="行政公文與正式文件多樣態範本：線上修改、複製、下載 Word、下載 PDF、直接列印，並內建公文用語檢核。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;700&display=swap">
+<style>
+/* 版面：左側範本目錄 / 中央 A4 稿紙 / 右側工具面板；列印時只留稿紙 */
+:root{
+  --bg:#e9ecf1; --surface:#ffffff; --surface2:#f4f6f9; --line:#cfd5de; --fg:#1d2733; --muted:#5d6b7c;
+  --accent:#1f4b7a; --accent-fg:#ffffff; --seal:#b4281f; --ph:#fff1b8; --ph-line:#e0c14e;
+  --warn-bg:#fdecea; --warn-fg:#8c1d16; --info-bg:#e8f0fb; --info-fg:#1b4478; --ok:#1d6b3c;
+  --font-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-head:"Noto Serif TC","PMingLiU","Songti TC",serif;
+  --font-paper:"標楷體","DFKai-SB","BiauKai","Noto Serif TC",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --surface:#1b222c; --surface2:#222b37; --line:#33404f; --fg:#e4e9f0; --muted:#9aa8b8;
+  --accent:#6fa6dd; --accent-fg:#0e1620; --seal:#e0574d; --warn-bg:#3a1f1d; --warn-fg:#ffb3ad; --info-bg:#1c2d44; --info-fg:#a8c9f2; --ok:#6fcf97;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --surface:#1b222c; --surface2:#222b37; --line:#33404f; --fg:#e4e9f0; --muted:#9aa8b8;
+  --accent:#6fa6dd; --accent-fg:#0e1620; --seal:#e0574d; --warn-bg:#3a1f1d; --warn-fg:#ffb3ad; --info-bg:#1c2d44; --info-fg:#a8c9f2; --ok:#6fcf97;color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--font-ui);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 頁首 */
+.top{display:flex;align-items:center;gap:14px;padding:14px 0;flex-wrap:wrap}
+.seal{width:40px;height:40px;background:var(--seal);color:#fff;font:700 22px/40px var(--font-head);text-align:center;border-radius:3px;flex:none;transform:rotate(-3deg)}
+.top h1{margin:0;font:700 22px/1.2 var(--font-head);letter-spacing:.08em}
+.top p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.top .grow{flex:1;min-width:200px}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:6px 12px;font-size:13px}
+
+/* 工具列 */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bar .sep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
+.btn{border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:6px 11px;font-size:14px;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:500}
+.btn.sm{padding:4px 9px;font-size:13px}
+.bar .name{font-weight:700;margin-right:6px;font-family:var(--font-head)}
+#sideToggle{display:none}
+
+/* 主體 */
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr) 300px;gap:14px;margin-top:12px;align-items:start}
+.nav,.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto}
+.nav input[type=search]{width:100%;border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:7px 10px;margin-bottom:10px}
+.nav h2{font:700 12px/1 var(--font-ui);letter-spacing:.14em;color:var(--muted);margin:14px 0 6px}
+.nav button.item{display:block;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;padding:7px 8px;border-radius:0 6px 6px 0}
+.nav button.item:hover{background:var(--surface2)}
+.nav button.item[aria-current=true]{border-left-color:var(--seal);background:var(--surface2);font-weight:700}
+.nav button.item small{display:block;color:var(--muted);font-weight:400;font-size:12px;line-height:1.35}
+
+.row{display:flex;align-items:stretch}.row .item{flex:1;min-width:0}
+.del{border:0;background:none;color:var(--muted);padding:0 8px;font-size:16px}.del:hover{color:var(--seal)}
+.navtools{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+.savebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:8px 10px}
+.savebar input{flex:1;min-width:160px;border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:6px 9px}
+.drop{border:1.5px dashed var(--line);border-radius:8px;padding:10px;text-align:center;font-size:13px;color:var(--muted)}
+.drop.on{border-color:var(--accent);background:var(--info-bg)}
+.paper .pb{border-top:1px dashed #999;margin:2.2em 0 1.5em;height:0}
+@media print{.paper .pb{border:0;margin:0;break-before:page;page-break-before:always}}
+.stage{min-width:0;overflow:hidden}
+.paper-wrap{width:210mm;transform-origin:top left}
+.paper{background:#fff;color:#000;width:210mm;min-height:297mm;padding:25mm 20mm 25mm 30mm;box-shadow:0 2px 14px rgba(0,0,0,.22);font-family:var(--font-paper);font-size:var(--fs,14pt);line-height:1.75;outline:none;word-break:break-all;overflow-wrap:anywhere}
+.paper p{margin:0}
+.paper .ph{background:var(--ph);box-shadow:0 0 0 1px var(--ph-line);border-radius:2px;cursor:text}
+.paper .org{text-align:center;font-size:1.3em;font-weight:700;letter-spacing:.06em}
+.paper .title{text-align:center;font-size:1.5em;font-weight:700;letter-spacing:.5em;margin:.2em 0 .6em}
+.paper .addr{margin-left:52%;margin-bottom:.8em}
+.paper .sec{padding-left:3em;text-indent:-3em}
+.paper .lab{margin-top:.2em}
+.paper .l1{padding-left:2em;text-indent:-2em}
+.paper .l2{padding-left:5em;text-indent:-3em}
+.paper .l3{padding-left:6.5em;text-indent:-1.5em}
+.paper .gap{height:.9em}
+.paper .right{text-align:right}
+.paper .center{text-align:center}
+.paper .sign{margin-top:2.2em;text-align:right;padding-right:3em}
+.paper table{border-collapse:collapse;width:100%}
+.paper table.bd td,.paper table.bd th{border:1px solid #000;padding:5pt 8pt;vertical-align:top;font-weight:400;text-align:left}
+.paper table.bd td.k{width:6em;white-space:nowrap;text-align:center;background:#f2f2f2}
+.paper table.bd td.tall{height:5em}
+.paper table.bd td.xtall{height:9em}
+.paper .small{font-size:.85em}
+.paper .stamp{display:inline-block;border:1px solid #000;padding:.2em 1.2em;margin-top:1em}
+.paper .en{font-family:"Times New Roman","Noto Serif TC",serif}
+.paper .box{border:1px solid #000;padding:6pt 10pt;margin:.6em 0}
+
+.panel .tabs{display:flex;gap:4px;margin-bottom:10px}
+.panel .tabs button{flex:1;border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:6px 4px;font-size:13px}
+.panel .tabs button[aria-selected=true]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.panel section[hidden]{display:none}
+.panel label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px}
+.panel input[type=text],.panel input[type=date]{width:100%;border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:6px 9px}
+.panel textarea,.panel select{width:100%;border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:6px 9px;font-size:13.5px}
+.panel textarea{resize:vertical;min-height:120px}
+.panel .hint{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.chip{border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:3px 10px;font-size:13px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.panel h3{font:700 13px/1.3 var(--font-ui);margin:14px 0 6px}
+.issue{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface2);border-radius:6px;padding:7px 9px;margin-bottom:6px;font-size:13px}
+.issue b{display:inline-block;font-size:11px;padding:0 6px;border-radius:3px;margin-right:6px}
+.issue.err b{background:var(--warn-bg);color:var(--warn-fg)}
+.issue.tip b{background:var(--info-bg);color:var(--info-fg)}
+.issue em{font-style:normal;background:var(--ph);color:#000;padding:0 3px;border-radius:2px}
+.notes{padding-left:18px;margin:0;font-size:13px;color:var(--muted)}
+.notes li{margin-bottom:5px}
+.okmsg{color:var(--ok);font-weight:500}
+.foot{margin-top:18px;color:var(--muted);font-size:12.5px;max-width:80ch}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 18px;border-radius:999px;font-size:14px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+
+@media (max-width:1100px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .nav,.panel{position:static;max-height:none}
+  .nav{order:1}.stage{order:3}.panel{order:2}
+  .nav .list{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .nav h2{display:none}
+  .row{flex:none}
+  .nav button.item{width:auto;flex:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+  .nav button.item small{display:none}
+  .nav button.item[aria-current=true]{border-color:var(--seal)}
+  .bar{position:static}
+  #sideToggle{display:inline-flex}
+  .panel.closed{display:none}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
+@page{size:A4;margin:25mm 20mm 25mm 30mm}
+@media print{
+  html,body{background:#fff!important;padding:0!important}
+  .noprint{display:none!important}
+  .layout{display:block;margin:0}
+  .stage{overflow:visible}
+  .paper-wrap{width:auto!important;zoom:1!important;transform:none!important;height:auto!important}
+  .paper{box-shadow:none;width:auto;min-height:0;padding:0}
+  .paper .ph{background:none!important;box-shadow:none!important}
+  .paper table,.paper .keep{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="top noprint">
+  <div class="seal" aria-hidden="true">文</div>
+  <div class="grow">
+    <h1>公文範本工坊</h1>
+    <p>選範本、直接在稿紙上修改，再複製、另存 PDF 或列印。內容只存在您的瀏覽器，不會上傳。</p>
+  </div>
+  <button class="iconbtn" id="themeBtn" type="button" aria-label="切換深色或淺色外觀">外觀</button>
+</header>
+
+<div class="bar noprint" role="toolbar" aria-label="文件工具列">
+  <span class="name" id="curName">函</span>
+  <button class="btn" id="bCopyT" type="button">複製文字</button>
+  <button class="btn" id="bCopyR" type="button">複製（含格式）</button>
+  <button class="btn primary" id="bPrint" type="button" title="列印，或在目的地選「另存為 PDF」">列印／另存 PDF</button>
+  <span class="sep"></span>
+  <button class="btn sm" id="fB" type="button" title="粗體"><b>B</b></button>
+  <button class="btn sm" id="fU" type="button" title="底線"><u>U</u></button>
+  <button class="btn sm" id="fL" type="button" title="靠左">靠左</button>
+  <button class="btn sm" id="fC" type="button" title="置中">置中</button>
+  <button class="btn sm" id="fR" type="button" title="靠右">靠右</button>
+  <button class="btn sm" id="fMinus" type="button" title="縮小字級">A−</button>
+  <span id="fsLabel" style="font-size:13px;min-width:34px;text-align:center">14pt</span>
+  <button class="btn sm" id="fPlus" type="button" title="放大字級">A+</button>
+  <span class="sep"></span>
+  <button class="btn sm" id="fPh" type="button" title="把選取的文字變成黃底待填欄位">設為待填</button>
+  <button class="btn sm" id="bSave" type="button">存為我的範本</button>
+  <button class="btn sm" id="bReset" type="button">還原</button>
+  <button class="btn sm" id="sideToggle" type="button" aria-expanded="false">欄位／檢核／常用語</button>
+</div>
+
+<div class="savebar noprint" id="saveBar" hidden>
+  <label for="tplName" style="font-size:13px">範本名稱</label>
+  <input type="text" id="tplName" maxlength="30" placeholder="例：病歷複查通知（外科）">
+  <button class="btn sm primary" id="doSave" type="button">儲存為我的範本</button>
+  <button class="btn sm" id="cancelSave" type="button">取消</button>
+</div>
+
+<div class="layout">
+  <nav class="nav noprint" aria-label="範本目錄">
+    <input type="search" id="q" placeholder="搜尋範本，例如 簽、會議" aria-label="搜尋範本">
+    <div class="list" id="navList"></div>
+    <div class="navtools"><button class="btn sm" id="expMine" type="button">匯出我的範本</button><button class="btn sm" id="impMine" type="button">匯入</button><input type="file" id="impFile" accept=".json" hidden></div>
+  </nav>
+
+  <main class="stage">
+    <div class="paper-wrap" id="wrap">
+      <div class="paper" id="paper" contenteditable="true" spellcheck="false" aria-label="公文稿紙，可直接編輯"></div>
+    </div>
+  </main>
+
+  <aside class="panel noprint closed" id="panel" aria-label="工具面板">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="fields">欄位</button>
+      <button role="tab" aria-selected="false" data-tab="check">檢核</button>
+      <button role="tab" aria-selected="false" data-tab="phrase">常用語</button>
+      <button role="tab" aria-selected="false" data-tab="draft">撰稿</button>
+    </div>
+
+    <section data-pane="fields">
+      <p class="hint">填一次，稿紙上所有同名欄位一起更新。黃底處是待填內容，按 Tab 跳到下一格。</p>
+      <label for="f_org">機關全銜</label><input type="text" id="f_org" data-k="org" placeholder="例：○○醫院">
+      <label for="f_addr">地址</label><input type="text" id="f_addr" data-k="addr" placeholder="郵遞區號＋地址">
+      <label for="f_handler">承辦人／單位</label><input type="text" id="f_handler" data-k="handler">
+      <label for="f_tel">電話</label><input type="text" id="f_tel" data-k="tel">
+      <label for="f_fax">傳真</label><input type="text" id="f_fax" data-k="fax">
+      <label for="f_email">電子信箱</label><input type="text" id="f_email" data-k="email">
+      <label for="f_leader">機關首長／署名</label><input type="text" id="f_leader" data-k="leader">
+      <label for="f_dateIn">發文日期</label><input type="date" id="f_dateIn">
+      <p class="hint" style="margin-top:6px">日期會轉成民國格式：<span id="rocShow"></span></p>
+    </section>
+
+    <section data-pane="draft" hidden>
+      <p class="hint">上傳來文（.docx、.pdf、.txt）或直接貼上文字，選好公文格式後產生草稿。檔案只在您的瀏覽器內讀取，不會上傳。</p>
+      <label for="srcFile">來文檔案</label>
+      <div class="drop" id="drop"><input type="file" id="srcFile" accept=".docx,.pdf,.txt,.md"><br>或把檔案拖曳到這裡</div>
+      <label for="srcText">來文內容（可修改或直接貼上）</label>
+      <textarea id="srcText" placeholder="貼上來文全文，含「主旨：」「說明：」會擷取得更準確"></textarea>
+      <label for="dFmt">公文格式</label>
+      <select id="dFmt"><option value="train">公費公假參訓：簽＋稿（簽稿併陳）</option><option value="fun">函</option><option value="shufun">書函</option><option value="qian">簽</option><option value="bianqian">便簽</option><option value="gonggao">公告</option><option value="meeting">開會通知單</option></select>
+      <div id="trainBox">
+        <label for="tName">參加人員姓名</label><input type="text" id="tName" placeholder="例：王小明（可多人，以頓號分隔）">
+        <label for="tTitle">職稱／單位</label><input type="text" id="tTitle" placeholder="例：病歷資訊管理師／病歷室">
+        <label for="tLeave">假別</label><select id="tLeave"><option>公假</option><option>公差</option><option>自假</option></select>
+        <label for="tFund">經費</label><select id="tFund"><option value="pub">公費（由本院經費支應）</option><option value="free">免費或由主辦單位補助</option><option value="self">自費</option></select>
+        <label for="tDeputy">職務代理人</label><input type="text" id="tDeputy" placeholder="例：李小華">
+      </div>
+      <label for="dMode">擬稿方式（非參訓格式時使用）</label>
+      <select id="dMode"><option value="reply">復函／回應來文</option><option value="notify">轉知／依來文轉發</option></select>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button class="btn sm primary" id="makeDraft" type="button">產生草稿</button><button class="btn sm" id="clearSrc" type="button">清除</button></div>
+      <p class="hint" id="draftMsg" style="margin-top:8px"></p>
+      <p class="hint">草稿會帶入來文機關、日期、字號、主旨與說明重點，並留下黃底欄位供您補上回復內容。修改滿意後，按上方「存為我的範本」即可重複使用。</p>
+    </section>
+
+    <section data-pane="check" hidden>
+      <p class="hint">依「公文查考規定及應注意事項」整理的常見錯誤，例如臺／台、全形數字、略以、挪抬、新臺幣、民國與西元併用。</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn sm primary" id="runCheck" type="button">開始檢核</button>
+        <button class="btn sm" id="fixAll" type="button">套用可自動修正項目</button>
+      </div>
+      <div id="issues" aria-live="polite"></div>
+    </section>
+
+    <section data-pane="phrase" hidden>
+      <p class="hint">先在稿紙上點一下要插入的位置，再點選用語。</p>
+      <div id="phrases"></div>
+      <h3>撰寫要點</h3>
+      <ul class="notes">
+        <li>項次順序一致：一、（一）1.（1）A.</li>
+        <li>主旨不寫簡稱，簡稱放在說明欄第一次出現處。</li>
+        <li>引敘來文：本部113年1月2日台內戶字第1130000001號函；本部於113年1月2日以台內戶字第1130000001號函。</li>
+        <li>民國年與西元年不併用；數字用阿拉伯數字，千位以上加逗號。</li>
+        <li>金額冠「新臺幣」，第一次出現後可註明（以下同）。</li>
+        <li>連續 3 項以上用「至」，2 項用「及」，不用「暨」。</li>
+        <li>無附件不必寫「無」，普通件不必寫「普通」。</li>
+        <li>來函問幾點答幾點，內容讓長官不翻附件也能看懂全貌。</li>
+      </ul>
+    </section>
+  </aside>
+</div>
+
+<p class="foot noprint">範本依《公文程式條例》《文書處理手冊》常見版式與提供的公文查考資料整理，僅供撰擬參考；實際格式、用印、字級與保存年限請依貴機關最新規定調整。要求最精確的版面時，PDF 請按「列印／另存 PDF」，在列印視窗的目的地選「另存為 PDF」，可得到文字可選取、分頁完整的檔案。上傳來文後的撰稿功能由規則自動擷取，並非 AI 改寫，產生的草稿請逐項核對。</p>
+<div class="toast noprint" id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const paper=$('#paper'), wrap=$('#wrap');
+const P=(t,k)=>'<span class="ph"'+(k?' data-k="'+k+'"':'')+'>'+t+'</span>';
+
+/* ---------- 共用片段 ---------- */
+const metaRows=(extra,recv)=>
+ '<p class="sec">受文者：'+(recv||P('受文者（機關全銜或姓名）'))+'</p>'+
+ '<p class="sec">發文日期：'+P('中華民國115年10月30日','date')+'</p>'+
+ '<p class="sec">發文字號：'+P('○○字第○○○○○○○○○○號')+'</p>'+
+ '<p class="sec">速別：'+P('普通件／速件／最速件')+'</p>'+
+ '<p class="sec">密等及解密條件或保密期限：'+P('（普通件可刪除此行）')+'</p>'+
+ '<p class="sec">附件：'+P('檢送○○○1份（無附件可刪除此行）')+'</p>'+(extra||'');
+const addrBlock=
+ '<div class="addr small">'+
+ '<p>地址：'+P('郵遞區號＋地址','addr')+'</p>'+
+ '<p>承辦人：'+P('承辦人姓名','handler')+'</p>'+
+ '<p>電話：'+P('02-0000-0000','tel')+'</p>'+
+ '<p>傳真：'+P('02-0000-0001','fax')+'</p>'+
+ '<p>電子信箱：'+P('name@example.gov.tw','email')+'</p></div>';
+const tailX=(recv)=>
+ '<p class="sec" style="margin-top:1em">正本：'+(recv||P('受文機關（全銜）'))+'</p>'+
+ '<p class="sec">副本：'+P('副本機關（無則刪除此行）')+'</p>';
+const tail=tailX();
+function letter(title,leaderLine){
+ return '<p class="org">'+P('機關全銜','org')+'　'+title+'</p><div class="gap"></div>'+addrBlock+metaRows()+'<div class="gap"></div>'+
+ '<p class="sec" data-sec="subject">主旨：'+P('請填寫主旨：以一段簡明說明目的與期望，不寫簡稱，結尾用「請查照」「請查照辦理」等期望語。')+'</p>'+
+ '<p class="lab">說明：</p>'+
+ '<p class="l1">一、依據'+P('○○機關○年○月○日○字第○號函')+'辦理。</p>'+
+ '<p class="l1">二、'+P('敘明事實、理由或處理情形。')+'</p>'+
+ '<p class="l1">三、'+P('其他補充事項。')+'</p>'+
+ '<p class="lab">辦法：</p>'+
+ '<p class="l1">一、'+P('請依規定辦理（無辦法可刪除本段）。')+'</p>'+tail+
+ '<div class="sign">'+leaderLine+'</div>';
+}
+
+/* ---------- 範本 ---------- */
+const TPL=[
+{id:'fun',cat:'行政公文',name:'函',desc:'機關間往復、對民眾行文，最常用',html:()=>letter('函','<p>'+P('機關首長姓名','leader')+'</p>')},
+{id:'shufun',cat:'行政公文',name:'書函',desc:'不屬重要事項的洽辦、查詢、通知',html:()=>letter('書函','<p>'+P('單位或機關名稱','leader')+'</p>')},
+{id:'gonggao',cat:'行政公文',name:'公告',desc:'對公眾或特定多數人宣布事項',html:()=>
+ '<p class="org">'+P('機關全銜','org')+'　公告</p><div class="gap"></div>'+
+ '<p class="sec">發布日期：'+P('中華民國115年10月30日','date')+'</p>'+
+ '<p class="sec">發文字號：'+P('○○字第○○○○○○○○○○號')+'</p>'+
+ '<p class="sec">附件：'+P('（無附件可刪除此行）')+'</p><div class="gap"></div>'+
+ '<p class="sec" data-sec="subject">主旨：'+P('公告○○○○，自即日起至○年○月○日止。')+'</p>'+
+ '<p class="sec">依據：'+P('○○法第○條或○○函。')+'</p>'+
+ '<p class="lab">公告事項：</p>'+
+ '<p class="l1">一、'+P('適用對象或範圍。')+'</p>'+
+ '<p class="l1">二、'+P('辦理方式、期限、地點。')+'</p>'+
+ '<p class="l1">三、'+P('聯絡方式。')+'</p>'+
+ '<div class="sign"><p>'+P('機關首長姓名','leader')+'</p></div>'},
+{id:'ling',cat:'行政公文',name:'令',desc:'訂定、修正、廢止法規或人事發布',html:()=>
+ '<p class="org">'+P('機關全銜','org')+'　令</p><div class="gap"></div>'+
+ '<p class="sec">發文日期：'+P('中華民國115年10月30日','date')+'</p>'+
+ '<p class="sec">發文字號：'+P('○○字第○○○○○○○○○○號')+'</p><div class="gap"></div>'+
+ '<p class="sec" data-sec="subject">主旨：'+P('修正「○○○○辦法」第3條、第5條、第7條，並自即日生效。')+'</p>'+
+ '<p class="lab">依據：'+P('○○法第○條。')+'</p>'+
+ '<p class="lab">公告事項：</p>'+
+ '<p class="l1">一、'+P('修正條文對照表如附件。')+'</p>'+
+ '<p class="l1">二、'+P('其他。')+'</p>'+
+ '<div class="sign"><p>'+P('機關首長姓名','leader')+'</p></div>'},
+{id:'meeting',cat:'行政公文',name:'開會通知單',desc:'召開會議的通知，含時間地點與出列席者',html:()=>
+ '<p class="org">'+P('機關全銜','org')+'　開會通知單</p><div class="gap"></div>'+addrBlock+
+ '<p class="sec">受文者：'+P('如行文單位')+'</p>'+
+ '<p class="sec">發文日期：'+P('中華民國115年10月30日','date')+'</p>'+
+ '<p class="sec">發文字號：'+P('○○字第○○○○○○○○○○號')+'</p>'+
+ '<p class="sec">速別：'+P('普通件')+'</p><div class="gap"></div>'+
+ '<table class="bd keep"><tr><td class="k">開會事由</td><td>'+P('召開「○○○○」會議')+'</td></tr>'+
+ '<tr><td class="k">開會時間</td><td>'+P('中華民國115年○月○日（星期○）上午9時30分')+'</td></tr>'+
+ '<tr><td class="k">開會地點</td><td>'+P('○○樓第○會議室（○○市○○路○號）')+'</td></tr>'+
+ '<tr><td class="k">主持人</td><td>'+P('○○○')+'</td></tr>'+
+ '<tr><td class="k">聯絡人及電話</td><td>'+P('○○○，電話 02-0000-0000')+'</td></tr>'+
+ '<tr><td class="k">出席者</td><td>'+P('○○科、○○室')+'</td></tr>'+
+ '<tr><td class="k">列席者</td><td>'+P('○○○')+'</td></tr>'+
+ '<tr><td class="k tall">備註</td><td>'+P('一、請準時出席，如不克出席請指派代表。　二、會議資料請於會前3日提供。')+'</td></tr></table>'+
+ '<p class="sec" style="margin-top:1em">副本：'+P('（無則刪除此行）')+'</p>'+
+ '<div class="sign"><p>'+P('機關首長姓名','leader')+'</p></div>'},
+{id:'qian',cat:'行政公文',name:'簽',desc:'內部對上級陳述意見、請示核可',html:()=>
+ '<p class="org">'+P('機關全銜','org')+'　簽</p>'+
+ '<p class="right">'+P('單位名稱')+'　'+P('中華民國115年10月30日','date')+'</p><div class="gap"></div>'+
+ '<p class="sec" data-sec="subject">主旨：'+P('為○○○○，敬請核示（核可、核備）。')+'</p>'+
+ '<p class="lab">說明：</p>'+
+ '<p class="l1">一、依據'+P('○○來文或法規')+'辦理。</p>'+
+ '<p class="l1">二、'+P('事實經過、現況、分析（本司／本院自稱，不寫本部○○司）。')+'</p>'+
+ '<p class="l1">三、'+P('相關規定或前例。')+'</p>'+
+ '<p class="lab">擬辦：</p>'+
+ '<p class="l1">一、'+P('如奉核可，擬○○○○。')+'</p>'+
+ '<p class="l1">二、'+P('奉核後，擬以函復○○。')+'</p>'+
+ '<p style="margin-top:1em">敬陳</p>'+
+ '<p>'+P('○○主任')+'</p>'+
+ '<table class="bd keep" style="margin-top:1.5em"><tr><th class="k">承辦人</th><th class="k">科長</th><th class="k">主任</th><th class="k">院長</th></tr>'+
+ '<tr><td class="xtall"></td><td></td><td></td><td></td></tr></table>'},
+{id:'bianqian',cat:'行政公文',name:'便簽',desc:'依據、緣由、說明、擬辦四段式',html:()=>
+ '<p class="title">便簽</p>'+
+ '<p class="right">'+P('中華民國115年10月30日','date')+'</p><div class="gap"></div>'+
+ '<p class="l1">一、依據'+P('○○○○○')+'辦理。（先寫依據）</p>'+
+ '<p class="l1">二、案係'+P('○○單位辦理○○○○')+'。（再引述何單位要做什麼事）</p>'+
+ '<p class="l1">三、有關'+P('○○○○○○')+'，'+P('依來文要旨予以說明。')+'</p>'+
+ '<p class="l1">四、如奉核可，'+P('○○○○○○')+'。（擬辦）</p>'+
+ '<div class="sign"><p>承辦人：'+P('○○○','handler')+'</p></div>'},
+{id:'jilu',cat:'紀錄與表單',name:'會議紀錄',desc:'會議時間地點、報告事項與決議',html:()=>
+ '<p class="title" style="letter-spacing:.1em">'+P('機關全銜','org')+' '+P('○○○○')+'會議紀錄</p>'+
+ '<p class="l1">一、時間：'+P('中華民國115年○月○日（星期○）上午○時○分')+'</p>'+
+ '<p class="l1">二、地點：'+P('○○會議室')+'</p>'+
+ '<p class="l1">三、主席：'+P('○○○')+'　　　　紀錄：'+P('○○○')+'</p>'+
+ '<p class="l1">四、出席單位及人員：'+P('如簽到表')+'</p>'+
+ '<p class="l1">五、主席致詞：（略）</p>'+
+ '<p class="l1">六、報告事項：'+P('（一）上次會議決議辦理情形。（二）○○○○。')+'</p>'+
+ '<p class="l1">七、討論事項：</p>'+
+ '<p class="l2">（一）案由：'+P('○○○○○○，提請討論。')+'</p>'+
+ '<p class="l3">說明：'+P('○○○○。')+'</p>'+
+ '<p class="l3">決議：'+P('○○○○。')+'</p>'+
+ '<p class="l1">八、臨時動議：'+P('無。')+'</p>'+
+ '<p class="l1">九、散會：'+P('上午○時○分')+'</p>'},
+{id:'tel',cat:'紀錄與表單',name:'公務電話紀錄',desc:'記錄來電或去電洽辦事項',html:()=>
+ '<p class="title" style="letter-spacing:.2em">公務電話紀錄</p>'+
+ '<table class="bd"><tr><td class="k">發話人</td><td>'+P('單位／姓名')+'</td><td class="k">受話人</td><td>'+P('單位／姓名')+'</td></tr>'+
+ '<tr><td class="k">通話時間</td><td colspan="3">'+P('中華民國115年10月30日　上午／下午○時○分','date')+'</td></tr>'+
+ '<tr><td class="k">事由</td><td colspan="3">'+P('○○○○')+'</td></tr>'+
+ '<tr><td class="k xtall">通話內容</td><td colspan="3">'+P('一、　二、　三、')+'</td></tr>'+
+ '<tr><td class="k tall">處理情形</td><td colspan="3">'+P('')+'</td></tr>'+
+ '<tr><td class="k">紀錄人</td><td>'+P('○○○')+'</td><td class="k">核閱</td><td></td></tr></table>'},
+{id:'attend',cat:'紀錄與表單',name:'出席會議報告單',desc:'簽報出席他機關會議的單位與人員',html:()=>
+ '<p class="title" style="letter-spacing:.1em">出席會議報告單</p>'+
+ '<table class="bd"><tr><td class="k">會議名稱</td><td colspan="3">'+P('○○○○會議')+'</td></tr>'+
+ '<tr><td class="k">開會機關</td><td colspan="3">'+P('○○部○○司')+'</td></tr>'+
+ '<tr><td class="k">時間</td><td>'+P('115年○月○日 ○時○分')+'</td><td class="k">地點</td><td>'+P('○○')+'</td></tr>'+
+ '<tr><td class="k">重要參加單位或出席人員</td><td colspan="3">'+P('如開會通知單')+'</td></tr>'+
+ '<tr><td class="k">會同出席單位人員</td><td colspan="3">'+P('本院○○科○○○')+'</td></tr>'+
+ '<tr><td class="k xtall">議程及擬提供意見</td><td colspan="3">'+P('')+'</td></tr>'+
+ '<tr><td class="k">單位署名</td><td colspan="3">'+P('單位名稱')+'</td></tr></table>'},
+{id:'apply',cat:'紀錄與表單',name:'申請書',desc:'向機關申請核發、補發或變更事項',html:()=>
+ '<p class="title" style="letter-spacing:.3em">申請書</p>'+
+ '<table class="bd"><tr><td class="k">申請人</td><td>'+P('姓名')+'</td><td class="k">身分證明</td><td>'+P('（請自行填寫）')+'</td></tr>'+
+ '<tr><td class="k">聯絡電話</td><td>'+P('')+'</td><td class="k">電子信箱</td><td>'+P('')+'</td></tr>'+
+ '<tr><td class="k">地址</td><td colspan="3">'+P('')+'</td></tr>'+
+ '<tr><td class="k">申請事項</td><td colspan="3">'+P('申請○○○○')+'</td></tr>'+
+ '<tr><td class="k xtall">事實及理由</td><td colspan="3">'+P('一、　二、')+'</td></tr>'+
+ '<tr><td class="k tall">檢附文件</td><td colspan="3">'+P('一、　二、')+'</td></tr></table>'+
+ '<p style="margin-top:1em">此致</p><p>'+P('受理機關全銜')+'</p>'+
+ '<div class="sign"><p>申請人：'+P('姓名')+'（簽名或蓋章）</p><p>'+P('中華民國115年10月30日','date')+'</p></div>'},
+{id:'proof',cat:'對外正式文件',name:'證明書',desc:'在職、服務、參加等事實證明',html:()=>
+ '<p class="org" style="font-size:1.7em;letter-spacing:.8em">'+P('機關全銜','org')+'</p>'+
+ '<p class="title" style="letter-spacing:.6em;margin-top:.4em">在職證明書</p>'+
+ '<p class="sec" style="padding-left:0;text-indent:2em">茲證明'+P('○○○')+'君，身分證統一編號'+P('（請自行填寫）')+'，自民國'+P('○○年○月○日')+'起任職於本'+P('機關／單位')+'，現任'+P('職稱')+'，迄今在職。</p>'+
+ '<p class="sec" style="padding-left:0;text-indent:2em">特此證明。</p>'+
+ '<p style="margin-top:1em">用途：'+P('申辦○○○○')+'</p>'+
+ '<div class="gap"></div><div class="gap"></div>'+
+ '<p class="right">'+P('機關首長姓名','leader')+'</p>'+
+ '<p class="right" style="margin-top:3em">'+P('中華民國115年10月30日','date')+'</p>'},
+{id:'invite',cat:'對外正式文件',name:'邀請函',desc:'邀請出席活動、演講或座談',html:()=>
+ '<p class="org">'+P('機關全銜','org')+'</p>'+
+ '<p class="title" style="letter-spacing:.5em">邀請函</p>'+
+ '<p>'+P('敬邀對象')+' 先生／女士　鈞鑒：</p><div class="gap"></div>'+
+ '<p style="text-indent:2em">本'+P('機關')+'訂於中華民國'+P('115年○月○日（星期○）下午○時')+'，假'+P('地點')+'舉辦「'+P('活動名稱')+'」，謹誠摯邀請您蒞臨指導。</p>'+
+ '<p style="text-indent:2em">活動議程及交通資訊如附件。敬請於'+P('○月○日')+'前回覆出席與否，聯絡人：'+P('○○○，電話 02-0000-0000','handler')+'。</p>'+
+ '<p style="text-indent:2em">耑此　敬頌</p><p style="text-indent:2em">時祺</p>'+
+ '<div class="sign"><p>'+P('機關首長姓名','leader')+'　敬邀</p><p>'+P('中華民國115年10月30日','date')+'</p></div>'},
+{id:'plan',cat:'對外正式文件',name:'計畫書',desc:'壹、貳、參 章節式計畫或專案報告',html:()=>
+ '<p class="title" style="letter-spacing:.1em">'+P('計畫名稱')+'計畫書</p>'+
+ '<p class="center">'+P('機關全銜','org')+'　'+P('中華民國115年10月','date')+'</p><div class="gap"></div>'+
+ '<p><b>壹、計畫緣起與目的</b></p><p class="l1">一、'+P('背景說明。')+'</p><p class="l1">二、'+P('預期目標。')+'</p>'+
+ '<p><b>貳、法令依據</b></p><p class="l1">一、'+P('○○法第○條。')+'</p>'+
+ '<p><b>參、實施對象與範圍</b></p><p class="l1">'+P('說明。')+'</p>'+
+ '<p><b>肆、實施期程</b></p><p class="l1">一、'+P('自115年○月○日起至115年○月○日止。')+'</p>'+
+ '<p><b>伍、實施方式與分工</b></p><p class="l1">一、'+P('工作項目及權責單位。')+'</p>'+
+ '<p><b>陸、經費需求</b></p><p class="l1">'+P('合計新臺幣○○元（以下同），經費來源：○○。')+'</p>'+
+ '<p><b>柒、預期效益</b></p><p class="l1">'+P('量化與質化效益。')+'</p>'+
+ '<p><b>捌、考核與追蹤</b></p><p class="l1">'+P('評核指標、報告時程。')+'</p>'},
+{id:'rechart',cat:'醫院行政',name:'病歷複查通知',desc:'請醫師依病理報告再次審視出院診斷',html:()=>
+ '<p>'+P('○○')+'醫師，您好：</p><div class="gap"></div>'+
+ '<p>病歷號：'+P('')+'　　姓名：'+P('')+'　　住院期間：'+P('月/日 ~ 月/日')+'</p><div class="gap"></div>'+
+ '<p>因有下列病理報告結果，需煩請您撥冗協助再次審視（recheck）病歷內容：</p>'+
+ '<div class="box en keep"><p>【病理切片報告】</p><p>Pathological diagnosis:</p><p>'+P('檢體部位, 術式 --- 診斷結果（含分級／ICD-O-3 形態碼）')+'</p></div>'+
+ '<p>請問：出院病摘之出院診斷是否需評估調整為「'+P('診斷名稱')+'」，或是維持目前的診斷編碼？</p><div class="gap"></div>'+
+ '<p>感謝您的辛勞與協助。</p><div class="gap"></div>'+
+ '<p>＊貼心小提醒：若評估後決定修改診斷，請務必同步於「出院病摘」之出院診斷欄位完成更正，以確保後續疾病分類編碼及健保申報作業之正確性，非常謝謝您。</p>'+
+ '<div class="sign"><p>'+P('單位／姓名','handler')+' 敬上</p><p>'+P('中華民國115年10月30日','date')+'</p></div>'}
+];
+
+/* ---------- 常用語 ---------- */
+const PHRASES=[
+ ['主旨起首',['檢送','有關','為','茲','關於','請']],
+ ['期望語・下行',['請查照。','請查照辦理。','請照辦。','請依說明事項辦理。','請轉知所屬。','請查照並轉知。']],
+ ['期望語・平行',['請查照。','請查照惠復。','請查照辦理。','請查照轉知。','請協助辦理。','請惠予協助。']],
+ ['期望語・上行',['敬請鑒核。','敬請核示。','敬請核備。','敬請鑒察。','謹請核示。']],
+ ['引敘來文',['依據貴機關○年○月○日○字第○號函辦理。','本機關○年○月○日○字第○號函諒達。','復貴機關○年○月○日○字第○號函。','略以，']],
+ ['項次層級',['一、','（一）','1.','（1）','A.']],
+ ['其他',['新臺幣（以下同）','如附件','如文','（請於○月○日前回復）','以上資料請於會前3日提供。']]
+];
+
+/* ---------- 狀態 ---------- */
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let cur=TPL[0], fields={}, fs=14;
+try{fields=JSON.parse(store.get('gwt:fields')||'{}')||{}}catch(e){fields={}}
+fs=parseInt(store.get('gwt:fs')||'14',10)||14;
+
+const roc=d=>{const y=d.getFullYear()-1911;return y+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'};
+const rocFull=s=>'中華民國'+s;
+if(!fields.date){fields.date=rocFull(roc(new Date()))}
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+
+/* ---------- 範本目錄 ---------- */
+function getMine(){try{return JSON.parse(store.get('gwt:mine')||'[]')||[]}catch(e){return[]}}
+function setMine(a){store.set('gwt:mine',JSON.stringify(a))}
+function getDraft(){try{return JSON.parse(store.get('gwt:draft')||'null')}catch(e){return null}}
+function allTpl(){
+  const out=[];const d=getDraft();
+  if(d)out.push({id:'draft',cat:'目前草稿',name:d.name,desc:'由來文產生，可繼續修改',html:()=>d.html});
+  getMine().forEach(m=>out.push({id:m.id,cat:'我的範本',name:m.name,desc:'自訂範本',mine:true,html:()=>m.html}));
+  return out.concat(TPL);
+}
+function buildNav(filter){
+  const list=$('#navList');list.innerHTML='';
+  const all=allTpl();
+  const cats=[...new Set(all.map(t=>t.cat))];
+  const f=(filter||'').trim();
+  cats.forEach(c=>{
+    const items=all.filter(t=>t.cat===c&&(!f||(t.name+t.desc+t.cat).includes(f)));
+    if(!items.length)return;
+    const h=document.createElement('h2');h.textContent=c;list.appendChild(h);
+    items.forEach(t=>{
+      const row=document.createElement('div');row.className='row';
+      const b=document.createElement('button');b.type='button';b.className='item';b.dataset.id=t.id;
+      b.setAttribute('aria-current',t.id===cur.id?'true':'false');
+      b.textContent=t.name;const sm=document.createElement('small');sm.textContent=t.desc;b.appendChild(sm);
+      b.onclick=()=>select(t.id);row.appendChild(b);
+      if(t.mine||t.id==='draft'){
+        const d=document.createElement('button');d.type='button';d.className='del';d.textContent='×';d.title='刪除';d.setAttribute('aria-label','刪除 '+t.name);
+        d.onclick=()=>{
+          if(t.id==='draft'){store.del('gwt:draft');store.del('gwt:doc:draft')}
+          else{setMine(getMine().filter(m=>m.id!==t.id));store.del('gwt:doc:'+t.id)}
+          if(cur.id===t.id)select('fun');else buildNav($('#q').value);
+          toast('已刪除「'+t.name+'」');
+        };
+        row.appendChild(d);
+      }
+      list.appendChild(row);
+    });
+  });
+}
+
+function applyFields(){
+  $$('#paper [data-k]').forEach(el=>{
+    const v=fields[el.dataset.k];
+    if(v){el.textContent=(el.dataset.k==='date'&&!/^中華民國/.test(v))?rocFull(v):v;el.classList.remove('ph')}
+  });
+}
+function skipDateRoc(){ /* 範本中「中華民國」前綴已含於欄位值時，避免重複 */ }
+
+function select(id,keepHash){
+  cur=allTpl().find(t=>t.id===id)||TPL[0];
+  const saved=store.get('gwt:doc:'+cur.id);
+  paper.innerHTML=saved||cur.html();
+  if(!saved)applyFields();
+  $('#curName').textContent=cur.name;
+  document.title=cur.name+'｜公文範本工坊';
+  if(!keepHash){try{history.replaceState(null,'','#'+cur.id)}catch(e){location.hash=cur.id}}
+  buildNav($('#q').value);
+  $('#issues').innerHTML='';
+  fit();
+}
+
+/* ---------- 自動儲存 ---------- */
+let saveT;
+paper.addEventListener('input',()=>{clearTimeout(saveT);saveT=setTimeout(()=>store.set('gwt:doc:'+cur.id,paper.innerHTML),400)});
+$('#bReset').onclick=()=>{store.del('gwt:doc:'+cur.id);select(cur.id,true);toast('已還原為原始範本')};
+
+/* ---------- 欄位 ---------- */
+function syncInputs(){
+  $$('.panel input[data-k]').forEach(i=>{i.value=fields[i.dataset.k]||''});
+  const m=(fields.date||'').match(/(\d+)年(\d+)月(\d+)日/);
+  if(m){const y=+m[1]+1911;$('#f_dateIn').value=y+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0')}
+  $('#rocShow').textContent=fields.date||'';
+}
+$$('.panel input[data-k]').forEach(i=>i.addEventListener('input',()=>{
+  fields[i.dataset.k]=i.value;store.set('gwt:fields',JSON.stringify(fields));
+  $$('#paper [data-k="'+i.dataset.k+'"]').forEach(el=>{if(i.value){el.textContent=i.value;el.classList.remove('ph')}});
+  paper.dispatchEvent(new Event('input'));
+}));
+$('#f_dateIn').addEventListener('input',e=>{
+  const v=e.target.value;if(!v)return;
+  const d=new Date(v+'T00:00:00');fields.date=rocFull(roc(d));
+  store.set('gwt:fields',JSON.stringify(fields));
+  $$('#paper [data-k="date"]').forEach(el=>{el.textContent=fields.date;el.classList.remove('ph')});
+  $('#rocShow').textContent=fields.date;paper.dispatchEvent(new Event('input'));
+});
+
+/* ---------- 待填欄位：點擊全選、Tab 跳格 ---------- */
+function selectNode(el){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+paper.addEventListener('click',e=>{const p=e.target.closest('.ph');if(p)selectNode(p)});
+paper.addEventListener('beforeinput',()=>{
+  const s=getSelection();if(!s.anchorNode)return;
+  const n=s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement;
+  const p=n&&n.closest&&n.closest('.ph');if(p)p.classList.remove('ph');
+});
+paper.addEventListener('keydown',e=>{
+  if(e.key!=='Tab')return;
+  const phs=$$('#paper .ph');if(!phs.length)return;
+  e.preventDefault();
+  const s=getSelection();let idx=-1;
+  if(s.anchorNode){const n=s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement;
+    phs.forEach((p,i)=>{if(p===n.closest('.ph')||(p.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING&&!p.contains(n)))idx=i})}
+  let nx=e.shiftKey?idx-1:idx+1; if(nx<0)nx=phs.length-1; if(nx>=phs.length)nx=0;
+  selectNode(phs[nx]);phs[nx].scrollIntoView({block:'center',behavior:'smooth'});
+});
+
+/* ---------- 格式工具 ---------- */
+const cmd=c=>{paper.focus();document.execCommand(c,false,null);paper.dispatchEvent(new Event('input'))};
+$('#fB').onclick=()=>cmd('bold');$('#fU').onclick=()=>cmd('underline');
+$('#fL').onclick=()=>cmd('justifyLeft');$('#fC').onclick=()=>cmd('justifyCenter');$('#fR').onclick=()=>cmd('justifyRight');
+function setFs(n){fs=Math.max(10,Math.min(20,n));paper.style.setProperty('--fs',fs+'pt');$('#fsLabel').textContent=fs+'pt';store.set('gwt:fs',String(fs));fit()}
+$('#fMinus').onclick=()=>setFs(fs-1);$('#fPlus').onclick=()=>setFs(fs+1);
+['fB','fU','fL','fC','fR'].forEach(id=>$('#'+id).addEventListener('mousedown',e=>e.preventDefault()));
+
+/* ---------- 縮放以符合螢幕 ---------- */
+function fit(){
+  const avail=$('.stage').clientWidth;
+  const mm=96/25.4*210;
+  const z=Math.min(1,avail/mm);
+  wrap.style.zoom=z;
+}
+window.addEventListener('resize',fit);
+
+/* ---------- 輸出 ---------- */
+function cleanClone(){
+  const c=paper.cloneNode(true);
+  c.removeAttribute('contenteditable');c.removeAttribute('id');c.removeAttribute('aria-label');
+  c.querySelectorAll('.ph').forEach(e=>e.classList.remove('ph'));
+  return c;
+}
+function plainText(){
+  const t=paper.innerText.replace(/\u00a0/g,' ').replace(/\n{3,}/g,'\n\n');
+  return t.trim()+'\n';
+}
+function fileBase(){return cur.name+'_'+new Date().toISOString().slice(0,10)}
+
+$('#bCopyT').onclick=async()=>{
+  const t=plainText();
+  try{await navigator.clipboard.writeText(t);toast('已複製純文字')}
+  catch(e){selectAndCopy()}
+};
+function selectAndCopy(){
+  const r=document.createRange();r.selectNodeContents(paper);const s=getSelection();s.removeAllRanges();s.addRange(r);
+  const ok=document.execCommand('copy');s.removeAllRanges();toast(ok?'已複製':'請按 Ctrl+C 複製')
+}
+$('#bCopyR').onclick=async()=>{
+  const c=cleanClone();
+  const html='<div style="font-family:標楷體,DFKai-SB,serif;font-size:'+fs+'pt;line-height:1.7">'+c.innerHTML+'</div>';
+  try{
+    await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([plainText()],{type:'text/plain'})})]);
+    toast('已複製（含格式），可貼到 Word 或信件');
+  }catch(e){selectAndCopy()}
+};
+
+function download(blob,name){
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+
+let printed=false;window.addEventListener('beforeprint',()=>{printed=true});
+$('#bPrint').onclick=()=>{
+  printed=false;
+  try{window.print()}catch(e){}
+  setTimeout(()=>{if(!printed){toast('此處無法開啟列印視窗。請用 Chrome 或 Edge 直接開啟本網頁，再按 Ctrl+P（Mac：⌘P），目的地選「另存為 PDF」');const t=$('#toast');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),7000)}},900);
+};
+
+/* ---------- 用語檢核 ---------- */
+const CJK='\\u3400-\\u9fff';
+const RULES=[
+ {re:/台(?!內)/g,msg:'「台」統一用「臺」（文號中的「台內」除外）',fix:'臺',auto:1,lvl:'err'},
+ {re:/掃瞄/g,msg:'「掃瞄」正確為「掃描」',fix:'掃描',auto:1,lvl:'err'},
+ {re:/提昇/g,msg:'「提昇」正確為「提升」',fix:'提升',auto:1,lvl:'err'},
+ {re:/收集/g,msg:'「收集」建議用「蒐集」',fix:'蒐集',auto:1,lvl:'tip'},
+ {re:/預定/g,msg:'「預定」依查考資料建議用「預訂」，請視語意判斷',lvl:'tip'},
+ {re:/剩餘/g,msg:'「剩餘」建議用「賸餘」，請視語意判斷',lvl:'tip'},
+ {re:/反應(?!時間)/g,msg:'表達「反映意見」時應為「反映」，請視語意判斷',lvl:'tip'},
+ {re:/暨/g,msg:'2 項並列用「及」，不用「暨」',fix:'及',auto:1,lvl:'tip'},
+ {re:/[０-９]+/g,msg:'數字不用全形，請改半形阿拉伯數字',fn:m=>m.replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)),auto:1,lvl:'err'},
+ {re:/略以：/g,msg:'「略以」後不可直接接冒號，須用逗號「略以，」',fix:'略以，',auto:1,lvl:'err'},
+ {re:new RegExp('(復請|敬請|請|惠請|謹請)[ \\u3000]+(?=['+CJK+'])','g'),msg:'公文無須挪抬，「請」後不留空格（如「復請查照」）',fn:m=>m.replace(/[ \u3000]+/g,''),auto:1,lvl:'err'},
+ {re:/(?<![…\.])…(?![…])|\.{3,}|。{3,}/g,msg:'刪節號應為 6 點「……」',fix:'……',auto:1,lvl:'err'},
+ {re:new RegExp('(?<=['+CJK+'])[,;:](?!\\d)|[,;](?=['+CJK+'])','g'),msg:'中文句中的標點應使用全形（，；：）',fn:m=>({',':'，',';':'；',':':'：'}[m]||m),auto:1,lvl:'err'},
+ {re:new RegExp('(?<=['+CJK+'])[\\(\\)]|[\\(\\)](?=['+CJK+'])','g'),msg:'括號應使用全形（ ），且全形半形需一致',fn:m=>m==='('?'（':'）',auto:1,lvl:'tip'},
+ {re:/申請書函/g,msg:'「申請書」不能寫成「申請書函」',fix:'申請書',auto:1,lvl:'err'},
+ {re:/[路街道]([一二三四五六七八九十])段/g,msg:'地址「段」應用阿拉伯數字（如：2段）',lvl:'tip'},
+ {re:/(?<!新臺幣)(?<![\d,.])\d[\d,]*(?:\.\d+)?元/g,msg:'金額應冠「新臺幣」（第一次出現後可註明「以下同」）',lvl:'tip'}
+];
+function textNodes(){
+  const w=document.createTreeWalker(paper,NodeFilter.SHOW_TEXT);const out=[];let n;while(n=w.nextNode())out.push(n);return out;
+}
+function runCheck(){
+  const res=[];
+  textNodes().forEach(node=>{
+    RULES.forEach(r=>{
+      r.re.lastIndex=0;let m;
+      while((m=r.re.exec(node.nodeValue))){
+        if(m[0]==='')r.re.lastIndex++;
+        else res.push({node,start:m.index,end:m.index+m[0].length,text:m[0],msg:r.msg,lvl:r.lvl,auto:!!r.auto});
+      }
+    });
+  });
+  const all=paper.innerText;
+  if(/(?:19|20)\d{2}\s*年/.test(all)&&/(?:民國\s*)?(?:[89]\d|1[0-3]\d)\s*年/.test(all)){
+    res.push({msg:'同一文件同時出現民國年與西元年，請統一（建議全用民國年）',lvl:'err',text:'民國年／西元年併用'});
+  }
+  $$('#paper [data-sec="subject"]').forEach(el=>{
+    if(/簡稱/.test(el.textContent))res.push({msg:'主旨不能寫簡稱，請移至說明欄第一次出現處',lvl:'err',text:'主旨含「簡稱」',el});
+  });
+  $$('#paper p').forEach(el=>{
+    const t=el.textContent.trim();
+    if(/^附件：\s*無\s*$/.test(t))res.push({msg:'無附件者不須在附件欄註明「無」，可刪除此行',lvl:'tip',text:t,el});
+    if(/^速別：\s*普通件?\s*$/.test(t))res.push({msg:'普通件不必特別註明速別，可視機關規定刪除',lvl:'tip',text:t,el});
+    if(/^密等[^：]*：\s*普通\s*$/.test(t))res.push({msg:'普通公文毋須於密等欄註明「普通」',lvl:'tip',text:t,el});
+  });
+  render(res);return res;
+}
+function render(res){
+  const box=$('#issues');box.innerHTML='';
+  if(!res.length){box.innerHTML='<p class="okmsg">未發現常見用語問題。</p><p class="hint">仍請核對文號、日期、受文者與附件是否正確。</p>';return}
+  const h=document.createElement('p');h.className='hint';h.textContent='共 '+res.length+' 項，點選可定位到稿紙。';box.appendChild(h);
+  res.forEach(it=>{
+    const b=document.createElement('button');b.type='button';b.className='issue '+(it.lvl==='err'?'err':'tip');
+    b.innerHTML='<b>'+(it.lvl==='err'?'應修':'建議')+'</b>'+it.msg+'<br><em></em>';
+    b.querySelector('em').textContent=it.text;
+    b.onclick=()=>{
+      try{
+        if(it.node&&it.node.isConnected){const r=document.createRange();r.setStart(it.node,it.start);r.setEnd(it.node,it.end);const s=getSelection();s.removeAllRanges();s.addRange(r);
+          (it.node.parentElement||paper).scrollIntoView({block:'center',behavior:'smooth'})}
+        else if(it.el){selectNode(it.el);it.el.scrollIntoView({block:'center',behavior:'smooth'})}
+      }catch(e){}
+    };
+    box.appendChild(b);
+  });
+}
+$('#runCheck').onclick=runCheck;
+$('#fixAll').onclick=()=>{
+  let n=0;
+  textNodes().forEach(node=>{
+    let v=node.nodeValue;
+    RULES.filter(r=>r.auto).forEach(r=>{r.re.lastIndex=0;v=v.replace(r.re,m=>{n++;return r.fn?r.fn(m):r.fix})});
+    if(v!==node.nodeValue)node.nodeValue=v;
+  });
+  paper.dispatchEvent(new Event('input'));
+  toast(n?('已自動修正 '+n+' 處'):'沒有可自動修正的項目');
+  runCheck();
+};
+
+/* ---------- 常用語 ---------- */
+let lastRange=null;
+document.addEventListener('selectionchange',()=>{
+  const s=getSelection();if(s.rangeCount&&paper.contains(s.anchorNode))lastRange=s.getRangeAt(0).cloneRange();
+});
+(function(){
+  const box=$('#phrases');
+  PHRASES.forEach(([t,arr])=>{
+    const h=document.createElement('h3');h.textContent=t;box.appendChild(h);
+    const c=document.createElement('div');c.className='chips';
+    arr.forEach(x=>{
+      const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=x;
+      b.addEventListener('mousedown',e=>e.preventDefault());
+      b.onclick=()=>{
+        paper.focus();
+        if(lastRange){const s=getSelection();s.removeAllRanges();s.addRange(lastRange)}
+        const ok=document.execCommand('insertText',false,x);
+        if(!ok){navigator.clipboard&&navigator.clipboard.writeText(x).then(()=>toast('已複製，請貼上'))}
+        paper.dispatchEvent(new Event('input'));
+      };
+      c.appendChild(b);
+    });
+    box.appendChild(c);
+  });
+})();
+
+/* ---------- 我的範本 ---------- */
+$('#bSave').onclick=()=>{
+  const bar=$('#saveBar');bar.hidden=false;
+  const inp=$('#tplName');inp.value=cur.mine?cur.name:(cur.id==='draft'?cur.name.replace(/^草稿：/,''):cur.name+'（自訂）');
+  inp.focus();inp.select();
+};
+$('#cancelSave').onclick=()=>{$('#saveBar').hidden=true};
+$('#doSave').onclick=()=>{
+  const name=$('#tplName').value.trim();if(!name){toast('請輸入範本名稱');return}
+  const html=paper.innerHTML;
+  const arr=getMine();let m=arr.find(x=>x.name===name);
+  if(m){m.html=html;m.ts=Date.now()}else{m={id:'my-'+Date.now().toString(36),name,html,ts:Date.now()};arr.unshift(m)}
+  setMine(arr);$('#saveBar').hidden=true;
+  store.del('gwt:doc:'+m.id);select(m.id);toast('已存成「'+name+'」，之後可從左側「我的範本」重複使用');
+};
+$('#tplName').addEventListener('keydown',e=>{if(e.key==='Enter')$('#doSave').click();if(e.key==='Escape')$('#cancelSave').click()});
+$('#fPh').addEventListener('mousedown',e=>e.preventDefault());
+$('#fPh').onclick=()=>{
+  paper.focus();
+  if(lastRange){const s=getSelection();s.removeAllRanges();s.addRange(lastRange)}
+  const t=getSelection().toString()||'請填寫';
+  document.execCommand('insertHTML',false,'<span class="ph">'+esc(t)+'</span>');
+  paper.dispatchEvent(new Event('input'));
+};
+$('#expMine').onclick=()=>{
+  const m=getMine();if(!m.length){toast('目前沒有我的範本可匯出');return}
+  download(new Blob([JSON.stringify({app:'gwt',mine:m},null,1)],{type:'application/json'}),'我的公文範本_'+new Date().toISOString().slice(0,10)+'.json');
+};
+$('#impMine').onclick=()=>$('#impFile').click();
+$('#impFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const j=JSON.parse(await f.text());const inc=(j.mine||[]).filter(x=>x&&x.name&&x.html);
+    const arr=getMine();inc.forEach(x=>{const i=arr.findIndex(y=>y.name===x.name);const rec={id:i>=0?arr[i].id:'my-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:x.name,html:x.html,ts:Date.now()};if(i>=0)arr[i]=rec;else arr.push(rec)});
+    setMine(arr);buildNav($('#q').value);toast('已匯入 '+inc.length+' 個範本');
+  }catch(err){toast('匯入失敗：檔案格式不正確')}
+  e.target.value='';
+};
+
+/* ---------- 來文撰稿 ---------- */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const CN=['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五'];
+const loaded={};
+function loadScript(src){return loaded[src]||(loaded[src]=new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('元件載入失敗，請檢查網路'));document.head.appendChild(s)}))}
+async function readFile(f){
+  const n=f.name.toLowerCase();
+  if(/\.(txt|md)$/.test(n))return await f.text();
+  if(n.endsWith('.docx')){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+    return (await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value;
+  }
+  if(n.endsWith('.pdf')){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    const lib=window.pdfjsLib;
+    lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf=await lib.getDocument({data:new Uint8Array(await f.arrayBuffer()),isEvalSupported:false}).promise;
+    let out='';
+    for(let i=1;i<=pdf.numPages;i++){
+      const tc=await (await pdf.getPage(i)).getTextContent();let y=null;
+      tc.items.forEach(it=>{const yy=it.transform[5];if(y!==null&&Math.abs(yy-y)>2)out+='\n';out+=it.str;y=yy});
+      out+='\n';
+    }
+    return out;
+  }
+  if(n.endsWith('.doc'))throw new Error('舊版 .doc 請先另存為 .docx，或直接貼上文字');
+  throw new Error('支援 .docx、.pdf、.txt');
+}
+function parseSrc(raw){
+  const t=raw.replace(/\r/g,'').replace(/[　\t]+/g,' ').replace(/[ ]*\n[ ]*/g,'\n').replace(/\n{2,}/g,'\n').trim();
+  const o={items:[]};let m;
+  m=t.match(/發文日期[:：]\s*(?:中華民國)?\s*(\d{2,3})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/)||t.match(/(?:中華民國)?\s*(1\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+  if(m)o.date=m[1]+'年'+m[2]+'月'+m[3]+'日';
+  m=t.match(/發文字號[:：]\s*(\S+)/);if(m)o.no=m[1];
+  m=t.match(/^\s*(\S{2,30}?)\s*(?:書函|函|公告|開會通知單)\s*$/m);if(m)o.org=m[1].trim();
+  m=t.match(/主旨[:：]\s*([\s\S]*?)(?=\n\s*(?:說明|辦法|公告事項|擬辦|正本|副本)[:：]|$)/);
+  if(m)o.subject=m[1].replace(/\s*\n\s*/g,'').trim();
+  m=t.match(/(?:說明|公告事項)[:：]\s*([\s\S]*?)(?=\n\s*(?:辦法|擬辦|正本|副本)[:：]|$)/);
+  let body=m?m[1].trim():'';
+  if(!o.subject&&!body){body=t}
+  if(!o.subject){const first=body.split(/[。\n]/).find(x=>x.trim().length>4)||'';o.subject=first.trim().slice(0,60)}
+  let parts=/(^|\n)[一二三四五六七八九十]+、/.test(body)?body.split(/\n(?=[一二三四五六七八九十]+、)/):body.split('\n');
+  o.items=parts.map(x=>x.replace(/\n/g,'').replace(/^[一二三四五六七八九十]+、\s*/,'').trim()).filter(x=>x.length>1&&x!==o.subject).slice(0,12);
+  const lab=n=>{for(const k of n.split('|')){const mm=t.match(new RegExp('(?<!發文)(?<!截止)'+k+'[:：]\\s*([^\\n]+)'));if(mm)return mm[1].trim().replace(/[。；;]+$/,'')}return ''};
+  const q=(o.subject||'').match(/[「『《]([^」』》]{4,60})[」』》]/)||t.match(/[「『《]([^」』》]{4,60})[」』》]/);
+  o.course=lab('課程名稱|研習名稱|訓練名稱|活動名稱|會議名稱|研討會名稱|主題')||(q?q[1]:'');
+  o.when=lab('辦理時間|活動時間|上課時間|研習時間|開會時間|日期及時間|時間|日期');
+  o.where=lab('辦理地點|上課地點|研習地點|開會地點|地點');
+  o.target=lab('參加對象|研習對象|對象');
+  o.deadline=lab('報名截止[^：:\\n]*|報名期限|報名日期|截止日期')||((t.match(/[^。\n]*報名[^。\n]*截止[^。\n]*/)||[''])[0].trim());
+  o.fee=(lab('報名費用|報名費|費用|收費')||((t.match(/[^。\n]*(?:免費|免收|不收)[^。\n]*/)||[''])[0].trim())).replace(/[。；;]+$/,'');
+  const hm=t.match(/(\d+(?:\.\d+)?)\s*(?:小時|學分|積分|點)/);o.hours=hm?hm[0]:'';
+  return o;
+}
+function shortSubj(s){
+  s=(s||'').replace(/[，,、]?\s*(?:請|敬請|復請|惠請)[^。]*。?$/,'').replace(/。$/,'').trim();
+  return s.length>80?s.slice(0,80):s;
+}
+function draftHTML(tid,o,mode,x){
+  const sub=shortSubj(o.subject)||'';const S=sub?esc(sub):P('來文主旨');
+  const org=o.org?esc(o.org):'';
+  const dt=o.date?esc(o.date):P('○年○月○日'), no=o.no?esc(o.no):P('○字第○號');
+  const refOut=(org?'貴機關':P('來文機關'))+dt+no+'函';
+  const refIn=(org||P('來文機關'))+dt+no+'函';
+  const items=(start)=>o.items.map((x,i)=>'<p class="l1">'+CN[start+i]+'、'+esc(x)+'</p>').join('');
+  const recv=org||P('受文者（機關全銜）');
+  if(tid==='train'){
+    x=x||{};
+    const who=x.name?esc(x.name):P('○○○'), ttl=x.title?esc(x.title):P('職稱／單位');
+    const C=o.course?esc(o.course):P('課程名稱'), host=org||P('主辦機關');
+    const V=(v,ph)=>v?esc(v):P(ph);
+    const leave=x.leave||'公假';
+    const fundTxt=x.fund==='self'?'報名費用'+(o.fee?'（'+esc(o.fee)+'）':'')+'由參加人員自費支付，惟仍請准予'+leave+'登記':
+      x.fund==='free'?(o.fee?esc(o.fee):'本課程免費或由主辦單位補助')+'，無須動支本院經費':
+      '報名費用'+V(o.fee,'新臺幣○元')+'，擬由公費（'+P('經費科目')+'）支應';
+    const sb='<p class="small">簽稿併陳</p>';
+    const qian=sb+'<p class="org">'+P('機關全銜','org')+'　簽</p><p class="right">'+P('單位名稱')+'　'+P('中華民國115年10月30日','date')+'</p><div class="gap"></div>'+
+     '<p class="sec" data-sec="subject">主旨：為本'+P('單位')+who+'君擬參加'+host+'辦理之「'+C+'」，擬請准予'+leave+'並由'+(x.fund==='self'?'自費':x.fund==='free'?'主辦單位補助':'公費')+'參加，敬請核示。</p>'+
+     '<p class="lab">說明：</p>'+
+     '<p class="l1">一、依據'+refIn+'辦理。</p>'+
+     '<p class="l1">二、課程資訊如下：</p>'+
+     '<p class="l2">（一）課程名稱：'+C+'</p>'+
+     '<p class="l2">（二）辦理時間：'+V(o.when,'○年○月○日（星期○）○時至○時')+'</p>'+
+     '<p class="l2">（三）辦理地點：'+V(o.where,'地點或線上')+'</p>'+
+     '<p class="l2">（四）時數：'+V(o.hours,'○小時')+'</p>'+
+     '<p class="l2">（五）參加對象：'+V(o.target,'參加對象')+'</p>'+
+     '<p class="l2">（六）報名期限：'+V(o.deadline,'○年○月○日')+'</p>'+
+     '<p class="l1">三、參加人員：'+ttl+who+'君。本課程內容與'+P('業務項目')+'相關，有助於'+P('提升○○專業及業務品質')+'。</p>'+
+     '<p class="l1">四、經費：'+fundTxt+'。</p>'+
+     '<p class="l1">五、課程期間之業務已安排由'+(x.deputy?esc(x.deputy):P('○○○'))+'君代理。</p>'+
+     '<p class="lab">擬辦：</p>'+
+     '<p class="l1">一、如奉核可，擬函復'+host+'完成報名（稿如附）。</p>'+
+     '<p class="l1">二、奉核後依規定辦理'+leave+'手續，結訓後檢附研習證明辦理核銷及登錄。</p>'+
+     '<p style="margin-top:1em">敬陳</p><p>'+P('○○主任')+'</p><p>'+P('○○院長')+'</p>'+
+     '<table class="bd keep" style="margin-top:1.5em"><tr><th class="k">承辦人</th><th class="k">單位主管</th><th class="k">人事</th><th class="k">主計</th><th class="k">核決</th></tr><tr><td class="xtall"></td><td></td><td></td><td></td><td></td></tr></table>';
+    const gao=sb+'<p class="org">'+P('機關全銜','org')+'　函（稿）</p><div class="gap"></div>'+addrBlock+metaRows('',host)+'<div class="gap"></div>'+
+     '<p class="sec" data-sec="subject">主旨：本'+P('單位')+'派員參加貴機關辦理之「'+C+'」，檢送報名資料1份，請查照。</p>'+
+     '<p class="lab">說明：</p><p class="l1">一、復'+refOut+'。</p>'+
+     '<p class="l1">二、本'+P('單位')+'參加人員為'+ttl+who+'君，聯絡電話：'+P('02-0000-0000','tel')+'，電子信箱：'+P('name@example.gov.tw','email')+'。</p>'+
+     '<p class="l1">三、'+P('其他需配合事項（例如：葷素、停車、發票抬頭、核銷憑證）。')+'</p>'+tailX(host)+'<div class="sign"><p>'+P('機關首長姓名','leader')+'</p></div>';
+    return qian+'<div class="pb html2pdf__page-break"></div>'+gao;
+  }
+  const lead=(title,leader)=>'<p class="org">'+P('機關全銜','org')+'　'+title+'</p><div class="gap"></div>'+addrBlock+metaRows('',recv)+'<div class="gap"></div>';
+  if(tid==='fun'||tid==='shufun'){
+    const title=tid==='fun'?'函':'書函';
+    const subject=mode==='notify'?'轉知'+S+'一案，請查照'+P('（辦理）')+'。':'有關'+(sub.startsWith('為')?esc(sub.slice(1)):S)+'一案，復如說明，請查照。';
+    let body;
+    if(mode==='notify'){
+      body='<p class="l1">一、依據'+refOut.replace('貴機關','貴機關')+'辦理。</p>'+(o.items.length?items(1):'<p class="l1">二、'+P('轉知事項。')+'</p>')+'<p class="l1">'+CN[Math.min(o.items.length+1,13)]+'、'+P('請配合事項或期限。')+'</p>';
+    }else{
+      body='<p class="l1">一、復'+refOut+'。</p><p class="l1">二、'+P('本機關辦理情形、意見或回復內容。')+'</p>'+items(2)+'<p class="l1">'+CN[Math.min(o.items.length+2,13)]+'、'+P('結論或後續配合事項。')+'</p>';
+    }
+    return lead(title)+'<p class="sec" data-sec="subject">主旨：'+subject+'</p><p class="lab">說明：</p>'+body+tailX(recv)+'<div class="sign"><p>'+P(tid==='fun'?'機關首長姓名':'單位或機關名稱','leader')+'</p></div>';
+  }
+  if(tid==='qian'){
+    return '<p class="org">'+P('機關全銜','org')+'　簽</p><p class="right">'+P('單位名稱')+'　'+P('中華民國115年10月30日','date')+'</p><div class="gap"></div>'+
+    '<p class="sec" data-sec="subject">主旨：'+(mode==='notify'?'為'+S+'一案，擬轉知相關單位，敬請核示。':'為'+S+'一案，擬復如說明，敬請核示。')+'</p>'+
+    '<p class="lab">說明：</p><p class="l1">一、依據'+refIn+'辦理。</p>'+items(1)+
+    '<p class="lab">擬辦：</p><p class="l1">一、如奉核可，擬'+(mode==='notify'?'轉知相關單位':'函復'+(org||P('來文機關')))+'（稿如附）。</p><p class="l1">二、'+P('其他建議。')+'</p>'+
+    '<p style="margin-top:1em">敬陳</p><p>'+P('○○主任')+'</p>'+
+    '<table class="bd keep" style="margin-top:1.5em"><tr><th class="k">承辦人</th><th class="k">科長</th><th class="k">主任</th><th class="k">院長</th></tr><tr><td class="xtall"></td><td></td><td></td><td></td></tr></table>';
+  }
+  if(tid==='bianqian'){
+    return '<p class="title">便簽</p><p class="right">'+P('中華民國115年10月30日','date')+'</p><div class="gap"></div>'+
+    '<p class="l1">一、依據'+refIn+'辦理。</p><p class="l1">二、案係'+(org||P('來文機關'))+S+'。</p>'+
+    '<p class="l1">三、有關'+(o.items[0]?esc(o.items[0]):P('來文要旨'))+'，'+P('本單位意見。')+'</p><p class="l1">四、如奉核可，'+P('擬辦事項')+'。</p>'+
+    '<div class="sign"><p>承辦人：'+P('○○○','handler')+'</p></div>';
+  }
+  if(tid==='gonggao'){
+    return '<p class="org">'+P('機關全銜','org')+'　公告</p><div class="gap"></div><p class="sec">發布日期：'+P('中華民國115年10月30日','date')+'</p><p class="sec">發文字號：'+P('○○字第○○○○○○○○○○號')+'</p><div class="gap"></div>'+
+    '<p class="sec" data-sec="subject">主旨：'+S+(/[。]$/.test(sub)?'':'。')+'</p><p class="sec">依據：'+refIn+'。</p><p class="lab">公告事項：</p>'+
+    (o.items.length?items(0):'<p class="l1">一、'+P('公告內容。')+'</p>')+'<div class="sign"><p>'+P('機關首長姓名','leader')+'</p></div>';
+  }
+  if(tid==='meeting'){
+    return '<p class="org">'+P('機關全銜','org')+'　開會通知單</p><div class="gap"></div>'+addrBlock+
+    '<p class="sec">受文者：'+P('如行文單位')+'</p><p class="sec">發文日期：'+P('中華民國115年10月30日','date')+'</p><p class="sec">發文字號：'+P('○○字第○○○○○○○○○○號')+'</p><div class="gap"></div>'+
+    '<table class="bd keep"><tr><td class="k">開會事由</td><td>'+S+'</td></tr><tr><td class="k">開會時間</td><td>'+P('中華民國115年○月○日（星期○）上午○時')+'</td></tr><tr><td class="k">開會地點</td><td>'+P('○○會議室')+'</td></tr><tr><td class="k">主持人</td><td>'+P('○○○')+'</td></tr><tr><td class="k">聯絡人及電話</td><td>'+P('○○○，電話 02-0000-0000')+'</td></tr><tr><td class="k">出席者</td><td>'+P('○○科、○○室')+'</td></tr>'+
+    '<tr><td class="k tall">備註</td><td>'+(o.items.length?esc(o.items.slice(0,3).join('；')):P('備註事項'))+'</td></tr></table><div class="sign"><p>'+P('機關首長姓名','leader')+'</p></div>';
+  }
+  return TPL.find(t=>t.id===tid).html();
+}
+function setDrop(f){
+  $('#draftMsg').textContent='讀取中…';
+  readFile(f).then(t=>{
+    $('#srcText').value=t.trim();
+    $('#draftMsg').textContent=t.trim().length?('已讀取「'+f.name+'」共 '+t.trim().length+' 字，請確認內容後按「產生草稿」。'):'檔案沒有可擷取的文字（可能是掃描影像），請貼上文字或改用 .docx。';
+  }).catch(e=>{$('#draftMsg').textContent='讀取失敗（'+(e&&e.message||'未知原因')+'）。請改傳 .docx／.txt，或用 PDF 閱讀器複製文字後貼到下方欄位。'});
+}
+$('#srcFile').onchange=e=>{if(e.target.files[0])setDrop(e.target.files[0])};
+const dz=$('#drop');
+['dragover','dragenter'].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.add('on')}));
+['dragleave','drop'].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.remove('on')}));
+dz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)setDrop(f)});
+$('#dFmt').onchange=()=>{$('#trainBox').hidden=$('#dFmt').value!=='train'};
+$('#clearSrc').onclick=()=>{$('#srcText').value='';$('#srcFile').value='';$('#draftMsg').textContent=''};
+$('#makeDraft').onclick=()=>{
+  const raw=$('#srcText').value.trim();
+  if(!raw){$('#draftMsg').textContent='請先上傳或貼上來文內容。';return}
+  const o=parseSrc(raw), tid=$('#dFmt').value, mode=$('#dMode').value;
+  const fmt=tid==='train'?'公費公假簽稿':TPL.find(t=>t.id===tid).name;
+  store.set('gwt:draft',JSON.stringify({name:'草稿：'+fmt+(o.subject?'－'+shortSubj(o.subject).slice(0,12):''),html:draftHTML(tid,o,mode,{name:$('#tName').value.trim(),title:$('#tTitle').value.trim(),leave:$('#tLeave').value,fund:$('#tFund').value,deputy:$('#tDeputy').value.trim()})}));
+  store.del('gwt:doc:draft');select('draft');
+  const got=[o.course&&'課程',o.when&&'時間',o.where&&'地點',o.fee&&'費用',o.deadline&&'報名期限',o.org&&'機關',o.date&&'日期',o.no&&'字號',o.subject&&'主旨',o.items.length&&('說明'+o.items.length+'點')].filter(Boolean).join('、');
+  $('#draftMsg').textContent='已產生「'+fmt+'」草稿。擷取到：'+(got||'無')+'。黃底處請自行補充，並核對引敘內容。';
+  toast('草稿已產生，請在稿紙上修改');
+};
+
+/* ---------- 面板頁籤、外觀 ---------- */
+$$('.panel .tabs button').forEach(b=>b.onclick=()=>{
+  $$('.panel .tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
+  $$('.panel section').forEach(s=>s.hidden=s.dataset.pane!==b.dataset.tab);
+});
+$('#sideToggle').onclick=()=>{const p=$('#panel');const c=p.classList.toggle('closed');$('#sideToggle').setAttribute('aria-expanded',String(!c))};
+$('#themeBtn').onclick=()=>{
+  const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+  r.dataset.theme=dark?'light':'dark';store.set('gwt:theme',r.dataset.theme);
+};
+const th=store.get('gwt:theme');if(th)document.documentElement.dataset.theme=th;
+$('#q').addEventListener('input',e=>buildNav(e.target.value));
+window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(id&&id!==cur.id&&allTpl().some(t=>t.id===id))select(id,true)});
+
+/* ---------- 啟動 ---------- */
+if(window.matchMedia('(min-width:1101px)').matches)$('#panel').classList.remove('closed');
+paper.style.setProperty('--fs',fs+'pt');$('#fsLabel').textContent=fs+'pt';
+syncInputs();
+const startId=location.hash.slice(1);
+select(allTpl().some(t=>t.id===startId)?startId:'fun',true);
+window.__gwt={runCheck,select,paper};
+})();
+</script>
+</body>
+</html>
