@@ -156,6 +156,7 @@
         .tab[data-tab="student"] { --tab-bg: var(--peach);    --tab-line: #E9A97C; }
         .tab[data-tab="drg"]     { --tab-bg: var(--pink);     --tab-line: #E79BB0; }
         .tab[data-tab="icd"]     { --tab-bg: var(--lavender); --tab-line: #B6A2E6; }
+        .tab[data-tab="tools"]   { --tab-bg: var(--mint);     --tab-line: #8CCDB2; }
 
         .tab .count {
             display: inline-block;
@@ -249,6 +250,7 @@
         .card.icd     { --c-bg: var(--sky);      --c-line: #8FC2E0; --c-deep: #3B83AE; }
         .card.ecode   { --c-bg: var(--butter);   --c-line: #E5CB63; --c-deep: #A98912; }
         .card.coder   { --c-bg: var(--lavender); --c-line: #B6A2E6; --c-deep: var(--lavender-deep); }
+        .card.gongwen { --c-bg: var(--mint);     --c-line: #8CCDB2; --c-deep: var(--mint-deep); }
         .card.future  { --c-bg: #EFE8EE;         --c-line: #C9BBC7; --c-deep: var(--muted); }
         .card.future::before { border-style: dashed; box-shadow: none; }
         .card.future:hover { transform: none; }
@@ -343,6 +345,7 @@
                 <button class="tab" role="tab" id="tab-student" data-tab="student" aria-controls="panel-student" aria-selected="true">學生練習區<span class="count">1</span></button>
                 <button class="tab" role="tab" id="tab-drg" data-tab="drg" aria-controls="panel-drg" aria-selected="false" tabindex="-1">Tw DRG<span class="count">4</span></button>
                 <button class="tab" role="tab" id="tab-icd" data-tab="icd" aria-controls="panel-icd" aria-selected="false" tabindex="-1">ICD 10<span class="count">3</span></button>
+                <button class="tab" role="tab" id="tab-tools" data-tab="tools" aria-controls="panel-tools" aria-selected="false" tabindex="-1">小小工具箱<span class="count">1</span></button>
             </div>
 
             <!-- 學生練習區 -->
@@ -413,6 +416,18 @@
                         <h2>未命名新系統 (開發中)</h2>
                         <p>未來的程式專案完成後，可以直接複製此卡片並修改標題與連結。</p>
                         <span class="card-btn">敬請期待</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 小小工具箱 -->
+            <section class="panel" role="tabpanel" id="panel-tools" aria-labelledby="tab-tools" hidden>
+                <p class="panel-intro">日常工作用得到的小幫手，慢慢加進來 ✿</p>
+                <div class="container">
+                    <a href="gongwen/" target="_blank" class="card gongwen">
+                        <h2>公文範本工坊</h2>
+                        <p>函、書函、簽、便簽、公告、會議紀錄等 15 種範本，可線上修改、複製、列印或另存 PDF；上傳來文可擬公費公假參訓的簽與稿，並可存成自己的範本重複使用。</p>
+                        <span class="card-btn">進入工具 &rarr;</span>
                     </a>
                 </div>
             </section>
